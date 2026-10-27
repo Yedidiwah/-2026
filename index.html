@@ -73,6 +73,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 main.wrap{padding-top:18px;padding-bottom:40px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);min-width:0}
 @media (max-width:520px){.card{padding:18px 16px}.brand .tag,.ago{display:none}.status{font-size:13px}.bar{gap:10px}}
+@media (max-width:420px){.brand svg,.status .sep{display:none}}
 .card h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
 .card .sub{color:var(--ink2);font-size:14.5px;margin-top:2px;max-width:62ch}
 .head{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
@@ -740,7 +741,7 @@ function renderStatus() {
   const ago = (iso) => Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
   const mins = ago(D.updated), chk = ago(D.checked || D.updated);       // data age vs. when the loop last looked
   clear($('#st-time')).append('עודכן ', num(D.updated_hm), mins >= 3 ? h('span', {class: 'ago'}, chk <= 8 ? ` · נבדק לפני ${chk} דק׳` : ` · לפני ${mins} דק׳`) : '');
-  $('#st-count').textContent = D.counted.boxes ? `נספרו ${D.counted.pct}%` : 'לפני הספירה';
+  $('#st-count').textContent = D.counted.boxes ? `נספרו ${+D.counted.pct.toFixed(1)}%` : 'לפני הספירה';
   $('#status').classList.toggle('stale', chk > 10);
   $('#prog').style.width = Math.min(100, D.counted.pct) + '%';
 }
