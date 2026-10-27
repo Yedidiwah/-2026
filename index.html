@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>תחזית חיה · בחירות 2026</title>
+<meta name="description" content="הערכה סטטיסטית בזמן אמת לתוצאות הבחירות לכנסת ה-26: מנדטים לפי גוש, הסיכוי ל-61 ותרחישים. לא תוצאה רשמית.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="he_IL">
+<meta property="og:title" content="תחזית חיה · בחירות 2026">
+<meta property="og:description" content="הערכה סטטיסטית בזמן אמת: מנדטים לפי גוש, הסיכוי ל-61 ותרחישים. לא תוצאה רשמית.">
+<meta name="robots" content="index,follow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 24a13 13 0 0 1 26 0' fill='none' stroke='%232a78d6' stroke-width='5' stroke-linecap='round' stroke-dasharray='1 7.5'/%3E%3Cpath d='M9 24a7 7 0 0 1 14 0' fill='none' stroke='%2300700a' stroke-width='5' stroke-linecap='round' stroke-dasharray='1 6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --page:#f4f3ef; --card:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --mute:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --line:rgba(11,11,11,.10); --wash:rgba(11,11,11,.045);
+  --bibi:#2a78d6; --change:#00700a; --arab:#ee5a4f; --other:#a8a69d;
+  --shadow:0 1px 2px rgba(11,11,11,.04),0 10px 28px -16px rgba(11,11,11,.18);
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --page:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --mute:#898781;
+    --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --wash:rgba(255,255,255,.06);
+    --bibi:#3987e5; --change:#1f9a3a; --arab:#e66767; --other:#6f6e68;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -16px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --mute:#898781;
+  --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --wash:rgba(255,255,255,.06);
+  --bibi:#3987e5; --change:#1f9a3a; --arab:#e66767; --other:#6f6e68;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px -16px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:400 16px/1.55 "Heebo","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.mute{color:var(--mute)} .ink2{color:var(--ink2)}
+
+/* ---------- top bar */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--page) 88%,transparent);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:14px;height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;white-space:nowrap}
+.brand .tag{font-weight:500;color:var(--ink2);font-size:14px}
+.status{margin-inline-start:auto;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink2);min-width:0}
+.status .sep{color:var(--axis)} .status span{white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink);flex:none;position:relative}
+.dot::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid var(--ink);opacity:.5;animation:pulse 2s ease-out infinite}
+.stale .dot{background:var(--mute)} .stale .dot::after{display:none}
+@keyframes pulse{0%{transform:scale(.5);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dot::after{animation:none}}
+.iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;flex:none}
+.iconbtn:hover{background:var(--wash)}
+.prog{height:3px;background:var(--grid)} .prog i{display:block;height:100%;background:var(--ink);transition:width .8s ease}
+.demo{background:#fff3c4;color:#4a3b00;text-align:center;font-size:14px;font-weight:600;padding:7px 12px;border-bottom:1px solid #e6d27a}
+.demo[hidden]{display:none}
+
+/* ---------- cards */
+main.wrap{padding-top:18px;padding-bottom:40px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);min-width:0}
+@media (max-width:520px){.card{padding:18px 16px}.brand .tag,.ago{display:none}.status{font-size:13px}.bar{gap:10px}}
+.card h2{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.card .sub{color:var(--ink2);font-size:14.5px;margin-top:2px;max-width:62ch}
+.head{display:flex;gap:12px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+.eyebrow{font-size:13px;font-weight:600;color:var(--ink2);letter-spacing:.02em}
+
+/* ---------- hero */
+.hero h1{font-size:clamp(26px,5.4vw,40px);line-height:1.12;font-weight:800;letter-spacing:-.025em;margin:6px 0 8px}
+.hero .lead{color:var(--ink2);max-width:60ch}
+.odds{margin:20px 0 4px}
+.oddsbar{display:flex;gap:2px;height:14px}
+.oddsbar i{display:block;min-width:4px;transition:flex-grow .6s ease}
+.oddsbar i:first-child{border-radius:0 7px 7px 0} .oddsbar i:last-child{border-radius:7px 0 0 7px}
+.oddskey{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;font-size:14px;color:var(--ink2)}
+.oddskey b{color:var(--ink);font-weight:800;font-size:18px;margin-inline-start:6px}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:7px;vertical-align:-1px;background:var(--c)}
+.sw.line{height:3px;border-radius:2px;vertical-align:3px;width:14px}
+.sw.stripe{background:repeating-linear-gradient(135deg,var(--change) 0 3px,var(--arab) 3px 6px)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.tile{position:relative;border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;background:var(--card);overflow:hidden}
+.tile::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+.tile .nm{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.tile>*{min-width:0}
+.tile .mem{font-size:12.5px;color:var(--mute);margin-top:2px;min-height:19px;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:721px){.tile .mem{white-space:nowrap}}
+.tile .big{font-size:clamp(44px,9vw,60px);font-weight:800;line-height:1;letter-spacing:-.03em;margin:10px 0 2px}
+.tile .rng{font-size:14px;color:var(--ink2)}
+.tile .ini{font-size:13px;color:var(--mute);margin-top:8px;display:flex;justify-content:space-between;gap:8px;align-items:flex-end}
+.spark{width:84px;height:26px;flex:none}
+.gap61{margin-top:18px;padding:12px 14px;border-radius:12px;background:var(--wash);font-size:15px;color:var(--ink2)}
+.gap61 b{color:var(--ink)}
+@media (max-width:720px){.tiles{grid-template-columns:1fr}.tile{display:grid;grid-template-columns:1fr auto;column-gap:12px}
+  .tile .nm,.tile .mem,.tile .rng,.tile .ini{grid-column:1}.tile .big{grid-column:2;grid-row:1/4;margin:0;align-self:center}}
+
+/* ---------- charts */
+svg text{unicode-bidi:plaintext;font-family:inherit}
+.chart{display:block;width:100%;height:auto;direction:ltr;overflow:visible}
+.fb{fill:var(--bibi)} .fc{fill:var(--change)} .fa{fill:var(--arab)} .fo{fill:var(--other)}
+.sb{stroke:var(--bibi)} .sc{stroke:var(--change)} .sa{stroke:var(--arab)} .so{stroke:var(--other)}
+.gridl{stroke:var(--grid);stroke-width:1} .axisl{stroke:var(--axis);stroke-width:1}
+.tick{fill:var(--mute);font-size:12px}
+.lbl{fill:var(--ink);font-size:13px;font-weight:600}
+.lbl2{fill:var(--ink2);font-size:12.5px}
+.seat{transition:opacity .15s}
+.phost{max-width:620px;margin:6px auto 0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:14px;color:var(--ink2);margin:0 0 6px}
+.legend b{color:var(--ink);font-weight:800}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--wash);gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-size:14px;font-weight:500;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 0 0 1px var(--line),0 1px 3px rgba(0,0,0,.08)}
+.seg.small button{padding:4px 10px;font-size:13px}
+.cap{font-size:13px;color:var(--mute);margin-top:8px}
+.tip{position:fixed;z-index:60;pointer-events:none;background:var(--ink);color:var(--card);padding:8px 11px;border-radius:9px;font-size:13px;line-height:1.4;
+  box-shadow:0 6px 24px rgba(0,0,0,.25);opacity:0;transition:opacity .1s;max-width:240px}
+.tip.on{opacity:1}
+.tip b{font-weight:800;font-size:15px;display:block}
+.tip .row{display:flex;align-items:center;gap:7px}
+.tip .k{width:12px;height:3px;border-radius:2px;background:var(--c);flex:none}
+
+/* ---------- scenario cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.sc-card{border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.sc-card .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.sc-card .t b{font-weight:800;font-size:16px}
+.sc-card .p{font-size:13px;color:var(--ink2)}
+.track{height:5px;border-radius:3px;background:var(--grid);overflow:hidden;margin:8px 0 10px}
+.track i{display:block;height:100%;background:var(--ink2);border-radius:3px}
+.sc-card .what{font-size:14px;color:var(--ink2);margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 8px;font-size:13.5px;background:var(--card)}
+.chip .sw{margin:0;width:8px;height:8px}
+.chip b{font-weight:800}
+.chip .d{color:var(--mute);font-size:12.5px}
+.chip.hit{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
+
+/* ---------- lab */
+.lab{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.lab{grid-template-columns:1fr}}
+.ctl{border-top:1px solid var(--line);padding:14px 0}
+.ctl:first-child{border-top:0;padding-top:0}
+.ctl h3{font-size:14.5px;font-weight:700;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ctl h3 span{font-weight:500;color:var(--ink2);font-size:13.5px}
+.ctl .hint{font-size:13px;color:var(--mute);margin:2px 0 8px}
+input[type=range]{width:100%;accent-color:var(--ink);margin:8px 0 0;direction:ltr}
+.rows{display:grid;gap:8px}
+.rowc{display:flex;justify-content:space-between;align-items:center;gap:6px 10px;font-size:14.5px;flex-wrap:wrap}
+.rowc .n{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 170px}
+.rowc .seg{flex:none}.seg button{white-space:nowrap}
+.rowc .n small{color:var(--mute);font-size:12.5px}
+.out{position:sticky;top:76px;border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--wash)}
+@media (max-width:860px){.out{position:static}}
+.out .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;text-align:center}
+.out .nums div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 4px}
+.out .nums b{display:block;font-size:26px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.out .nums span{font-size:12.5px;color:var(--ink2)}
+.out .nums small{display:block;font-size:11.5px;color:var(--mute)}
+.verdict{margin-top:12px;font-size:15px}
+.verdict b{font-weight:800}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:7px 14px;font-size:14px;font-weight:600}
+.btn:hover{background:var(--wash)}
+
+/* ---------- table */
+.tw{overflow-x:auto;margin:0 -6px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:560px}
+th{font-weight:600;font-size:12.5px;color:var(--mute);text-align:start;padding:8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 6px;border-bottom:1px solid var(--grid);vertical-align:middle}
+tr:hover td{background:var(--wash)}
+td.nm{font-weight:600;white-space:nowrap}
+td.nm .sw{margin-inline-end:9px}
+td.se{font-weight:800;font-size:17px}
+td.num2,th.num2{text-align:end;font-variant-numeric:tabular-nums}
+.pp{display:flex;align-items:center;gap:8px;min-width:96px}
+.pp .track{margin:0;flex:1;height:5px}
+.pp span{font-size:12.5px;color:var(--ink2);min-width:34px;text-align:end;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.hide-sm{display:none}table{min-width:0}}
+
+/* ---------- coverage */
+.cov{display:grid;gap:10px}
+.covrow{display:grid;grid-template-columns:minmax(120px,190px) 1fr 48px;gap:10px;align-items:center;font-size:14px}
+.covrow .track{margin:0}
+.covrow .w{font-size:12px;color:var(--mute)}
+.swing{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.swing span{border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:13.5px;background:var(--card)}
+
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:700;font-size:15.5px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:20px;color:var(--mute);font-weight:400}
+details[open] summary::after{content:"–"}
+details p,details ul{color:var(--ink2);font-size:14.5px;margin:10px 0 0;max-width:68ch}
+details ul{padding-inline-start:20px} details li{margin:4px 0}
+footer{padding:0 0 46px;color:var(--mute);font-size:13px}
+footer p{max-width:70ch;margin:0 0 6px}
+.err{padding:30px 22px;text-align:center;color:var(--ink2)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.fade{opacity:.55;transition:opacity .2s}
+</style>
+</head>
+<body>
+<div id="demo" class="demo" hidden>תצוגה לדוגמה · נתונים סינתטיים להדגמת העיצוב בלבד · אלה לא תוצאות אמיתיות</div>
+
+<header class="top" id="top">
+  <div class="wrap bar">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 24a13 13 0 0 1 26 0" fill="none" stroke="var(--bibi)" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 7.5"/><path d="M9 24a7 7 0 0 1 14 0" fill="none" stroke="var(--change)" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 6"/></svg>
+      <span>בחירות 2026</span><span class="tag">תחזית חיה</span>
+    </div>
+    <div class="status" id="status"><span class="dot"></span><span id="st-time">טוען…</span><span class="sep">·</span><span id="st-count"></span></div>
+    <button class="iconbtn" id="theme" aria-label="החלפת מצב תצוגה (בהיר/כהה)" title="בהיר / כהה">◐</button>
+  </div>
+  <div class="prog"><i id="prog" style="width:0"></i></div>
+</header>
+
+<main class="wrap" id="app">
+  <section class="card hero" id="hero"><div class="err" id="loading">טוען את ההערכה האחרונה…</div></section>
+  <section class="card" id="parl" hidden></section>
+  <section class="card" id="dist" hidden></section>
+  <section class="card" id="thr" hidden></section>
+  <section class="card" id="lab" hidden></section>
+  <section class="card" id="time" hidden></section>
+  <section class="card" id="lists" hidden></section>
+  <section class="card" id="count" hidden></section>
+  <section class="card" id="how" hidden></section>
+</main>
+
+<footer class="wrap">
+  <p>האתר אינו רשמי ואינו קשור לוועדת הבחירות המרכזית. התוצאות הרשמיות מתפרסמות רק באתר הוועדה (votes26.bechirot.gov.il).</p>
+  <p>כל המספרים כאן הם הערכה סטטיסטית שמתעדכנת ככל שנספרות קלפיות, ולא תוצאה — ט.ל.ח.</p>
+</footer>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<noscript><p class="err">האתר דורש JavaScript כדי להציג את ההערכה.</p></noscript>
+
+<script>
+(() => {
+'use strict';
+/* ====================================================================== config */
+const RAW_URL = 'https://raw.githubusercontent.com/Yedidiwah/-2026/data/latest.json';
+const params = new URLSearchParams(location.search);
+const isLocal = /^(localhost|127\.0\.0\.1|\[::1\]|)$/.test(location.hostname);
+const DATA_URL = params.get('data') || (isLocal ? 'data/latest.json' : RAW_URL);
+const POLL_MS = 60000;
+const THRESH = 0.0325, SEATS = 120;
+const BLOC = {
+  bibi:   {name: 'ביבי',   cls: 'b', css: 'var(--bibi)'},
+  change: {name: 'שינוי',  cls: 'c', css: 'var(--change)'},
+  arab:   {name: 'ערבים',  cls: 'a', css: 'var(--arab)'},
+  other:  {name: 'לא סווגו', cls: 'o', css: 'var(--other)'},
+};
+const ORDER = ['bibi', 'change', 'arab'];
+
+/* ====================================================================== helpers */
+const $ = (s, r = document) => r.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const mk = (ns) => (tag, props = {}, ...kids) => {
+  const e = ns ? document.createElementNS(NS, tag) : document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.setAttribute('class', v);
+    else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+};
+const h = mk(false), s = mk(true);
+const nfmt = new Intl.NumberFormat('he-IL');
+const n0 = (x) => nfmt.format(Math.round(x));
+const pc = (x, d = 1) => (x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
+const pr = (p) => (p < 0.005 ? '<1%' : p > 0.995 ? '>99%' : Math.round(p * 100) + '%');
+const sgn = (x) => (x > 0 ? '+' + x : x < 0 ? '−' + Math.abs(x) : '0');
+const num = (t, cls = '') => h('span', {class: 'num ' + cls}, t);
+const seatsWord = (n) => (n === 1 ? 'מנדט אחד' : n + ' מנדטים');
+const rng = (lo, hi) => (lo === hi ? String(lo) : lo + '–' + hi);
+const clear = (e) => { while (e.firstChild) e.removeChild(e.firstChild); return e; };
+const put = (root, ...kids) => { Element.prototype.append.apply(root, kids.flat(Infinity).filter((c) => c != null && c !== false)); return root; };   // append(null) would print "null"
+const swatch = (b, extra = '') => h('span', {class: 'sw ' + extra, style: `--c:${BLOC[b].css}`});
+const tip = $('#tip');
+function showTip(ev, nodes) {
+  clear(tip).append(...[].concat(nodes));
+  tip.classList.add('on');
+  const pad = 14, w = tip.offsetWidth, hgt = tip.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY - hgt - pad;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - pad;
+  if (y < 8) y = ev.clientY + pad;
+  tip.style.left = Math.max(8, x) + 'px'; tip.style.top = y + 'px';
+}
+const hideTip = () => tip.classList.remove('on');
+
+/* ====================================================================== seat math (same as the model) */
+function baderOfer(votes, T, ban, force) {
+  const n = votes.length, pass = new Array(n).fill(false);
+  let q = 0;
+  for (let i = 0; i < n; i++) {
+    pass[i] = (votes[i] / T >= THRESH || (force && force[i])) && !(ban && ban[i]);
+    if (pass[i]) q += votes[i];
+  }
+  const out = new Array(n).fill(0);
+  if (!q) return out;
+  q /= SEATS;
+  let got = 0;
+  for (let i = 0; i < n; i++) if (pass[i]) { out[i] = Math.floor(votes[i] / q); got += out[i]; }
+  while (got < SEATS) {
+    let best = -1, bi = -1;
+    for (let i = 0; i < n; i++) if (pass[i]) { const a = votes[i] / (out[i] + 1); if (a > best) { best = a; bi = i; } }
+    out[bi]++; got++;
+  }
+  return out;
+}
+
+/* ====================================================================== parliament */
+function layout(n = SEATS, rows = 7, R = 220, r0 = 0.42) {
+  const radii = Array.from({length: rows}, (_, i) => R * (r0 + (1 - r0) * i / (rows - 1)));
+  const sum = radii.reduce((a, b) => a + b, 0);
+  const counts = radii.map((r) => Math.round(n * r / sum));
+  let diff = n - counts.reduce((a, b) => a + b, 0);
+  for (let i = rows - 1; diff !== 0; i = (i - 1 + rows) % rows) { counts[i] += Math.sign(diff); diff -= Math.sign(diff); }
+  const seats = [];
+  radii.forEach((r, ri) => { const c = counts[ri]; for (let j = 0; j < c; j++) seats.push({r, th: c === 1 ? Math.PI / 2 : Math.PI * j / (c - 1)}); });
+  seats.sort((a, b) => a.th - b.th || a.r - b.r);
+  const dot = Math.min(R * (1 - r0) / (rows - 1), Math.PI * R * r0 / (counts[0] - 1)) * 0.43;
+  return {seats, dot, R};
+}
+/* groups: ordered [{bloc, label, n}] ; paints seats right->left in that order */
+function parliament(host, groups, opts = {}) {
+  const R = opts.R || 220, pad = 26, W = 2 * R + 2 * pad, H = R + pad + 34;
+  const {seats, dot} = layout(SEATS, opts.rows || 7, R);
+  const cx = W / 2, cy = R + pad;
+  const seq = [];
+  groups.forEach((g) => { for (let i = 0; i < g.n; i++) seq.push(g); });
+  const svg = s('svg', {class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': opts.aria || 'פריסת 120 המושבים לפי גוש'});
+  const pt = (r, th) => [cx + r * Math.cos(th), cy - r * Math.sin(th)];
+  seats.forEach((st, i) => {
+    const [x, y] = pt(st.r, st.th);
+    const g = seq[i] || {bloc: 'other', label: ''};
+    const c = s('circle', {cx: x.toFixed(1), cy: y.toFixed(1), r: dot.toFixed(1), class: 'seat f' + BLOC[g.bloc].cls, tabindex: opts.noTip ? null : 0});
+    if (!opts.noTip) {
+      const say = (ev) => showTip(ev, [h('b', {}, g.label || BLOC[g.bloc].name), `מושב ${i + 1} מתוך 120`]);
+      c.addEventListener('pointermove', say); c.addEventListener('pointerleave', hideTip);
+      c.addEventListener('focus', () => { const b = c.getBoundingClientRect(); say({clientX: b.x + b.width / 2, clientY: b.y}); });
+      c.addEventListener('blur', hideTip);
+    }
+    svg.append(c);
+  });
+  if (seats.length > 60) {                       // the majority mark: the 61st seat from the right is ringed
+    const [x, y] = pt(seats[60].r, seats[60].th), g61 = seq[60] || {bloc: 'other'};
+    svg.append(s('circle', {cx: x.toFixed(1), cy: y.toFixed(1), r: (dot + 3.2).toFixed(1), fill: 'none', stroke: 'var(--ink)', 'stroke-width': 2, 'pointer-events': 'none'}),
+      s('text', {x: x.toFixed(1), y: (y + dot * 0.38).toFixed(1), 'text-anchor': 'middle', 'pointer-events': 'none',
+        style: `font-size:${(dot * 1.05).toFixed(1)}px;font-weight:800;fill:${g61.bloc === 'other' ? 'var(--ink)' : '#fff'}`}, '61'));
+  }
+  if (!opts.noCenter) {
+    svg.append(s('text', {x: cx, y: cy - 22, 'text-anchor': 'middle', style: 'font-size:46px;font-weight:800;fill:var(--ink);letter-spacing:-.03em'}, '120'),
+      s('text', {x: cx, y: cy + 2, 'text-anchor': 'middle', class: 'lbl2'}, 'מושבים · רוב = 61'));
+  }
+  clear(host).append(svg);
+}
+
+/* ====================================================================== state */
+let D = null, lab = null, histTab = 'bibi', allLists = false;
+const resetLab = () => { lab = {sBC: 0, sA: 0, ban: {}, force: {}, assign: {}}; };
+resetLab();
+
+const listsOf = (b) => D.lists.filter((l) => l.bloc === b);
+const members = (b, k = 3) => listsOf(b).filter((l) => l.seats > 0).sort((a, c) => c.seats - a.seats).slice(0, k).map((l) => l.name);
+
+/* ====================================================================== hero */
+function verdict(d) {
+  const b = d.p.bibi61, c = d.p.ca61, n = d.p.neither;
+  if (b >= 0.85) return 'גוש ביבי צפוי להגיע ל-61';
+  if (b >= 0.6) return 'גוש ביבי מועדף להגיע ל-61';
+  if (c >= 0.85) return 'שינוי + ערבים צפויים להגיע ל-61';
+  if (c >= 0.6) return 'שינוי + ערבים מועדפים להגיע ל-61';
+  if (n >= 0.5) return 'כרגע אף גוש לא מגיע ל-61';
+  return 'המאבק על 61 פתוח';
+}
+function sparkline(key, color) {
+  const pts = D.history.filter((r) => r[key] != null);
+  if (pts.length < 2) return null;
+  const W = 84, H = 26, xs = pts.map((r) => r.pct), mx = Math.max(...xs, 1);
+  const ys = pts.map((r) => r[key]), lo = Math.min(...ys), hi = Math.max(...ys), span = Math.max(hi - lo, 4);
+  const X = (v) => 3 + (W - 6) * v / mx, Y = (v) => H - 4 - (H - 8) * (v - lo) / span;
+  const d = pts.map((r, i) => (i ? 'L' : 'M') + X(r.pct).toFixed(1) + ' ' + Y(r[key]).toFixed(1)).join('');
+  const last = pts[pts.length - 1];
+  return s('svg', {class: 'spark', viewBox: `0 0 ${W} ${H}`, 'aria-hidden': 'true', style: 'direction:ltr'},
+    s('path', {d, fill: 'none', stroke: 'var(--axis)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round'}),
+    s('circle', {cx: X(last.pct), cy: Y(last[key]), r: 4, style: `fill:${color};stroke:var(--card);stroke-width:2`}));
+}
+function distanceTo61() {
+  // smallest transfer of votes from שינוי to ביבי (or back) that flips the 61 line, everything else held at the central estimate
+  const base = labCompute(D, {sBC: 0, sA: 0, ban: {}, force: {}, assign: {}});
+  const T = D.total_valid, at = (sh) => labCompute(D, {sBC: sh, sA: 0, ban: {}, force: {}, assign: {}}).bl.bibi;
+  if (base.bl.bibi < 61) {
+    for (let sh = 0.0005; sh <= 0.12; sh += 0.0005) if (at(sh) >= 61) return {kind: 'need', pct: sh, votes: sh * T, seats: 61 - base.bl.bibi};
+    return {kind: 'far', seats: 61 - base.bl.bibi};
+  }
+  for (let sh = -0.0005; sh >= -0.12; sh -= 0.0005) if (at(sh) < 61) return {kind: 'lose', pct: -sh, votes: -sh * T, seats: base.bl.bibi - 60};
+  return {kind: 'safe'};
+}
+function renderHero() {
+  const d = D, c = d.counted, b = d.blocs, root = clear($('#hero'));
+  const early = c.boxes === 0;
+  const eyebrow = early ? 'הערכה ראשונית · לפני הספירה — לפי תוצאות 2022 וההצבעה שדווחה ב-22:00'
+    : `הערכה לפי ${c.pct.toFixed(1).replace(/\.0$/, '')}% מהקלפיות שנספרו`;
+  const {bibi61: pb, ca61: pca, neither: pn} = d.p;
+  const lead = early ? 'עדיין לא נספרו קלפיות. ההערכה נשענת על הצבעה ב-2022 והתאמה להצבעה של היום, ולכן הטווחים רחבים. כל קלפי שנספרת מצמצמת אותם.'
+    : c.pct < 3 ? 'מוקדם מאוד — נספרה רק חלק קטן מהקלפיות, וההערכה עדיין נשענת בעיקר על 2022. הטווחים רחבים וצפויים להצטמצם.'
+    : 'ההערכה מתחשבת באילו אזורים כבר נספרו ובשינוי שנצפה עד כה לעומת 2022. הטווחים מצטמצמים ככל שנספרות עוד קלפיות.';
+  const seg = (v, cls, style = '') => h('i', {style: `flex-grow:${Math.max(v, 0.004)};${style}`, class: cls});
+  const odds = h('div', {class: 'odds', role: 'img', 'aria-label': `סיכוי ל-61: ביבי ${pr(pb)}, אף גוש ${pr(pn)}, שינוי ערבים ${pr(pca)}`},
+    h('div', {class: 'oddsbar'}, seg(pb, '', 'background:var(--bibi)'), seg(pn, '', 'background:var(--other)'),
+      seg(pca, '', 'background:repeating-linear-gradient(135deg,var(--change) 0 5px,var(--arab) 5px 10px)')),
+    h('div', {class: 'oddskey'},
+      h('span', {}, swatch('bibi'), 'ביבי מגיע ל-61', h('b', {}, num(pr(pb)))),
+      h('span', {}, swatch('other'), 'אף גוש לא מגיע', h('b', {}, num(pr(pn)))),
+      h('span', {}, h('span', {class: 'sw stripe'}), 'שינוי + ערבים מגיעים', h('b', {}, num(pr(pca))))));
+  const tiles = h('div', {class: 'tiles'}, ORDER.map((k) => {
+    const x = b[k];
+    const ini = x.initial == null ? null : h('span', {}, 'ראשוני ', num(`${x.initial} (${rng(x.initial_lo, x.initial_hi)})`));
+    return h('div', {class: 'tile', style: `--c:${BLOC[k].css}`},
+      h('div', {class: 'nm'}, swatch(k), 'גוש ' + BLOC[k].name),
+      h('div', {class: 'mem'}, members(k).join(' · ') || ' '),
+      h('div', {class: 'big'}, num(x.seats)),
+      h('div', {class: 'rng'}, 'טווח (80% סבירות): ', num(rng(x.lo, x.hi))),
+      h('div', {class: 'ini'}, ini || h('span'), sparkline(k === 'bibi' ? 'bibi' : k, BLOC[k].css)));
+  }));
+  const dist = distanceTo61();
+  let g;
+  if (dist.kind === 'need') g = [h('b', {}, `ביבי חסר ${seatsWord(dist.seats)} ל-61.`), ` כדי להגיע אליו צריכים לעבור אליו כ-${(dist.pct * 100).toFixed(1).replace(/\.0$/, '')}% מכלל הקולות מגוש שינוי (כ-${n0(dist.votes)} קולות), כשכל השאר נשאר כמו בהערכה.`];
+  else if (dist.kind === 'lose') g = [h('b', {}, 'ביבי מעל 61 בהערכה המרכזית.'), ` העברה של כ-${(dist.pct * 100).toFixed(1).replace(/\.0$/, '')}% מכלל הקולות (כ-${n0(dist.votes)} קולות) לגוש שינוי מורידה אותו מתחת ל-61.`];
+  else if (dist.kind === 'safe') g = [h('b', {}, 'ביבי מעל 61 בהפרש גדול.')];
+  else g = [h('b', {}, `ביבי חסר ${seatsWord(dist.seats)} ל-61`), ' — מעבר לטווח שבדקנו.'];
+  put(root,h('div', {class: 'eyebrow'}, eyebrow), h('h1', {}, verdict(d)), h('p', {class: 'lead'}, lead), odds, tiles,
+    h('div', {class: 'gap61'}, ...g));
+}
+
+/* ====================================================================== parliament section */
+function renderParliament() {
+  const d = D, root = clear($('#parl')); root.hidden = false;
+  const groups = [], other = listsOf('other').filter((l) => l.seats > 0).sort((a, b) => b.seats - a.seats);
+  ORDER.slice(0, 1).forEach(() => groups.push({bloc: 'bibi', n: d.blocs.bibi.seats, label: 'גוש ביבי'}));
+  // right -> left: ביבי, לא סווגו, שינוי, ערבים
+  groups.push({bloc: 'other', n: d.other_seats, label: 'לא סווגו לגוש: ' + (other.map((l) => l.name).join(', ') || '—')});
+  groups.push({bloc: 'change', n: d.blocs.change.seats, label: 'גוש שינוי'}, {bloc: 'arab', n: d.blocs.arab.seats, label: 'גוש ערבים'});
+  const legend = h('div', {class: 'legend'},
+    ORDER.map((k) => h('span', {}, swatch(k), BLOC[k].name + ' ', h('b', {}, num(d.blocs[k].seats)))),
+    d.other_seats ? h('span', {}, swatch('other'), 'לא סווגו ', h('b', {}, num(d.other_seats)), other.length ? ` (${other.map((l) => l.name).join(', ')})` : '') : null);
+  const host = h('div', {class: 'phost'});
+  put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, '120 המושבים'), h('p', {class: 'sub'}, 'ההערכה המרכזית, מימין לשמאל: ביבי, רשימות שלא סווגו, שינוי, ערבים. המושב המוקף הוא ה-61 — הרוב.'))), legend, host,
+    h('p', {class: 'cap'}, 'המושבים בין סוף הרצועה הכחולה למושב ה-61 הם מה שחסר לגוש ביבי. מעבירים עכבר על מושב כדי לראות למי הוא שייך.'));
+  parliament(host, groups);
+}
+
+/* ====================================================================== distribution */
+function histogram(host, dist, bloc, with61) {
+  const W = 720, Hh = 250, m = {l: 46, r: 14, t: 22, b: 36};
+  let lo = 120, hi = 0;
+  dist.forEach((p, i) => { if (p >= 0.002) { lo = Math.min(lo, i); hi = Math.max(hi, i); } });
+  if (hi < lo) { lo = 0; hi = 10; }
+  if (with61) { lo = Math.min(lo, 56); hi = Math.max(hi, 66); }
+  lo = Math.max(0, lo - 2); hi = Math.min(120, hi + 2);
+  const k = hi - lo + 1, pw = W - m.l - m.r, ph = Hh - m.t - m.b, step = pw / k, bw = Math.min(24, step * 0.78);
+  const maxP = Math.max(...dist.slice(lo, hi + 1), 0.01);
+  const ts = [0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5].find((t) => maxP / t <= 5) || 0.5, ymax = Math.ceil(maxP / ts) * ts;
+  const X = (i) => m.l + (i - lo) * step + step / 2, Y = (p) => m.t + ph - ph * p / ymax;
+  const svg = s('svg', {class: 'chart', viewBox: `0 0 ${W} ${Hh}`, role: 'img', 'aria-label': 'התפלגות מספר המנדטים'});
+  for (let v = 0; v <= ymax + 1e-9; v += ts)
+    svg.append(s('line', {x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: v === 0 ? 'axisl' : 'gridl'}),
+      s('text', {x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end', class: 'tick'}, Math.round(v * 100) + '%'));
+  const xs = k <= 22 ? 1 : k <= 44 ? 2 : 5;
+  for (let i = lo; i <= hi; i++) if (i % xs === 0) svg.append(s('text', {x: X(i), y: Hh - 12, 'text-anchor': 'middle', class: 'tick'}, i));
+  const bars = [];
+  for (let i = lo; i <= hi; i++) {
+    const p = dist[i], x = X(i) - bw / 2, y = Y(p), hh = Math.max(0, m.t + ph - y), r = Math.min(4, bw / 2, hh);
+    const win = with61 && i >= 61;
+    const path = s('path', {d: hh ? `M${x},${y + hh}V${y + r}Q${x},${y} ${x + r},${y}H${x + bw - r}Q${x + bw},${y} ${x + bw},${y + r}V${y + hh}Z` : '',
+      class: 'f' + BLOC[bloc].cls, style: `opacity:${with61 && !win ? 0.35 : 1}`});
+    bars.push(path); svg.append(path);
+  }
+  if (with61) {
+    const x61 = X(61) - step / 2;
+    svg.append(s('line', {x1: x61, x2: x61, y1: m.t - 6, y2: m.t + ph, stroke: 'var(--ink)', 'stroke-width': 1.5}),
+      s('text', {x: x61 + 6, y: m.t - 8, 'text-anchor': 'start', class: 'lbl'}, '61 ומעלה ←'));
+  }
+  const hit = s('rect', {x: m.l, y: 0, width: pw, height: Hh, fill: 'transparent', style: 'cursor:crosshair'});
+  const cross = s('line', {y1: m.t, y2: m.t + ph, stroke: 'var(--ink2)', 'stroke-width': 1, style: 'opacity:0'});
+  svg.append(cross, hit);
+  const at = (ev) => {
+    const b = svg.getBoundingClientRect(), x = (ev.clientX - b.left) * (W / b.width);
+    return Math.max(lo, Math.min(hi, Math.floor((x - m.l) / step) + lo));
+  };
+  const move = (ev) => {
+    const i = at(ev); cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i)); cross.style.opacity = 1;
+    showTip(ev, [h('b', {}, `${i} מנדטים`), `סבירות ${pc(dist[i])}`]);
+  };
+  hit.addEventListener('pointermove', move); hit.addEventListener('pointerdown', move);
+  hit.addEventListener('pointerleave', () => { hideTip(); cross.style.opacity = 0; });
+  clear(host).append(svg);
+}
+function renderDist() {
+  const d = D, root = clear($('#dist')); root.hidden = false;
+  const tabs = [['bibi', 'ביבי'], ['ca', 'שינוי + ערבים'], ['change', 'שינוי'], ['arab', 'ערבים']];
+  const host = h('div'), stat = h('p', {class: 'cap', style: 'font-size:14.5px;color:var(--ink2)'});
+  const table = h('div');
+  const draw = () => {
+    const x = d.blocs[histTab], bloc = histTab === 'ca' ? 'change' : histTab, with61 = histTab === 'bibi' || histTab === 'ca';
+    histogram(host, x.dist, bloc, with61);
+    const tot = x.dist.reduce((a, b) => a + b, 0), p61 = x.dist.slice(61).reduce((a, b) => a + b, 0) / (tot || 1);
+    clear(stat).append(`הערכה מרכזית ${x.seats} מנדטים, טווח 80% ${rng(x.lo, x.hi)}.` + (with61 ? ` הסיכוי ל-61 ומעלה: ${pr(p61)}.` : ''),
+      h('span', {class: 'mute'}, ` (מבוסס על ${d.draws} הדמיות של אי-הוודאות)`));
+    clear(table).append(h('details', {}, h('summary', {}, 'הצג כטבלה'),
+      h('div', {class: 'tw'}, h('table', {style: 'min-width:0;max-width:380px'}, h('thead', {}, h('tr', {}, h('th', {}, 'מנדטים'), h('th', {class: 'num2'}, 'סבירות'))),
+        h('tbody', {}, x.dist.map((p, i) => [i, p]).filter(([, p]) => p >= 0.003).map(([i, p]) => h('tr', {}, h('td', {}, num(i)), h('td', {class: 'num2'}, pc(p)))))))));
+    $$tabs.forEach((bt) => bt.setAttribute('aria-pressed', String(bt.dataset.k === histTab)));
+  };
+  const $$tabs = tabs.map(([k, t]) => h('button', {'data-k': k, 'aria-pressed': String(k === histTab), onclick: () => { histTab = k; draw(); }}, t));
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'כמה מנדטים — ובאיזו סבירות'),
+    h('p', {class: 'sub'}, 'כל עמודה היא תרחיש אפשרי בהתאם לאי-הוודאות של ההערכה הנוכחית. ככל שנספרות יותר קלפיות העמודות מתכנסות.')),
+    h('div', {class: 'seg', role: 'group', 'aria-label': 'בחירת גוש'}, $$tabs)), host, stat, table);
+  draw();
+}
+
+/* ====================================================================== threshold scenarios */
+function renderThreshold() {
+  const d = D, root = clear($('#thr'));
+  if (!d.scenarios.length) { root.hidden = true; return; }
+  root.hidden = false;
+  const cur = d.blocs;
+  const cards = d.scenarios.map((sc) => {
+    const fall = sc.kind === 'fall';
+    const chip = (k) => {
+      const v = sc.bloc[k], dl = sc.delta[k];
+      return h('span', {class: 'chip' + (k === 'bibi' && v >= 61 && cur.bibi.seats < 61 ? ' hit' : '')}, swatch(k), BLOC[k].name + ' ', h('b', {}, num(v)),
+        dl ? h('span', {class: 'd'}, num('(' + sgn(dl) + ')')) : null);
+    };
+    return h('div', {class: 'sc-card'},
+      h('div', {class: 't'}, h('b', {}, sc.name)), h('div', {class: 'p'}, `סיכוי ${fall ? 'להישאר מעל החסימה' : 'לעבור את החסימה'}: `, num(pr(sc.pass_prob))),
+      h('div', {class: 'track'}, h('i', {style: `width:${Math.round(sc.pass_prob * 100)}%`})),
+      h('div', {class: 'what'}, fall ? 'אם לא תעבור את החסימה (3.25%) הקולות שלה הולכים לאיבוד והמנדטים מתחלקים מחדש:'
+        : `אם תעבור את החסימה (${seatsWord(sc.list_seats)}) המנדטים מתחלקים מחדש:`),
+      h('div', {class: 'chips'}, ['bibi', 'change', 'arab'].map(chip)));
+  });
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'רשימות על הסף'),
+    h('p', {class: 'sub'}, `חסימה: ${pc(THRESH, 2)} מהקולות הכשרים (כ-${n0(d.threshold_votes)} קולות). רשימה שנופלת מתחת לחסימה מזיזה מנדטים בין הגושים. בסוגריים: השינוי לעומת ההערכה הנוכחית.`))),
+    h('div', {class: 'cards'}, cards));
+}
+
+/* ====================================================================== what-if lab */
+function labCompute(d, L) {
+  const lists = d.lists, T = d.total_valid;
+  let v = lists.map((l) => l.votes);
+  const sum = (b) => lists.reduce((a, l, i) => a + (l.bloc === b ? v[i] : 0), 0);
+  if (L.sBC) {
+    const Vb = sum('bibi'), Vc = sum('change'), dv = L.sBC * T, fb = (Vb + dv) / Vb, fc = (Vc - dv) / Vc;
+    v = v.map((x, i) => (lists[i].bloc === 'bibi' ? x * fb : lists[i].bloc === 'change' ? x * fc : x));
+  }
+  if (L.sA) {
+    const Va = sum('arab'), dv = L.sA * T, fa = (Va + dv) / Va, fn = (T - Va - dv) / (T - Va);
+    v = v.map((x, i) => (lists[i].bloc === 'arab' ? x * fa : x * fn));
+  }
+  const seats = baderOfer(v, T, lists.map((l) => !!L.ban[l.code]), lists.map((l) => !!L.force[l.code]));
+  const bl = {bibi: 0, change: 0, arab: 0, other: 0};
+  lists.forEach((l, i) => { const b = l.bloc === 'other' ? (L.assign[l.code] || 'other') : l.bloc; bl[b] += seats[i]; });
+  return {seats, bl, v};
+}
+function renderLab() {
+  const d = D, root = clear($('#lab')); root.hidden = false;
+  const T = d.total_valid;
+  const out = h('div', {class: 'out'}), host = h('div');
+  const sl1v = h('span'), sl2v = h('span');
+  const sl1 = h('input', {type: 'range', min: -40, max: 40, step: 1, value: Math.round(lab.sBC * 1000), 'aria-label': 'העברת קולות בין ביבי לשינוי',
+    oninput: (e) => { lab.sBC = e.target.value / 1000; update(); }});
+  const sl2 = h('input', {type: 'range', min: -20, max: 20, step: 1, value: Math.round(lab.sA * 1000), 'aria-label': 'שינוי בכוח של הגוש הערבי',
+    oninput: (e) => { lab.sA = e.target.value / 1000; update(); }});
+  const seg = (opts, get, set, small = true) => h('div', {class: 'seg' + (small ? ' small' : ''), role: 'group'}, opts.map(([k, t]) =>
+    h('button', {'aria-pressed': String(get() === k), onclick: (ev) => { set(k); ev.currentTarget.parentNode.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === ev.currentTarget))); update(); }}, t)));
+  const thrRows = d.scenarios.map((sc) => {
+    const l = d.lists.find((x) => x.code === sc.code), fall = sc.kind === 'fall', store = fall ? lab.ban : lab.force;
+    return h('div', {class: 'rowc'}, h('div', {class: 'n'}, swatch(l.bloc), l.name, h('small', {}, `סיכוי ${fall ? 'להישאר' : 'לעבור'} ${pr(sc.pass_prob)}`)),
+      seg([['', 'כצפוי'], ['1', fall ? 'נופלת' : 'עוברת']], () => (store[sc.code] ? '1' : ''), (k) => { if (k) store[sc.code] = true; else delete store[sc.code]; }));
+  });
+  const unc = d.lists.filter((l) => l.bloc === 'other' && (l.seats > 0 || l.pass_prob >= 0.02)).sort((a, b) => b.votes - a.votes).slice(0, 6);
+  const uncRows = unc.map((l) => h('div', {class: 'rowc'}, h('div', {class: 'n'}, swatch('other'), l.name, h('small', {}, `${l.seats} מנדטים`)),
+    seg([['', 'ניטרלי'], ['bibi', 'ביבי'], ['change', 'שינוי']], () => lab.assign[l.code] || '', (k) => { if (k) lab.assign[l.code] = k; else delete lab.assign[l.code]; })));
+  const controls = h('div', {},
+    h('div', {class: 'ctl'}, h('h3', {}, 'ביבי מול שינוי', sl1v), h('p', {class: 'hint'}, 'העברת קולות מגוש אחד לשני (כאחוז מכלל הקולות הכשרים). שאר הגושים לא משתנים.'), sl1,
+      h('div', {class: 'legend', style: 'justify-content:space-between;margin:2px 0 0;font-size:12.5px;color:var(--mute)'}, h('span', {}, '← יותר לשינוי'), h('span', {}, 'יותר לביבי →'))),
+    h('div', {class: 'ctl'}, h('h3', {}, 'הגוש הערבי', sl2v), h('p', {class: 'hint'}, 'יותר או פחות קולות לרשימות הערביות, על חשבון כל השאר באופן יחסי.'), sl2,
+      h('div', {class: 'legend', style: 'justify-content:space-between;margin:2px 0 0;font-size:12.5px;color:var(--mute)'}, h('span', {}, '← פחות'), h('span', {}, 'יותר →'))),
+    thrRows.length ? h('div', {class: 'ctl'}, h('h3', {}, 'רשימות על הסף'), h('p', {class: 'hint'}, 'מה אם הרשימה נופלת / עוברת את החסימה.'), h('div', {class: 'rows'}, thrRows)) : null,
+    uncRows.length ? h('div', {class: 'ctl'}, h('h3', {}, 'רשימות שלא סווגו'), h('p', {class: 'hint'}, 'לאיזה גוש לספור אותן במושבים? כברירת מחדל הן לא נספרות באף גוש.'), h('div', {class: 'rows'}, uncRows)) : null,
+    h('div', {class: 'ctl'}, h('button', {class: 'btn', onclick: () => { resetLab(); renderLab(); }}, 'איפוס התרחיש')));
+  function update() {
+    const r = labCompute(d, lab), sh = lab.sBC * 100, sa = lab.sA * 100;
+    clear(sl1v).append(sh === 0 ? 'ללא שינוי' : `${sh > 0 ? 'ביבי' : 'שינוי'} +${Math.abs(sh).toFixed(1)}% (${n0(Math.abs(lab.sBC) * T)} קולות)`);
+    clear(sl2v).append(sa === 0 ? 'ללא שינוי' : `${sa > 0 ? '+' : '−'}${Math.abs(sa).toFixed(1)}% מהקולות (${n0(Math.abs(lab.sA) * T)})`);
+    const groups = [{bloc: 'bibi', n: r.bl.bibi, label: 'גוש ביבי'}, {bloc: 'other', n: r.bl.other, label: 'לא סווגו'}, {bloc: 'change', n: r.bl.change, label: 'גוש שינוי'}, {bloc: 'arab', n: r.bl.arab, label: 'גוש ערבים'}];
+    parliament(host, groups, {R: 150, rows: 6, noCenter: true, aria: 'פריסת המושבים בתרחיש'});
+    const cell = (k) => {
+      const base = k === 'other' ? d.other_seats : d.blocs[k].seats, dl = r.bl[k] - base;
+      return h('div', {}, h('b', {}, num(r.bl[k])), h('span', {}, BLOC[k].name), h('small', {}, dl ? num(sgn(dl) + ' מההערכה') : ' '));
+    };
+    const miss = 61 - r.bl.bibi, ca = r.bl.change + r.bl.arab;
+    clear(out).append(h('div', {class: 'eyebrow'}, 'התוצאה בתרחיש שבחרת'), host, h('div', {class: 'nums'}, ['bibi', 'change', 'arab', 'other'].map(cell)),
+      h('p', {class: 'verdict'}, r.bl.bibi >= 61 ? [h('b', {}, `גוש ביבי מגיע ל-${r.bl.bibi}`), ' — מעל הרוב.']
+        : [h('b', {}, `גוש ביבי ${r.bl.bibi}`), ` — ${miss === 1 ? 'חסר מנדט אחד' : 'חסרים ' + miss + ' מנדטים'} ל-61` + (ca >= 61 ? '. שינוי + ערבים מגיעים לרוב.' : (r.bl.other ? `; ${r.bl.other} מנדטים של רשימות שלא סווגו יכולים להכריע.` : '.'))]));
+  }
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'מעבדת תרחישים: מה אם?'),
+    h('p', {class: 'sub'}, 'זזים עם המחוונים והמנדטים מחושבים מחדש מיד, באותה שיטת חלוקה (בדר-עופר, חסימה 3.25%). זה תרחיש נקודתי, לא תחזית.'))),
+    h('div', {class: 'lab'}, controls, out));
+  update();
+}
+
+/* ====================================================================== timeline */
+function renderTimeline() {
+  const d = D, root = clear($('#time')); root.hidden = false;
+  const H = d.history;
+  const W = 720, Hh = 270, m = {l: 40, r: 78, t: 18, b: 38};
+  const mx = Math.max(10, ...H.map((r) => r.pct)) * 1.04, ymax = Math.max(80, Math.ceil(Math.max(...H.map((r) => r.bibi_hi)) / 10) * 10);
+  const pw = W - m.l - m.r, ph = Hh - m.t - m.b, X = (v) => m.l + pw * v / mx, Y = (v) => m.t + ph - ph * v / ymax;
+  const svg = s('svg', {class: 'chart', viewBox: `0 0 ${W} ${Hh}`, role: 'img', 'aria-label': 'ההערכה לאורך הספירה'});
+  for (let v = 0; v <= ymax; v += 20) svg.append(s('line', {x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: v === 0 ? 'axisl' : 'gridl'}), s('text', {x: m.l - 8, y: Y(v) + 4, 'text-anchor': 'end', class: 'tick'}, v));
+  const xt = mx <= 14 ? 2 : mx <= 30 ? 5 : mx <= 60 ? 10 : 20;
+  for (let v = 0; v <= mx; v += xt) svg.append(s('text', {x: X(v), y: Hh - 18, 'text-anchor': 'middle', class: 'tick'}, v + '%'));
+  svg.append(s('text', {x: m.l + pw / 2, y: Hh - 2, 'text-anchor': 'middle', class: 'tick'}, 'אחוז הקלפיות שנספרו'));
+  svg.append(s('line', {x1: m.l, x2: W - m.r, y1: Y(61), y2: Y(61), stroke: 'var(--ink)', 'stroke-width': 1.25}), s('text', {x: W - m.r - 2, y: Y(61) - 7, 'text-anchor': 'end', class: 'lbl'}, '61 = רוב'));
+  const band = H.map((r) => `${X(r.pct).toFixed(1)},${Y(r.bibi_hi).toFixed(1)}`).concat(H.slice().reverse().map((r) => `${X(r.pct).toFixed(1)},${Y(r.bibi_lo).toFixed(1)}`)).join(' ');
+  svg.append(s('polygon', {points: band, class: 'fb', style: 'opacity:.13'}));
+  const line = (key, b) => s('path', {d: H.map((r, i) => (i ? 'L' : 'M') + X(r.pct).toFixed(1) + ' ' + Y(r[key]).toFixed(1)).join(''), fill: 'none', class: 's' + BLOC[b].cls, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round'});
+  const last = H[H.length - 1], ends = [];
+  for (const [key, b] of [['bibi', 'bibi'], ['change', 'change'], ['arab', 'arab']]) {
+    svg.append(line(key, b));
+    svg.append(s('circle', {cx: X(last.pct), cy: Y(last[key]), r: 4.5, class: 'f' + BLOC[b].cls, style: 'stroke:var(--card);stroke-width:2'}));
+    ends.push({y: Y(last[key]), b, v: last[key]});
+  }
+  ends.sort((a, b) => a.y - b.y);
+  ends.forEach((e, i) => { if (i && e.y - ends[i - 1].y < 15) e.y = ends[i - 1].y + 15; });
+  ends.forEach((e) => svg.append(s('text', {x: X(last.pct) + 11, y: e.y + 4, 'text-anchor': 'start', class: 'lbl'}, `${BLOC[e.b].name} ${e.v}`)));
+  if (H[0].pct === 0) svg.append(s('circle', {cx: X(0), cy: Y(H[0].bibi), r: 4.5, fill: 'var(--card)', stroke: 'var(--bibi)', 'stroke-width': 2}));
+  const cross = s('line', {y1: m.t, y2: m.t + ph, stroke: 'var(--ink2)', 'stroke-width': 1, style: 'opacity:0'}), hit = s('rect', {x: m.l, y: 0, width: pw, height: Hh, fill: 'transparent', style: 'cursor:crosshair'});
+  svg.append(cross, hit);
+  const mv = (ev) => {
+    const b = svg.getBoundingClientRect(), x = ((ev.clientX - b.left) * (W / b.width) - m.l) / pw * mx;
+    const r = H.reduce((a, c) => (Math.abs(c.pct - x) < Math.abs(a.pct - x) ? c : a));
+    cross.setAttribute('x1', X(r.pct)); cross.setAttribute('x2', X(r.pct)); cross.style.opacity = 1;
+    const row = (k) => h('div', {class: 'row', style: `--c:${BLOC[k].css}`}, h('span', {class: 'k'}), `${BLOC[k].name}: `, h('b', {style: 'display:inline;font-size:13px'}, num(r[k])));
+    showTip(ev, [h('b', {}, r.pct === 0 ? 'הערכה ראשונית' : `${r.t} · נספרו ${r.pct}%`), row('bibi'), h('div', {style: 'opacity:.7;font-size:12px'}, `טווח ביבי ${rng(r.bibi_lo, r.bibi_hi)}`), row('change'), row('arab')]);
+  };
+  hit.addEventListener('pointermove', mv); hit.addEventListener('pointerdown', mv);
+  hit.addEventListener('pointerleave', () => { hideTip(); cross.style.opacity = 0; });
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'איך ההערכה השתנתה'),
+    h('p', {class: 'sub'}, 'כל נקודה היא עדכון. הרצועה הכחולה היא טווח ה-80% של ביבי: ככל שנספר יותר היא אמורה להצטמצם. העיגול הריק הוא ההערכה הראשונית.'))),
+    H.length < 2 ? h('p', {class: 'cap'}, 'הגרף יתמלא ככל שיגיעו עוד עדכונים.') : null, svg);
+}
+
+/* ====================================================================== lists table */
+function renderLists() {
+  const d = D, root = clear($('#lists')); root.hidden = false;
+  const rows = d.lists.filter((l) => l.votes > 0 || l.seats > 0).sort((a, b) => b.seats - a.seats || b.votes - a.votes);
+  const main = rows.filter((l) => l.seats > 0 || l.pass_prob >= 0.02), rest = rows.filter((l) => !main.includes(l));
+  const row = (l) => {
+    const dl = l.initial_seats == null ? null : l.seats - l.initial_seats;
+    return h('tr', {}, h('td', {class: 'nm'}, swatch(l.bloc), l.name), h('td', {class: 'se num2'}, num(l.seats)),
+      h('td', {class: 'num2 hide-sm'}, num(rng(l.seats_lo, l.seats_hi))), h('td', {class: 'num2'}, n0(l.votes)), h('td', {class: 'num2 hide-sm'}, pc(l.share, 2)),
+      h('td', {}, h('div', {class: 'pp'}, h('div', {class: 'track'}, h('i', {style: `width:${Math.round(l.pass_prob * 100)}%`})), num(pr(l.pass_prob)))),
+      h('td', {class: 'num2 hide-sm mute'}, l.initial_seats == null ? '' : num(`${l.initial_seats}${dl ? ' (' + sgn(dl) + ')' : ''}`)));
+  };
+  const body = h('tbody', {}, main.map(row));
+  const more = rest.length ? h('button', {class: 'btn', style: 'margin-top:12px', onclick: (ev) => { allLists = !allLists; if (allLists) body.append(...rest.map(row)); else renderLists(); ev.currentTarget.textContent = allLists ? 'הסתר רשימות קטנות' : `הצג עוד ${rest.length} רשימות`; }}, allLists ? 'הסתר רשימות קטנות' : `הצג עוד ${rest.length} רשימות`) : null;
+  if (allLists) body.append(...rest.map(row));
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'כל הרשימות'), h('p', {class: 'sub'}, 'מנדטים, קולות משוערים וסיכוי לעבור את החסימה. "ראשוני" = ההערכה לפני הספירה; בסוגריים השינוי ממנה.'))),
+    h('div', {class: 'tw'}, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'רשימה'), h('th', {class: 'num2'}, 'מנדטים'), h('th', {class: 'num2 hide-sm'}, 'טווח'), h('th', {class: 'num2'}, 'קולות (הערכה)'),
+      h('th', {class: 'num2 hide-sm'}, '% מהכשרים'), h('th', {}, 'סיכוי לעבור חסימה'), h('th', {class: 'num2 hide-sm'}, 'ראשוני'))), body)), more);
+}
+
+/* ====================================================================== what has been counted */
+function renderCount() {
+  const d = D, c = d.counted, root = clear($('#count')); root.hidden = false;
+  const cov = (d.coverage || []).slice().sort((a, b) => b.weight - a.weight);
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'מה כבר נספר'),
+    h('p', {class: 'sub'}, `נספרו ${n0(c.boxes)} מתוך ${n0(c.total)} קלפיות (${c.pct}%) — כ-${n0(c.valid)} קולות כשרים. ההערכה תלויה בכך שאזורים שונים נספרים בקצב שונה.`))),
+    cov.length ? h('div', {class: 'cov'}, cov.map((x) => h('div', {class: 'covrow'}, h('div', {}, x.sector, h('div', {class: 'w'}, `${Math.round(x.weight * 100)}% מבעלי זכות הבחירה`)),
+      h('div', {class: 'track'}, h('i', {style: `width:${Math.round(x.counted * 100)}%`})), h('b', {}, num(Math.round(x.counted * 100) + '%'))))) : h('p', {class: 'cap'}, 'עוד לא נספרו מספיק קלפיות כדי להציג פילוח.'),
+    d.swing.length ? h('div', {}, h('p', {class: 'eyebrow', style: 'margin:18px 0 0'}, 'השינוי שנצפה עד עכשיו לעומת 2022 בכל רשימה'), h('div', {class: 'swing'}, d.swing.map((t) => {
+      const m = t.match(/^(.*?)\s*([+\-−]\d+)%$/);          // keep the sign glued to its number inside right-to-left text
+      return h('span', {}, m ? [m[1] + ' ', num(m[2].replace('-', '−') + '%')] : t);
+    }))) : null);
+}
+
+/* ====================================================================== how it works */
+function renderHow() {
+  const d = D, root = clear($('#how')); root.hidden = false;
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'איך זה עובד ומה לא יודעים'))),
+    h('details', {open: true}, h('summary', {}, 'הנחות היסוד'), h('ul', {}, d.assumptions.map((a) => h('li', {}, a)))),
+    h('details', {}, h('summary', {}, 'מה יכול להזיז את ההערכה'), h('ul', {},
+      h('li', {}, d.ext_valid ? `מעטפות חיצוניות (חיילים, חולים, אסירים, נציגויות): כ-${n0(d.ext_valid)} קולות, כ-${d.ext_seats} מנדטים, נספרות בסוף. ההרכב שלהן מונח כמו ב-2022, והסטייה שלו נכללת בטווח.` : 'מעטפות חיצוניות נספרות בסוף.'),
+      h('li', {}, 'רשימות חדשות ללא היסטוריה (למשל ביחד, ישר!, עמך ישראל): ההערכה שלהן נשענת רק על מה שנספר עד כה, ולכן רגישה לסדר הגעת הקלפיות.'),
+      h('li', {}, 'סדר ההגעה: אם קלפיות מאזור אחד נספרות ראשונות, ההערכה נוטה אליו עד שנספרים אזורים אחרים. הטווחים כוללים את הטעות ההיסטורית אחרי אותו אחוז ספירה.'),
+      h('li', {}, 'רשימות על הסף: מעבר או נפילה מזיזים כמה מנדטים בין הגושים (ראו "רשימות על הסף").'),
+      h('li', {}, 'הסכמי עודפים: לא מדומים, ולכן ±1 מנדט ברשימות שוליות.'))),
+    h('details', {}, h('summary', {}, 'איך מחושב הטווח'), h('p', {}, 'כל קלפי שנספרה מייצגת קלפיות דומות בה (אותו סוג יישוב ואותו מאפיין חברתי-כלכלי) ומשוקללת לפי גודל הקבוצה. את אי-הוודאות מודדים בהגרלה חוזרת של הקלפיות שנספרו, ומרחיבים אותה לפי הטעות ההיסטורית שנמדדה על חמש מערכות בחירות קודמות באותו אחוז ספירה. הטווח הוא 80% סבירות: ב-80% מהמקרים הצפויים התוצאה תיפול בתוכו.')),
+    h('details', {}, h('summary', {}, 'עדכון נתונים'), h('p', {}, `הנתונים מגיעים מקובץ התוצאות של ועדת הבחירות ומתעדכנים כאן אוטומטית כל דקה. עדכון אחרון: ${d.updated_hm}. אם אין נתונים חדשים — ייתכן שהוועדה לא פרסמה קלפיות נוספות.`)));
+}
+
+/* ====================================================================== status bar + render + polling */
+function renderStatus() {
+  if (!D) return;
+  const mins = Math.max(0, Math.round((Date.now() - new Date(D.updated).getTime()) / 60000));
+  clear($('#st-time')).append('עודכן ', num(D.updated_hm), mins >= 3 ? h('span', {class: 'ago'}, ` · לפני ${mins} דק׳`) : '');
+  $('#st-count').textContent = D.counted.boxes ? `נספרו ${D.counted.pct}%` : 'לפני הספירה';
+  $('#status').classList.toggle('stale', mins > 25);
+  $('#prog').style.width = Math.min(100, D.counted.pct) + '%';
+}
+function renderAll() {
+  $('#demo').hidden = !D.demo;
+  renderHero(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderHow(); renderStatus();
+}
+let lastStamp = null, busy = false;
+async function load(first) {
+  if (busy) return; busy = true;
+  try {
+    const r = await fetch(DATA_URL + (DATA_URL.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 30000), {cache: 'no-store'});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    try { localStorage.setItem('il26-last', JSON.stringify(j)); } catch (e) { /* storage may be unavailable */ }
+    if (j.updated !== lastStamp) { lastStamp = j.updated; D = j; resetLabIfShapeChanged(); renderAll(); } else renderStatus();
+  } catch (e) {
+    console.error('load/render failed:', e);
+    if (!D) {
+      let cached = null;
+      try { cached = JSON.parse(localStorage.getItem('il26-last')); } catch (x) { /* ignore */ }
+      if (cached) { D = cached; renderAll(); $('#st-time').textContent = 'אין חיבור — מוצג המידע האחרון (' + D.updated_hm + ')'; }
+      else clear($('#hero')).append(h('div', {class: 'err'}, 'לא הצלחתי לטעון את ההערכה כרגע. נסו לרענן בעוד רגע.'));
+    }
+  } finally { busy = false; }
+}
+function resetLabIfShapeChanged() { /* lab choices survive updates; only the numbers under them change */ }
+$('#theme').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  try { localStorage.setItem('il26-theme', next); } catch (e) { /* ignore */ }
+});
+try { const t = localStorage.getItem('il26-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
+load(true);
+setInterval(() => { if (!document.hidden) load(false); }, POLL_MS);
+setInterval(renderStatus, 30000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(false); });
+})();
+</script>
+</body>
+</html>
