@@ -730,16 +730,17 @@ function renderHow() {
       h('li', {}, 'רשימות על הסף: מעבר או נפילה מזיזים כמה מנדטים בין הגושים (ראו "רשימות על הסף").'),
       h('li', {}, 'הסכמי עודפים: לא מדומים, ולכן ±1 מנדט ברשימות שוליות.'))),
     h('details', {}, h('summary', {}, 'איך מחושב הטווח'), h('p', {}, 'כל קלפי שנספרה מייצגת קלפיות דומות בה (אותו סוג יישוב ואותו מאפיין חברתי-כלכלי) ומשוקללת לפי גודל הקבוצה. את אי-הוודאות מודדים בהגרלה חוזרת של הקלפיות שנספרו, ומרחיבים אותה לפי הטעות ההיסטורית שנמדדה על חמש מערכות בחירות קודמות באותו אחוז ספירה. הטווח הוא 80% סבירות: ב-80% מהמקרים הצפויים התוצאה תיפול בתוכו.')),
-    h('details', {}, h('summary', {}, 'עדכון נתונים'), h('p', {}, `הנתונים מגיעים מקובץ התוצאות של ועדת הבחירות ומתעדכנים כאן אוטומטית כל דקה. עדכון אחרון: ${d.updated_hm}. אם אין נתונים חדשים — ייתכן שהוועדה לא פרסמה קלפיות נוספות.`)));
+    h('details', {}, h('summary', {}, 'עדכון נתונים'), h('p', {}, `הנתונים מגיעים מקובץ התוצאות של ועדת הבחירות. ההערכה מתעדכנת בכל פעם שמתפרסמות קלפיות חדשות, והדף בודק עדכון כל דקה. "נבדק לפני X דק׳" בראש הדף מראה שהבדיקה פעילה גם כשאין חדש. עדכון אחרון של ההערכה: ${d.updated_hm}.`)));
 }
 
 /* ====================================================================== status bar + render + polling */
 function renderStatus() {
   if (!D) return;
-  const mins = Math.max(0, Math.round((Date.now() - new Date(D.updated).getTime()) / 60000));
-  clear($('#st-time')).append('עודכן ', num(D.updated_hm), mins >= 3 ? h('span', {class: 'ago'}, ` · לפני ${mins} דק׳`) : '');
+  const ago = (iso) => Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  const mins = ago(D.updated), chk = ago(D.checked || D.updated);       // data age vs. when the loop last looked
+  clear($('#st-time')).append('עודכן ', num(D.updated_hm), mins >= 3 ? h('span', {class: 'ago'}, chk <= 8 ? ` · נבדק לפני ${chk} דק׳` : ` · לפני ${mins} דק׳`) : '');
   $('#st-count').textContent = D.counted.boxes ? `נספרו ${D.counted.pct}%` : 'לפני הספירה';
-  $('#status').classList.toggle('stale', mins > 25);
+  $('#status').classList.toggle('stale', chk > 10);
   $('#prog').style.width = Math.min(100, D.counted.pct) + '%';
 }
 function renderAll() {
@@ -754,7 +755,7 @@ async function load(first) {
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
     try { localStorage.setItem('il26-last', JSON.stringify(j)); } catch (e) { /* storage may be unavailable */ }
-    if (j.updated !== lastStamp) { lastStamp = j.updated; D = j; resetLabIfShapeChanged(); renderAll(); } else renderStatus();
+    if (j.updated !== lastStamp) { lastStamp = j.updated; D = j; resetLabIfShapeChanged(); renderAll(); } else { D.checked = j.checked; renderStatus(); }
   } catch (e) {
     console.error('load/render failed:', e);
     if (!D) {
