@@ -371,7 +371,7 @@ function parliament(host, groups, opts = {}) {
 }
 
 /* ====================================================================== state */
-let D = null, lab = null, histTab = 'bibi', allLists = false;
+let D = null, lab = null, histTab = 'bibi', allLists = false, cardsAll = false, labAll = false;
 const resetLab = () => { lab = {sBC: 0, sA: 0, ban: {}, force: {}, assign: {}}; };
 resetLab();
 
@@ -535,28 +535,43 @@ function renderDist() {
 }
 
 /* ====================================================================== threshold scenarios */
+// every list that could be anywhere near the line, the likeliest to cross it first. A list the estimate
+// gives only a small chance of crossing is still shown: the point is to see what it would do to the blocs.
+function thrCandidates() {
+  return D.lists.filter((l) => l.votes > 0 && l.share >= 0.02 && l.share <= 0.09)
+    .map((l) => ({l, fall: l.seats > 0, risk: Math.min(l.pass_prob, 1 - l.pass_prob), dist: Math.abs(l.share - THRESH)}))
+    .sort((a, b) => b.risk - a.risk || a.dist - b.dist);
+}
+const crossP = (c) => (c.fall ? 1 - c.l.pass_prob : c.l.pass_prob);       // chance the what-if actually happens
+function scenarioOf(c) {
+  const f = {[c.l.code]: true};
+  const r = labCompute(D, {sBC: 0, sA: 0, ban: c.fall ? f : {}, force: c.fall ? {} : f, assign: {}});
+  return {bl: r.bl, own: r.seats[D.lists.indexOf(c.l)]};
+}
 function renderThreshold() {
-  const d = D, root = clear($('#thr'));
-  if (!d.scenarios.length) { root.hidden = true; return; }
+  const d = D, root = clear($('#thr')), cands = thrCandidates();
+  if (!cands.length) { root.hidden = true; return; }
   root.hidden = false;
-  const cur = d.blocs;
-  const cards = d.scenarios.map((sc) => {
-    const fall = sc.kind === 'fall';
+  const base = {bibi: d.blocs.bibi.seats, change: d.blocs.change.seats, arab: d.blocs.arab.seats};
+  const card = (c) => {
+    const sc = scenarioOf(c), cp = crossP(c);
     const chip = (k) => {
-      const v = sc.bloc[k], dl = sc.delta[k];
-      return h('span', {class: 'chip' + (k === 'bibi' && v >= 61 && cur.bibi.seats < 61 ? ' hit' : '')}, swatch(k), BLOC[k].name + ' ', h('b', {}, num(v)),
+      const v = sc.bl[k], dl = v - base[k];
+      return h('span', {class: 'chip' + (k === 'bibi' && (v >= 61) !== (base.bibi >= 61) ? ' hit' : '')}, swatch(k), BLOC[k].name + ' ', h('b', {}, num(v)),
         dl ? h('span', {class: 'd'}, num('(' + sgn(dl) + ')')) : null);
     };
     return h('div', {class: 'sc-card'},
-      h('div', {class: 't'}, h('b', {}, sc.name)), h('div', {class: 'p'}, `סיכוי ${fall ? 'להישאר מעל החסימה' : 'לעבור את החסימה'}: `, num(pr(sc.pass_prob))),
-      h('div', {class: 'track'}, h('i', {style: `width:${Math.round(sc.pass_prob * 100)}%`})),
-      h('div', {class: 'what'}, fall ? 'אם לא תעבור את החסימה (3.25%) הקולות שלה הולכים לאיבוד והמנדטים מתחלקים מחדש:'
-        : `אם תעבור את החסימה (${seatsWord(sc.list_seats)}) המנדטים מתחלקים מחדש:`),
+      h('div', {class: 't'}, h('b', {}, c.l.name), h('span', {class: 'p'}, num(pc(c.l.share)), ' מהקולות')),
+      h('div', {class: 'p'}, `סיכוי ${c.fall ? 'ליפול מתחת לחסימה' : 'לעבור את החסימה'}: `, num(pr(cp))),
+      h('div', {class: 'track'}, h('i', {style: `width:${Math.max(1, Math.round(cp * 100))}%`})),
+      h('div', {class: 'what'}, c.fall ? 'אם לא תעבור את החסימה, הקולות שלה הולכים לאיבוד והמנדטים מתחלקים מחדש:'
+        : `אם תעבור את החסימה (${seatsWord(sc.own)}), המנדטים מתחלקים מחדש:`),
       h('div', {class: 'chips'}, ['bibi', 'change', 'arab'].map(chip)));
-  });
-  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'רשימות על הסף'),
-    h('p', {class: 'sub'}, `חסימה: ${pc(THRESH, 2)} מהקולות הכשרים (כ-${n0(d.threshold_votes)} קולות). רשימה שנופלת מתחת לחסימה מזיזה מנדטים בין הגושים. בסוגריים: השינוי לעומת ההערכה הנוכחית.`))),
-    h('div', {class: 'cards'}, cards));
+  };
+  put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'רשימות על הסף: ומה אם?'),
+      h('p', {class: 'sub'}, `חסימה: ${pc(THRESH, 2)} מהקולות הכשרים (כ-${n0(d.threshold_votes)} קולות). הרשימות הקרובות ביותר לחסימה, מהסבירה ביותר לחצות אותה. גם תרחיש שההערכה נותנת לו סיכוי קטן מוצג, כדי לראות מה היה קורה. בסוגריים: השינוי לעומת ההערכה הנוכחית.`))),
+    h('div', {class: 'cards'}, (cardsAll ? cands : cands.slice(0, 6)).map(card)),
+    cands.length > 6 ? h('button', {class: 'btn', style: 'margin-top:14px', onclick: () => { cardsAll = !cardsAll; renderThreshold(); }}, cardsAll ? 'הצג פחות' : `הצג עוד ${cands.length - 6} רשימות`) : null);
 }
 
 /* ====================================================================== what-if lab */
@@ -588,10 +603,11 @@ function renderLab() {
     oninput: (e) => { lab.sA = e.target.value / 1000; update(); }});
   const seg = (opts, get, set, small = true) => h('div', {class: 'seg' + (small ? ' small' : ''), role: 'group'}, opts.map(([k, t]) =>
     h('button', {'aria-pressed': String(get() === k), onclick: (ev) => { set(k); ev.currentTarget.parentNode.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b === ev.currentTarget))); update(); }}, t)));
-  const thrRows = d.scenarios.map((sc) => {
-    const l = d.lists.find((x) => x.code === sc.code), fall = sc.kind === 'fall', store = fall ? lab.ban : lab.force;
-    return h('div', {class: 'rowc'}, h('div', {class: 'n'}, swatch(l.bloc), l.name, h('small', {}, `סיכוי ${fall ? 'להישאר' : 'לעבור'} ${pr(sc.pass_prob)}`)),
-      seg([['', 'כצפוי'], ['1', fall ? 'נופלת' : 'עוברת']], () => (store[sc.code] ? '1' : ''), (k) => { if (k) store[sc.code] = true; else delete store[sc.code]; }));
+  const cands = thrCandidates();
+  const thrRows = (labAll ? cands : cands.slice(0, 5)).map((c) => {
+    const store = c.fall ? lab.ban : lab.force;
+    return h('div', {class: 'rowc'}, h('div', {class: 'n'}, swatch(c.l.bloc), c.l.name, h('small', {}, num(pc(c.l.share)), ` · סיכוי ${c.fall ? 'ליפול' : 'לעבור'} `, num(pr(crossP(c))))),
+      seg([['', 'כצפוי'], ['1', c.fall ? 'נופלת' : 'עוברת']], () => (store[c.l.code] ? '1' : ''), (k) => { if (k) store[c.l.code] = true; else delete store[c.l.code]; }));
   });
   const unc = d.lists.filter((l) => l.bloc === 'other' && (l.seats > 0 || l.pass_prob >= 0.02)).sort((a, b) => b.votes - a.votes).slice(0, 6);
   const uncRows = unc.map((l) => h('div', {class: 'rowc'}, h('div', {class: 'n'}, swatch('other'), l.name, h('small', {}, `${l.seats} מנדטים`)),
@@ -601,7 +617,8 @@ function renderLab() {
       h('div', {class: 'legend', style: 'justify-content:space-between;margin:2px 0 0;font-size:12.5px;color:var(--mute)'}, h('span', {}, '← יותר לשינוי'), h('span', {}, 'יותר לביבי →'))),
     h('div', {class: 'ctl'}, h('h3', {}, 'הגוש הערבי', sl2v), h('p', {class: 'hint'}, 'יותר או פחות קולות לרשימות הערביות, על חשבון כל השאר באופן יחסי.'), sl2,
       h('div', {class: 'legend', style: 'justify-content:space-between;margin:2px 0 0;font-size:12.5px;color:var(--mute)'}, h('span', {}, '← פחות'), h('span', {}, 'יותר →'))),
-    thrRows.length ? h('div', {class: 'ctl'}, h('h3', {}, 'רשימות על הסף'), h('p', {class: 'hint'}, 'מה אם הרשימה נופלת / עוברת את החסימה.'), h('div', {class: 'rows'}, thrRows)) : null,
+    thrRows.length ? h('div', {class: 'ctl'}, h('h3', {}, 'רשימות על הסף'), h('p', {class: 'hint'}, 'מה אם הרשימה נופלת או עוברת את החסימה, גם אם ההערכה נותנת לזה סיכוי קטן.'), h('div', {class: 'rows'}, thrRows),
+      cands.length > 5 ? h('button', {class: 'btn', style: 'margin-top:10px', onclick: () => { labAll = !labAll; renderLab(); }}, labAll ? 'הצג פחות' : `הצג עוד ${cands.length - 5} רשימות`) : null) : null,
     uncRows.length ? h('div', {class: 'ctl'}, h('h3', {}, 'רשימות שלא סווגו'), h('p', {class: 'hint'}, 'לאיזה גוש לספור אותן במושבים? כברירת מחדל הן לא נספרות באף גוש.'), h('div', {class: 'rows'}, uncRows)) : null,
     h('div', {class: 'ctl'}, h('button', {class: 'btn', onclick: () => { resetLab(); renderLab(); }}, 'איפוס התרחיש')));
   function update() {
