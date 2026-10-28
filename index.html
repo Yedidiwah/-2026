@@ -364,7 +364,7 @@ function showTip(ev, nodes) {
 const hideTip = () => tip.classList.remove('on');
 
 /* ====================================================================== seat math (same as the model) */
-function baderOfer(votes, T, ban, force) {
+function baderOfer(votes, T, ban, force, pairs) {
   const n = votes.length, pass = new Array(n).fill(false);
   let q = 0;
   for (let i = 0; i < n; i++) {
@@ -376,10 +376,20 @@ function baderOfer(votes, T, ban, force) {
   q /= SEATS;
   let got = 0;
   for (let i = 0; i < n; i++) if (pass[i]) { out[i] = Math.floor(votes[i] / q); got += out[i]; }
+  // surplus-vote agreements: a pair is void unless both lists pass; for the remaining seats it is ONE list (combined votes / (combined seats + 1)),
+  // and a seat it wins goes to the partner whose own votes / (own seats + 1) is higher. Same rule as scripts/surplus_agreements.py (checked on 2022).
+  const units = [], used = new Set();
+  (pairs || []).forEach(([a, b]) => { if (pass[a] && pass[b]) { units.push([a, b]); used.add(a); used.add(b); } });
+  for (let i = 0; i < n; i++) if (pass[i] && !used.has(i)) units.push([i]);
   while (got < SEATS) {
-    let best = -1, bi = -1;
-    for (let i = 0; i < n; i++) if (pass[i]) { const a = votes[i] / (out[i] + 1); if (a > best) { best = a; bi = i; } }
-    out[bi]++; got++;
+    let best = -1, bu = null;
+    units.forEach((u) => {
+      const a = u.reduce((s, i) => s + votes[i], 0) / (u.reduce((s, i) => s + out[i], 0) + 1);
+      if (a > best) { best = a; bu = u; }
+    });
+    let win = bu[0];
+    if (bu.length === 2 && votes[bu[1]] / (out[bu[1]] + 1) > votes[bu[0]] / (out[bu[0]] + 1)) win = bu[1];
+    out[win]++; got++;
   }
   return out;
 }
@@ -547,7 +557,7 @@ function renderParliament() {
     d.other_seats ? h('span', {}, swatch('other'), 'לא סווגו ', h('b', {}, num(d.other_seats)), other.length ? ` (${other.map((l) => l.name).join(', ')})` : '') : null);
   const host = h('div', {class: 'phost'});
   put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, '120 המושבים'), h('p', {class: 'sub'}, 'ההערכה המרכזית, מימין לשמאל: ביבי, רשימות שלא סווגו, שינוי, ערבים. המושב המוקף הוא ה-61 — הרוב.'))), legend, host,
-    h('p', {class: 'cap'}, 'המושבים בין סוף הרצועה הכחולה למושב ה-61 הם מה שחסר לגוש ביבי. מעבירים עכבר על מושב כדי לראות למי הוא שייך.'));
+    h('p', {class: 'cap'}, 'המושבים בין סוף הרצועה הכחולה למושב ה-61 הם מה שחסר לגוש ביבי. מעבירים עכבר על מושב כדי לראות למי הוא שייך.' + ((d.agreements || []).length ? ' המנדטים לפי רשימה כוללים הסכמי עודפים (פירוט ב"איך זה עובד").' : '')));
   parliament(host, groups);
 }
 
@@ -679,7 +689,9 @@ function labCompute(d, L) {
     const add = THRESH * 1.01 * T - v[i], rest = v.reduce((a, x, j) => a + (j === i ? 0 : x), 0);
     v = v.map((x, j) => (j === i ? x + add : x - add * x / rest));
   });
-  const seats = baderOfer(v, T, lists.map((l) => !!L.ban[l.code]), null);
+  const at = (c) => lists.findIndex((l) => l.code === c);
+  const pairs = (d.agreements || []).map((p) => [at(p.a), at(p.b)]).filter(([a, b]) => a >= 0 && b >= 0);
+  const seats = baderOfer(v, T, lists.map((l) => !!L.ban[l.code]), null, pairs);
   const bl = {bibi: 0, change: 0, arab: 0, other: 0};
   lists.forEach((l, i) => { const b = l.bloc === 'other' ? (L.assign[l.code] || 'other') : l.bloc; bl[b] += seats[i]; });
   return {seats, bl, v};
@@ -791,7 +803,7 @@ function renderLists() {
   const body = h('tbody', {}, main.map(row));
   const more = rest.length ? h('button', {class: 'btn', style: 'margin-top:12px', onclick: (ev) => { allLists = !allLists; if (allLists) body.append(...rest.map(row)); else renderLists(); ev.currentTarget.textContent = allLists ? 'הסתר רשימות קטנות' : `הצג עוד ${rest.length} רשימות`; }}, allLists ? 'הסתר רשימות קטנות' : `הצג עוד ${rest.length} רשימות`) : null;
   if (allLists) body.append(...rest.map(row));
-  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'כל הרשימות'), h('p', {class: 'sub'}, 'מנדטים, קולות משוערים וסיכוי לעבור את החסימה. "ראשוני" = ההערכה לפני הספירה; בסוגריים השינוי ממנה.'))),
+  put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'כל הרשימות'), h('p', {class: 'sub'}, `מנדטים${(d.agreements || []).length ? ' (כולל הסכמי עודפים)' : ''}, קולות משוערים וסיכוי לעבור את החסימה. "ראשוני" = ההערכה לפני הספירה, מחושבת באותה שיטה; בסוגריים השינוי ממנה.`))),
     h('div', {class: 'tw'}, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'רשימה'), h('th', {class: 'num2'}, 'מנדטים'), h('th', {class: 'num2 hide-sm'}, 'טווח'), h('th', {class: 'num2'}, 'קולות (הערכה)'),
       h('th', {class: 'num2 hide-sm'}, '% מהכשרים'), h('th', {}, 'סיכוי לעבור חסימה'), h('th', {class: 'num2 hide-sm'}, 'ראשוני'))), body)), more);
 }
@@ -1014,13 +1026,17 @@ async function loadGov() {
 function renderHow() {
   const d = D, root = clear($('#how')); root.hidden = false;
   put(root,h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'איך זה עובד ומה לא יודעים'))),
-    h('details', {open: true}, h('summary', {}, 'הנחות היסוד'), h('ul', {}, d.assumptions.map((a) => h('li', {}, a)))),
+    h('details', {open: true}, h('summary', {}, 'הנחות היסוד'), h('ul', {}, d.assumptions.map((a) => h('li', {}, a)),
+      (d.agreements || []).length ? h('li', {}, 'הסכמי עודפים בחישוב: ', (d.agreements || []).map((p, i) => {
+        const nm = (c) => (d.lists.find((l) => l.code === c) || {name: c}).name;
+        return h('span', {style: 'white-space:nowrap'}, (i ? ' · ' : ''), nm(p.a), ' + ', nm(p.b), p.on ? '' : ' (בטל: אחת מהן מתחת לחסימה)');
+      }), '. בזוג, המנדט שהוא זוכה בו הולך לשותפה עם הממוצע (קולות לחלק במנדטים ועוד אחד) הגבוה יותר.') : null)),
     h('details', {}, h('summary', {}, 'מה יכול להזיז את ההערכה'), h('ul', {},
       h('li', {}, d.ext_valid ? `מעטפות חיצוניות (חיילים, חולים, אסירים, נציגויות): כ-${n0(d.ext_valid)} קולות, כ-${d.ext_seats} מנדטים, נספרות בסוף. ההרכב שלהן מונח כמו ב-2022, והסטייה שלו נכללת בטווח.` : 'מעטפות חיצוניות נספרות בסוף.'),
       h('li', {}, 'רשימות חדשות ללא היסטוריה (למשל ביחד, ישר!, עמך ישראל): ההערכה שלהן נשענת רק על מה שנספר עד כה, ולכן רגישה לסדר הגעת הקלפיות.'),
       h('li', {}, 'סדר ההגעה: אם קלפיות מאזור אחד נספרות ראשונות, ההערכה נוטה אליו עד שנספרים אזורים אחרים. הטווחים כוללים את הטעות ההיסטורית אחרי אותו אחוז ספירה.'),
       h('li', {}, 'רשימות על הסף: מעבר או נפילה מזיזים כמה מנדטים בין הגושים (ראו "רשימות על הסף").'),
-      h('li', {}, 'הסכמי עודפים: לא מדומים, ולכן ±1 מנדט ברשימות שוליות.'))),
+      h('li', {}, 'הסכמי עודפים נכללים בחישוב, אבל רשימת ההסכמים נשענת על דיווחי עיתונות על מה שנחתם בוועדה. הם מזיזים בדרך כלל מנדט בודד בין הרשימות שבקצה התור של המנדטים האחרונים, והמנדט האחרון מוכרע לעתים בהפרש של כמה אלפי קולות.'))),
     h('details', {}, h('summary', {}, 'איך מחושב הטווח'), h('p', {}, 'כל קלפי שנספרה מייצגת קלפיות דומות בה (אותו סוג יישוב ואותו מאפיין חברתי-כלכלי) ומשוקללת לפי גודל הקבוצה. את אי-הוודאות מודדים בהגרלה חוזרת של הקלפיות שנספרו, ומרחיבים אותה לפי הטעות ההיסטורית שנמדדה על חמש מערכות בחירות קודמות באותו אחוז ספירה. הטווח הוא 80% סבירות: ב-80% מהמקרים הצפויים התוצאה תיפול בתוכו.')),
     h('details', {}, h('summary', {}, 'עדכון נתונים'), h('p', {}, `הנתונים מגיעים מקובץ התוצאות של ועדת הבחירות. ההערכה מתעדכנת בכל פעם שמתפרסמות קלפיות חדשות, והדף בודק עדכון כל דקה. "נבדק לפני X דק׳" בראש הדף מראה שהבדיקה פעילה גם כשאין חדש. עדכון אחרון של ההערכה: ${d.updated_hm}.`)));
 }
