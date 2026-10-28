@@ -631,10 +631,12 @@ function renderDist() {
 }
 
 /* ====================================================================== threshold scenarios */
-// every list that could be anywhere near the line, the likeliest to cross it first. A list the estimate
-// gives only a small chance of crossing is still shown: the point is to see what it would do to the blocs.
+// the lists the estimate could realistically push across the line, the likeliest to cross it first: those whose 10-90% range of the vote share
+// comes within 1% of the votes of the threshold. A small chance of crossing is still shown (the point is to see what it would do to the blocs),
+// but a list at 5% with 97% of the boxes counted is not "on the threshold": a card about Shas falling out would only be noise.
+const THR_NEAR = 0.01;
 function thrCandidates() {
-  return D.lists.filter((l) => l.votes > 0 && l.share >= 0.015 && l.share <= 0.09)
+  return D.lists.filter((l) => l.votes > 0 && l.share >= 0.015 && l.share <= 0.09 && l.share_lo - THR_NEAR <= THRESH && l.share_hi + THR_NEAR >= THRESH)
     .map((l) => ({l, fall: l.seats > 0, risk: Math.min(l.pass_prob, 1 - l.pass_prob), dist: Math.abs(l.share - THRESH)}))
     .sort((a, b) => b.risk - a.risk || a.dist - b.dist);
 }
@@ -665,7 +667,7 @@ function renderThreshold() {
       h('div', {class: 'chips'}, ['bibi', 'change', 'arab'].map(chip)));
   };
   put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'רשימות על הסף: ומה אם?'),
-      h('p', {class: 'sub'}, `חסימה: ${pc(THRESH, 2)} מהקולות הכשרים (כ-${n0(d.threshold_votes)} קולות). הרשימות הקרובות ביותר לחסימה, מהסבירה ביותר לחצות אותה. גם תרחיש שההערכה נותנת לו סיכוי קטן מוצג, כדי לראות מה היה קורה. בסוגריים: השינוי לעומת ההערכה הנוכחית.`))),
+      h('p', {class: 'sub'}, `חסימה: ${pc(THRESH, 2)} מהקולות הכשרים (כ-${n0(d.threshold_votes)} קולות). מוצגות רק רשימות שטווח ההערכה שלהן מתקרב לחסימה (עד ${pc(THR_NEAR, 0)} מהקולות ממנה), מהסבירה ביותר לחצות אותה. גם תרחיש שההערכה נותנת לו סיכוי קטן מוצג, כדי לראות מה היה קורה. בסוגריים: השינוי לעומת ההערכה הנוכחית.`))),
     h('div', {class: 'cards'}, (cardsAll ? cands : cands.slice(0, 6)).map(card)),
     cands.length > 6 ? h('button', {class: 'btn', style: 'margin-top:14px', onclick: () => { cardsAll = !cardsAll; renderThreshold(); }}, cardsAll ? 'הצג פחות' : `הצג עוד ${cands.length - 6} רשימות`) : null);
 }
@@ -1035,7 +1037,7 @@ function renderHow() {
       h('li', {}, d.ext_valid ? `מעטפות חיצוניות (חיילים, חולים, אסירים, נציגויות): כ-${n0(d.ext_valid)} קולות, כ-${d.ext_seats} מנדטים, נספרות בסוף. ההרכב שלהן מונח כמו ב-2022, והסטייה שלו נכללת בטווח.` : 'מעטפות חיצוניות נספרות בסוף.'),
       h('li', {}, 'רשימות חדשות ללא היסטוריה (למשל ביחד, ישר!, עמך ישראל): ההערכה שלהן נשענת רק על מה שנספר עד כה, ולכן רגישה לסדר הגעת הקלפיות.'),
       h('li', {}, 'סדר ההגעה: אם קלפיות מאזור אחד נספרות ראשונות, ההערכה נוטה אליו עד שנספרים אזורים אחרים. הטווחים כוללים את הטעות ההיסטורית אחרי אותו אחוז ספירה.'),
-      h('li', {}, 'רשימות על הסף: מעבר או נפילה מזיזים כמה מנדטים בין הגושים (ראו "רשימות על הסף").'),
+      thrCandidates().length ? h('li', {}, 'רשימה שקרובה לחסימה: מעבר או נפילה מזיזים כמה מנדטים בין הגושים (ראו "רשימות על הסף").') : null,
       h('li', {}, 'הסכמי עודפים נכללים בחישוב, אבל רשימת ההסכמים נשענת על דיווחי עיתונות על מה שנחתם בוועדה. הם מזיזים בדרך כלל מנדט בודד בין הרשימות שבקצה התור של המנדטים האחרונים, והמנדט האחרון מוכרע לעתים בהפרש של כמה אלפי קולות.'))),
     h('details', {}, h('summary', {}, 'איך מחושב הטווח'), h('p', {}, 'כל קלפי שנספרה מייצגת קלפיות דומות בה (אותו סוג יישוב ואותו מאפיין חברתי-כלכלי) ומשוקללת לפי גודל הקבוצה. את אי-הוודאות מודדים בהגרלה חוזרת של הקלפיות שנספרו, ומרחיבים אותה לפי הטעות ההיסטורית שנמדדה על חמש מערכות בחירות קודמות באותו אחוז ספירה. הטווח הוא 80% סבירות: ב-80% מהמקרים הצפויים התוצאה תיפול בתוכו.')),
     h('details', {}, h('summary', {}, 'עדכון נתונים'), h('p', {}, `הנתונים מגיעים מקובץ התוצאות של ועדת הבחירות. ההערכה מתעדכנת בכל פעם שמתפרסמות קלפיות חדשות, והדף בודק עדכון כל דקה. "נבדק לפני X דק׳" בראש הדף מראה שהבדיקה פעילה גם כשאין חדש. עדכון אחרון של ההערכה: ${d.updated_hm}.`)));
