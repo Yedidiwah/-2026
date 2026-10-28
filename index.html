@@ -233,6 +233,25 @@ footer p{max-width:70ch;margin:0 0 6px}
 .ds-gl{stroke:var(--grid);stroke-width:1;stroke-dasharray:2 3}
 .legend .ds-dirs{margin-inline-start:auto;font-size:13px;color:var(--mute)}
 @media (max-width:520px){.legend .ds-dirs{margin-inline-start:0;flex-basis:100%}}
+
+/* ---------- vote flows (sankey) */
+.fl-sk{position:relative;direction:ltr;margin-top:6px}
+.fl-sk svg{display:block;overflow:visible}
+.fl-nl{position:absolute;display:flex;gap:5px;direction:rtl;font-size:13px;line-height:18px;white-space:nowrap}
+.fl-nl.o{justify-content:flex-end}
+.fl-nl.d{justify-content:flex-start}
+.fl-nl b{font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis}
+.fl-nl .sh{color:var(--ink2);font-size:12px}
+.fl-colh{position:absolute;top:0;font-size:12.5px;font-weight:700;color:var(--ink2)}
+.fl-rb{fill-opacity:.42;transition:fill-opacity .12s}
+.fl-rb:hover,.fl-rb.sel{fill-opacity:.82}
+.fl-hl .fl-rb:not(.sel){fill-opacity:.1}
+.fl-lines{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:14.5px;color:var(--ink2);max-width:78ch}
+.fl-lines li{padding-inline-start:14px;position:relative}
+.fl-lines li::before{content:"";position:absolute;inset-inline-start:0;top:.65em;width:6px;height:6px;border-radius:2px;background:var(--axis)}
+.fl-warn{margin:12px 0 4px;padding:10px 12px;border-radius:12px;background:var(--wash);font-size:14px;color:var(--ink2);max-width:78ch}
+.fl-warn b{color:var(--ink)}
+@media (max-width:520px){.fl-nl{font-size:12px}}
 </style>
 </head>
 <body>
@@ -261,6 +280,7 @@ footer p{max-width:70ch;margin:0 0 6px}
   <section class="card" id="lists" hidden></section>
   <section class="card" id="count" hidden></section>
   <section class="card" id="dsh" hidden></section>
+  <section class="card" id="flw" hidden></section>
   <section class="card" id="how" hidden></section>
 </main>
 
@@ -860,6 +880,101 @@ function renderDemo() {
 let dsTimer;
 window.addEventListener('resize', () => { clearTimeout(dsTimer); dsTimer = setTimeout(() => { const g = $('#ds-grid'); if (g && Math.round(g.clientWidth) !== dsW) drawDemo(); }, 80); });
 
+/* ====================================================================== vote flows (sankey) */
+const FL_BL = {bibi: 'var(--bibi)', change: 'var(--change)', arab: 'var(--arab)', other: 'var(--other)'};
+const FL_BLN = {bibi: 'גוש ביבי', change: 'גוש שינוי', arab: 'גוש ערבים', other: 'אחרים'};
+const flPct = (x) => (x >= 10 ? Math.round(x) : x.toFixed(1)) + '%';
+const flK = (v) => (v >= 1000 ? n0(v / 1000) + ' אלף' : String(v));
+const flName = (n) => n.name.split(' (')[0];
+let flW = 0, flScrolled = false;
+function flDraw() {
+  const fl = D && D.flows, host = $('#fl-sk');
+  if (!fl || !host) return;
+  clear(host);
+  const O = fl.origins, T = fl.dests, F = fl.flows;
+  const W = Math.max(300, Math.floor(host.clientWidth));
+  flW = Math.round(host.clientWidth);
+  const mobile = W < 560, LBL = mobile ? 86 : 176, NW = 12, GAP = mobile ? 5 : 7, H = mobile ? 640 : 580, TOP = 24, MINH = 12;
+  const xo = W - LBL - NW, xd = LBL;
+  let k = (H - GAP * (Math.max(O.length, T.length) - 1)) / O.reduce((a, o) => a + o.votes, 0);
+  const hs = (arr) => arr.map((n) => Math.max(MINH, n.votes * k));
+  for (let it = 0; it < 40; it++) {                      // shrink until both columns, with their minimum heights, fit
+    const a = hs(O).reduce((q, v) => q + v, 0) + GAP * (O.length - 1), b = hs(T).reduce((q, v) => q + v, 0) + GAP * (T.length - 1);
+    if (Math.max(a, b) <= H) break;
+    k *= 0.96;
+  }
+  const lay = (arr) => { let y = TOP; return hs(arr).map((hh) => { const r = {y, h: hh}; y += hh + GAP; return r; }); };
+  const po = lay(O), pt = lay(T);
+  host.style.height = (H + TOP + 8) + 'px';
+  const svg = s('svg', {width: W, height: H + TOP + 8, viewBox: `0 0 ${W} ${H + TOP + 8}`, role: 'img', 'aria-label': 'תרשים סנקי של תנועת הקולות בין 2022 להיום'});
+  // outgoing flows of a 2022 list stack top to bottom in the order of their targets, incoming flows likewise
+  const outs = O.map((_, i) => F.filter((f) => f.o === i).sort((a, b) => a.d - b.d));
+  const ins = T.map((_, j) => F.filter((f) => f.d === j).sort((a, b) => a.o - b.o));
+  const oy = new Map(), ty = new Map();
+  outs.forEach((fl2, i) => { let y = po[i].y + (po[i].h - fl2.reduce((q, f) => q + f.votes * k, 0)) / 2; fl2.forEach((f) => { oy.set(f, y); y += f.votes * k; }); });
+  ins.forEach((fl2, j) => { let y = pt[j].y + (pt[j].h - fl2.reduce((q, f) => q + f.votes * k, 0)) / 2; fl2.forEach((f) => { ty.set(f, y); y += f.votes * k; }); });
+  const ribbons = [];
+  const tipFlow = (ev, f) => {
+    const o = O[f.o], d = T[f.d];
+    showTip(ev, [h('b', {}, `${flName(o)} ← ${d.name}`), h('div', {}, 'כ-', num(flPct(f.pct)), ` ממצביעי ${flName(o)} ב-2022`),
+      h('div', {style: 'opacity:.78;font-size:12px'}, 'טווח 10%–90%: ', num(`${flPct(f.lo)}–${flPct(f.hi)}`), ` · בערך ${n0(f.votes)} קולות`)]);
+  };
+  F.forEach((f) => {
+    const hh = Math.max(0.8, f.votes * k), a = oy.get(f), b = ty.get(f), m = (xo + xd + NW) / 2;
+    const p = s('path', {d: `M${xo},${a} C${m},${a} ${m},${b} ${xd + NW},${b} L${xd + NW},${b + hh} C${m},${b + hh} ${m},${a + hh} ${xo},${a + hh} Z`, class: 'fl-rb', style: `fill:${FL_BL[O[f.o].bloc]}`});
+    p.dataset.o = f.o; p.dataset.d = f.d;
+    p.addEventListener('pointerenter', (ev) => { svg.classList.add('fl-hl'); p.classList.add('sel'); tipFlow(ev, f); });
+    p.addEventListener('pointermove', (ev) => tipFlow(ev, f));
+    p.addEventListener('pointerleave', () => { svg.classList.remove('fl-hl'); p.classList.remove('sel'); hideTip(); });
+    ribbons.push(p); svg.append(p);
+  });
+  const labels = [];
+  const tipNode = (ev, n, i, side) => {
+    const rows = F.filter((f) => (side === 'o' ? f.o : f.d) === i).sort((a, b) => b.votes - a.votes).slice(0, 5);
+    showTip(ev, [h('b', {}, n.name),
+      h('div', {style: 'opacity:.78;font-size:12px'}, side === 'o' ? `${flPct(n.share)} מהקולות ב-2022 · ${n0(n.votes)} קולות` : `≈${flPct(n.share)} (אומדן לפי תנועת הקולות)`),
+      h('div', {}, side === 'o' ? 'הצביעו הפעם:' : 'הגיעו מ:'),
+      rows.map((f) => h('div', {}, (side === 'o' ? T[f.d].name : flName(O[f.o])) + ' ', num(side === 'o' ? flPct(f.pct) : flK(f.votes))))]);
+  };
+  const nodes = (arr, pos, x, side) => arr.forEach((n, i) => {
+    const r = s('rect', {x, y: pos[i].y, width: NW, height: pos[i].h, rx: 3, style: `fill:${FL_BL[n.bloc]}`});
+    r.addEventListener('pointerenter', (ev) => {
+      svg.classList.add('fl-hl');
+      ribbons.forEach((p) => p.classList.toggle('sel', side === 'o' ? +p.dataset.o === i : +p.dataset.d === i));
+      tipNode(ev, n, i, side);
+    });
+    r.addEventListener('pointermove', (ev) => tipNode(ev, n, i, side));
+    r.addEventListener('pointerleave', () => { svg.classList.remove('fl-hl'); ribbons.forEach((p) => p.classList.remove('sel')); hideTip(); });
+    svg.append(r);
+    labels.push(h('div', {class: 'fl-nl ' + side, style: `top:${pos[i].y + pos[i].h / 2 - 9}px;width:${LBL - 10}px;${side === 'o' ? 'right:0' : 'left:0'}`},
+      h('b', {}, mobile ? n.short : (side === 'd' ? n.name : flName(n))), mobile ? null : h('span', {class: 'sh'}, num((side === 'd' ? '≈' : '') + flPct(n.share)))));
+  });
+  nodes(O, po, xo, 'o');
+  nodes(T, pt, xd, 'd');
+  put(host, svg, labels, h('div', {class: 'fl-colh', style: 'right:0'}, '2022'), h('div', {class: 'fl-colh', style: 'left:0'}, 'היום (אומדן)'));
+}
+function renderFlows() {
+  const fl = D.flows, root = clear($('#flw'));
+  if (!fl || !fl.flows || !fl.flows.length) { root.hidden = true; return; }       // older data file, or too few settlements counted yet
+  root.hidden = false;
+  const rows = fl.flows.slice().sort((a, b) => b.votes - a.votes).map((f) => h('tr', {}, h('td', {class: 'nm'}, flName(fl.origins[f.o])), h('td', {}, fl.dests[f.d].name),
+    h('td', {class: 'num2'}, num(flPct(f.pct))), h('td', {class: 'num2'}, num(`${flPct(f.lo)}–${flPct(f.hi)}`)), h('td', {class: 'num2'}, num(n0(f.votes)))));
+  put(root,
+    h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'לאן הלכו הקולות? אומדן תנועת קולות מ-2022'),
+      h('p', {class: 'sub'}, 'מאיפה הגיעו הקולות של כל רשימה. עובי הרצועה הוא כמות הקולות, והצבע הוא הגוש של המפלגה ב-2022. ריחוף על רצועה או על מפלגה מציג אחוזים וטווח. זה אומדן, לא נתון נמדד.'))),
+    h('div', {class: 'legend'}, ['bibi', 'change', 'arab', 'other'].map((b) => h('span', {}, h('span', {class: 'sw', style: `--c:${FL_BL[b]}`}), FL_BLN[b]))),
+    h('div', {class: 'fl-sk', id: 'fl-sk'}),
+    h('ul', {class: 'fl-lines'}, fl.lines.map((t) => h('li', {}, t))),
+    h('p', {class: 'fl-warn'}, h('b', {}, 'איך לקרוא נכון. '), 'אף אחד לא יודע איך מצביע בודד הצביע פעמיים. האומדן בונה את מטריצת המעבר שמסבירה בצורה הטובה ביותר את השינוי בין שתי הבחירות בכל היישובים. מפלגות שבוחריהן גרים באותם מקומות (למשל יש עתיד והמחנה הממלכתי) קשות להפרדה, ולכן הטווחים שלהן רחבים. שינוי באחוזי ההצבעה ומצביעים חדשים לא נכללים בתמונה.'),
+    h('details', {}, h('summary', {}, 'טבלת הזרימות'), h('div', {class: 'tw'}, h('table', {}, h('thead', {}, h('tr', {},
+      ['מ-2022', 'ל-2026', 'חלק ממצביעי המפלגה', 'טווח 10%–90%', 'קולות בערך'].map((x, i) => h('th', {class: i > 1 ? 'num2' : ''}, x)))), h('tbody', {}, rows)))),
+    h('p', {class: 'cap'}, `נבדקו ${fl.setts} יישובים שבהם נספרו לפחות ${Math.round(fl.min_frac * 100)}% מהקלפיות (${n0(fl.votes)} קולות כשרים). לכל רשימה מ-2022 נמצאה החלוקה לרשימות של היום (ללא ערכים שליליים, הסכום 100%) שמשחזרת הכי טוב את התוצאה בכל יישוב, בשקלול לפי הקולות. הטווח הוא 10%–90% מתוך ${fl.boot} הגרלות חוזרות של היישובים. הצד של היום מוצג בקירוב (≈).`));
+  flDraw();
+  if (!flScrolled && location.hash === '#flw') { flScrolled = true; requestAnimationFrame(() => root.scrollIntoView()); }
+}
+let flTimer;
+window.addEventListener('resize', () => { clearTimeout(flTimer); flTimer = setTimeout(() => { const g = $('#fl-sk'); if (g && Math.round(g.clientWidth) !== flW) flDraw(); }, 80); });
+
 /* ====================================================================== how it works */
 function renderHow() {
   const d = D, root = clear($('#how')); root.hidden = false;
@@ -887,7 +1002,7 @@ function renderStatus() {
 }
 function renderAll() {
   $('#demo').hidden = !D.demo;
-  renderHero(); renderBasis(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderDemo(); renderHow(); renderStatus();
+  renderHero(); renderBasis(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderDemo(); renderFlows(); renderHow(); renderStatus();
 }
 let lastStamp = null, busy = false;
 // GitHub's API serves the branch within ~60 s, while raw.githubusercontent.com may lag up to 5 minutes (its CDN ignores
