@@ -210,6 +210,29 @@ footer p{max-width:70ch;margin:0 0 6px}
 .err{padding:30px 22px;text-align:center;color:var(--ink2)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .fade{opacity:.55;transition:opacity .2s}
+
+/* ---------- demographic shift */
+.ds-headline{font-size:15.5px;margin:2px 0 4px;max-width:70ch}
+.ds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:2px 26px;margin-top:6px}
+.ds-blk{min-width:0;padding:12px 0 8px;border-top:1px solid var(--line)}
+.ds-blk.all{background:var(--wash);border-radius:12px;padding:12px 12px 8px;margin:0 -12px;border-top:0}
+.ds-bh{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.ds-bh b{font-size:15.5px;font-weight:700}
+.ds-meta{font-size:13px;color:var(--ink2)}
+.ds-tag{font-size:12px;color:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:0 6px;background:var(--card)}
+.ds-ex{font-size:13px;color:var(--ink2);margin-top:1px}
+.ds-chart{direction:ltr}
+.ds-chart svg{display:block;max-width:100%;overflow:visible}
+.ds-bar{outline:none}
+.ds-bar .hit{fill:transparent}
+.ds-bar:hover .hit,.ds-bar:focus .hit{fill:var(--wash)}
+.ds-bar:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.ds-vl{font-size:12.5px;font-weight:700;fill:var(--ink)}
+.ds-nm{font-size:12.5px;fill:var(--ink2)}
+.ds-zero{stroke:var(--ink2);stroke-opacity:.6;stroke-width:1.25}
+.ds-gl{stroke:var(--grid);stroke-width:1;stroke-dasharray:2 3}
+.legend .ds-dirs{margin-inline-start:auto;font-size:13px;color:var(--mute)}
+@media (max-width:520px){.legend .ds-dirs{margin-inline-start:0;flex-basis:100%}}
 </style>
 </head>
 <body>
@@ -237,6 +260,7 @@ footer p{max-width:70ch;margin:0 0 6px}
   <section class="card" id="time" hidden></section>
   <section class="card" id="lists" hidden></section>
   <section class="card" id="count" hidden></section>
+  <section class="card" id="dsh" hidden></section>
   <section class="card" id="how" hidden></section>
 </main>
 
@@ -752,6 +776,90 @@ function renderCount() {
     }))) : null);
 }
 
+/* ====================================================================== demographic shift */
+let dsCut = 0, dsW = 0, dsScrolled = false;
+const DS_CLS = {bibi: 'fb', change: 'fc', arab: 'fa', other: 'fo'};
+const dsSgn = (x) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toFixed(1) + '%';
+const dsP = (x) => x.toFixed(1) + '%';
+const dsSegs = (dm, c) => [dm.national].concat(c.segments);
+const dsPath = (x0, x1, y, hh, r) => {                  // the DATA end of a bar is rounded, its base sits flat on the zero line
+  const d = x1 >= x0 ? 1 : -1;
+  return `M${x0},${y} H${x1 - d * r} Q${x1},${y} ${x1},${y + r} V${y + hh - r} Q${x1},${y + hh} ${x1 - d * r},${y + hh} H${x0} Z`;
+};
+function dsBars(dm, seg, W, ax) {
+  const NAME = 54, PAD = 4, ROW = 18, BH = 11, TOP = 4, ROOM = 46;
+  const half = (W - NAME - PAD * 2) / 2, x0 = PAD + half, k = (half - ROOM) / ax, H = TOP + ROW * dm.series.length;
+  const svg = s('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'group', 'aria-label': seg.label});
+  svg.append(s('line', {x1: x0 - 5 * k, x2: x0 - 5 * k, y1: 0, y2: H, class: 'ds-gl'}), s('line', {x1: x0 + 5 * k, x2: x0 + 5 * k, y1: 0, y2: H, class: 'ds-gl'}),
+    s('line', {x1: x0, x2: x0, y1: 0, y2: H, class: 'ds-zero'}));
+  dm.series.forEach((r, i) => {
+    const v = seg.series[r.key], y = TOP + i * ROW, x1 = x0 + v.d * k, len = Math.abs(x1 - x0), pos = v.d >= 0;
+    const g = s('g', {class: 'ds-bar', tabindex: '0', role: 'img', 'aria-label': `${r.name}, ${seg.label}: ${dsP(v.old)} ב-2022, ${dsP(v.now)} עכשיו, שינוי ${dsSgn(v.d)}`});
+    const show = (ev) => {
+      const b = g.getBoundingClientRect();
+      showTip(ev.clientX ? ev : {clientX: b.left + b.width / 2, clientY: b.top + b.height / 2}, [
+        h('b', {}, `${r.name} · ${seg.label}`),
+        h('div', {}, '2022: ', num(dsP(v.old)), ' ← עכשיו: ', num(dsP(v.now))),
+        h('div', {}, 'שינוי: ', num(dsSgn(v.d))),
+        h('div', {style: 'opacity:.75;font-size:12px'}, `${seg.setts} יישובים · נספרו ${Math.round(seg.counted * 100)}% מהקלפיות${seg.examples.length ? ' · ' + seg.examples.slice(0, 3).join(', ') : ''}`)]);
+    };
+    put(g, s('rect', {x: 0, y: y - 2, width: W, height: ROW, class: 'hit'}),
+      len >= 0.5 ? s('path', {d: dsPath(x0, x1, y, BH, Math.min(4, len)), class: DS_CLS[r.key]}) : s('rect', {x: x0 - 1, y, width: 2, height: BH, class: DS_CLS[r.key]}),
+      s('text', {x: pos ? x1 + 5 : x1 - 5, y: y + BH - 1.5, 'text-anchor': pos ? 'start' : 'end', class: 'ds-vl'}, dsSgn(v.d)),
+      s('text', {x: W - 2, y: y + BH - 1.5, 'text-anchor': 'end', class: 'ds-nm'}, r.name.replace('גוש ', '')));
+    ['pointerenter', 'pointermove', 'focus', 'click'].forEach((t) => g.addEventListener(t, show));
+    ['pointerleave', 'blur'].forEach((t) => g.addEventListener(t, hideTip));
+    svg.append(g);
+  });
+  return svg;
+}
+function drawDemo() {
+  const dm = D && D.demographics, grid = $('#ds-grid');
+  if (!dm || !grid) return;
+  const c = dm.cuts[dsCut];
+  clear(grid);
+  dsSegs(dm, c).forEach((seg) => {
+    const host = h('div', {class: 'ds-chart'});
+    host._seg = seg;
+    put(grid, h('div', {class: 'ds-blk' + (seg.key === 'all' ? ' all' : '')},
+      h('div', {class: 'ds-bh'}, h('b', {}, seg.label),
+        h('span', {class: 'ds-meta'}, seg.key === 'all' ? `${seg.setts} יישובים` : `${seg.setts} יישובים · ${dsP(seg.share)} מהקולות`),
+        seg.small && seg.key !== 'all' ? h('span', {class: 'ds-tag'}, 'מדגם קטן') : null,
+        seg.partial ? h('span', {class: 'ds-tag'}, `נספרו ${Math.round(seg.counted * 100)}% מהקלפיות`) : null),
+      c.id === 'type' && seg.examples.length ? h('div', {class: 'ds-ex'}, seg.examples.join(', ')) : null, host));
+  });
+  const ref = [...grid.children].find((b) => !b.classList.contains('all')) || grid.firstElementChild;
+  const W = Math.max(240, Math.floor(ref.clientWidth));
+  dsW = Math.round(grid.clientWidth);
+  grid.querySelectorAll('.ds-chart').forEach((host) => host.append(dsBars(dm, host._seg, W, dm._ax)));
+}
+function renderDemo() {
+  const dm = D.demographics, root = clear($('#dsh'));
+  if (!dm || !dm.cuts || !dm.cuts.length) { root.hidden = true; return; }      // older data file, or the chart could not be computed
+  root.hidden = false;
+  if (dsCut >= dm.cuts.length) dsCut = 0;
+  dm._ax = Math.max(5, Math.ceil(Math.max(...dm.cuts.flatMap((c) => dsSegs(dm, c).flatMap((x) => dm.series.map((r) => Math.abs(x.series[r.key].d))))) / 5) * 5);   // one scale for every tab
+  const c = dm.cuts[dsCut];
+  const tabs = h('div', {class: 'seg', role: 'group', 'aria-label': 'חלוקה דמוגרפית'}, dm.cuts.map((x, i) =>
+    h('button', {type: 'button', 'aria-pressed': String(i === dsCut), onclick: () => { dsCut = i; renderDemo(); }}, x.title)));
+  const rows = dsSegs(dm, c).map((x) => h('tr', {}, h('td', {class: 'nm'}, x.label), h('td', {class: 'num2'}, num(String(x.setts))), h('td', {class: 'num2'}, num(dsP(x.share))),
+    dm.series.map((r) => { const v = x.series[r.key]; return h('td', {class: 'num2'}, num(`${v.old.toFixed(1)} ← ${v.now.toFixed(1)} (${dsSgn(v.d)})`)); })));
+  put(root,
+    h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'מי זז? תזוזת קולות לפי קבוצה דמוגרפית'), h('p', {class: 'sub'}, dm.takeaway)), tabs),
+    h('p', {class: 'ds-headline'}, c.headline),
+    h('p', {class: 'cap', style: 'margin:0 0 8px'}, c.note),
+    h('div', {class: 'legend'}, dm.series.map((r) => h('span', {}, h('span', {class: 'sw', style: `--c:var(--${r.key})`}), r.name)),
+      h('span', {class: 'ds-dirs'}, 'ימינה = עלייה לעומת 2022 · שמאלה = ירידה')),
+    h('div', {class: 'ds-grid', id: 'ds-grid'}),
+    h('details', {}, h('summary', {}, 'טבלת המספרים'), h('div', {class: 'tw'}, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, 'קבוצה'), h('th', {class: 'num2'}, 'יישובים'), h('th', {class: 'num2'}, 'חלק מהקולות'),
+      dm.series.map((r) => h('th', {class: 'num2'}, `${r.name}: 2022 ← עכשיו (שינוי)`)))), h('tbody', {}, rows)))),
+    h('p', {class: 'cap'}, 'איך קראנו: לכל יישוב שנספרו בו קלפיות משווים את התוצאה הנוכחית לתוצאה של אותו יישוב ב-2022, ומשקללים לפי הקולות שנספרו, כך שהרכב היישובים שנספרו קודם לא מטה את ההשוואה. מספרי הקלפיות משתנים בין בחירות, ולכן לא משווים קלפי מול קלפי. מעטפות חיצוניות עדיין לא נכללות. "אחרים": כל רשימה מחוץ לשלושת הגושים. התמונה משתנה ככל שהספירה מתקדמת.'));
+  drawDemo();
+  if (!dsScrolled && location.hash === '#dsh') { dsScrolled = true; requestAnimationFrame(() => root.scrollIntoView()); }
+}
+let dsTimer;
+window.addEventListener('resize', () => { clearTimeout(dsTimer); dsTimer = setTimeout(() => { const g = $('#ds-grid'); if (g && Math.round(g.clientWidth) !== dsW) drawDemo(); }, 80); });
+
 /* ====================================================================== how it works */
 function renderHow() {
   const d = D, root = clear($('#how')); root.hidden = false;
@@ -779,7 +887,7 @@ function renderStatus() {
 }
 function renderAll() {
   $('#demo').hidden = !D.demo;
-  renderHero(); renderBasis(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderHow(); renderStatus();
+  renderHero(); renderBasis(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderDemo(); renderHow(); renderStatus();
 }
 let lastStamp = null, busy = false;
 // GitHub's API serves the branch within ~60 s, while raw.githubusercontent.com may lag up to 5 minutes (its CDN ignores
