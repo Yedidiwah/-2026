@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מפת הצבעה לפי יישוב · בחירות 2026</title>
+<meta name="description" content="בוחרים רשימה, תת־גוש או גוש ורואים על המפה אילו יישובים נדלקים, לפי הספירה החיה של בחירות 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#f4f3ef; --card:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --mute:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --line:rgba(11,11,11,.10); --wash:rgba(11,11,11,.045);
+  --bibi:#2a78d6; --change:#00700a; --arab:#ee5a4f; --other:#6f6e68; --raam:#d99a00; --joint:#ee5a4f;
+  --up:#5b3fd0; --down:#e0791d; --land:#ebe9e2; --sea:#f8f7f3;
+  --shadow:0 1px 0 rgba(0,0,0,.04),0 10px 28px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --mute:#898781;
+  --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --wash:rgba(255,255,255,.06);
+  --bibi:#3987e5; --change:#1f9a3a; --arab:#e66767; --other:#9d9b92; --raam:#e0a31a; --joint:#e66767;
+  --up:#8a73f0; --down:#f08f3a; --land:#242422; --sea:#141413; --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.5);
+}}
+:root[data-theme="dark"]{
+  --page:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --mute:#898781;
+  --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --wash:rgba(255,255,255,.06);
+  --bibi:#3987e5; --change:#1f9a3a; --arab:#e66767; --other:#9d9b92; --raam:#e0a31a; --joint:#e66767;
+  --up:#8a73f0; --down:#f08f3a; --land:#242422; --sea:#141413; --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{background:var(--page)}
+body{margin:0;padding:0 16px;color:var(--ink);font-family:"Heebo","Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.5;direction:rtl;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-bottom:28px}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block}
+header{padding:20px 0 8px}
+.toplink{display:inline-block;font-size:13.5px;font-weight:600;color:var(--ink2);text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 13px;margin-bottom:10px}
+.toplink:hover{background:var(--wash)}
+.eyebrow{font-size:12.5px;font-weight:700;color:var(--mute);letter-spacing:.04em}
+h1{margin:4px 0 0;font-size:clamp(26px,4.4vw,38px);font-weight:800;line-height:1.1}
+.dek{margin:8px 0 0;max-width:68ch;color:var(--ink2)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.controls{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end;padding:14px 0 12px}
+.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
+.cl{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2)}
+.chip:hover{background:var(--wash)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;color:var(--ink2);padding:7px 13px;cursor:pointer}
+.seg button+button{border-right:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+select,input[type=search]{font:inherit;font-size:13.5px;padding:7px 11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-width:150px;max-width:100%}
+.grid{display:grid;grid-template-columns:minmax(300px,500px) 1fr;gap:16px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line);border-radius:18px 18px 0 0;overflow:hidden}
+.kpi{background:var(--card);padding:10px 12px}
+.kpi b{display:block;font-size:20px;font-weight:800;line-height:1.15}
+.kpi span{font-size:11.5px;color:var(--mute)}
+.mapwrap{position:relative;overflow:hidden}
+#map{display:block;width:100%;height:auto;background:var(--sea);touch-action:none;cursor:grab;user-select:none}
+#map.drag{cursor:grabbing}
+#land path{fill:var(--land);stroke:var(--land);stroke-width:1.2;stroke-linejoin:round;vector-effect:non-scaling-stroke}   /* one neutral land shape, no border lines inside it */
+#map circle{vector-effect:non-scaling-stroke}
+#map circle.nc{fill:none;stroke:var(--mute);stroke-width:.7;opacity:.7}
+#labels text{font-size:10px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none;text-anchor:middle}
+.zoom{position:absolute;top:78px;left:10px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:19px;line-height:1;cursor:pointer;box-shadow:var(--shadow)}
+#tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .08s;background:var(--ink);color:var(--page);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:9px;max-width:230px;z-index:5;transform:translate(-50%,-120%);box-shadow:0 8px 22px rgba(0,0,0,.3)}
+#tip b{display:block;font-size:13.5px}
+.legend{padding:11px 14px 13px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);display:grid;gap:7px}
+.ramp{height:10px;border-radius:5px}
+.rl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute)}
+.lnote{font-size:11.5px;color:var(--mute);line-height:1.45}
+.side{padding:16px}
+@media (min-width:861px){.side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}}   /* the map is tall: keep the list in view while scrolling */
+.side h2{margin:0;font-size:21px;font-weight:800;line-height:1.2}
+.side .sub{color:var(--ink2);font-size:13.5px;margin-top:3px}
+.st{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.04em;margin:18px 0 7px}
+.rank{display:flex;flex-direction:column;gap:2px}
+.rr{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:5px 7px;border-radius:7px;cursor:pointer;font-size:13.5px}
+.rr:hover{background:var(--wash)}
+.rr .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rr .a{font-weight:700;direction:ltr}
+.rr .b{color:var(--mute);font-size:12px;direction:ltr;min-width:54px;text-align:left}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--wash);color:var(--ink2);border:1px solid var(--line)}
+.tag.warn{color:var(--down);border-color:currentColor;background:transparent}
+.dk{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:9px;margin-top:14px}
+.dk div{background:var(--wash);border-radius:10px;padding:9px 11px}
+.dk b{display:block;font-size:19px;font-weight:800}
+.dk span{font-size:11.5px;color:var(--mute)}
+.lb{display:grid;grid-template-columns:130px 1fr 52px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
+.lb .bar{height:9px;border-radius:4px;background:var(--wash);overflow:hidden}
+.lb .bar i{display:block;height:100%}
+.lb .p{direction:ltr;text-align:left;font-weight:700}
+.back{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:4px 12px;cursor:pointer}
+footer{margin-top:18px;color:var(--mute);font-size:12px;line-height:1.55}
+footer p{margin:0 0 7px;max-width:88ch}
+footer b{color:var(--ink2)}
+.err{padding:30px;text-align:center;color:var(--ink2)}
+@media (prefers-reduced-motion:reduce){#tip{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="toplink" id="toplink" href="./">‏← לתחזית החיה</a>
+  <div class="eyebrow" id="eyebrow">טוען את הספירה…</div>
+  <h1>מי הצביע למי? מפה לפי יישוב</h1>
+  <p class="dek">בוחרים רשימה, תת־גוש או גוש, ורואים אילו יישובים נדלקים. הצבע מראה כמה מהקולות בכל יישוב הלכו לבחירה, והגודל מראה כמה קולות זה. אפשר להגדיל ולגרור. המפה מתעדכנת עם כל קובץ חדש של ועדת הבחירות.</p>
+</header>
+
+<div class="controls">
+  <div class="ctl"><span class="cl">גושים ותתי־גושים</span><div class="chips" id="chips" role="group" aria-label="בחירת גוש"></div></div>
+  <div class="ctl"><label class="cl" for="lsel">או רשימה</label><select id="lsel"></select></div>
+  <div class="ctl"><span class="cl">צבע לפי</span><div class="seg" id="mseg" role="group"><button data-m="share">אחוז מהקולות</button><button data-m="change">שינוי מול 2022</button></div></div>
+  <div class="ctl"><span class="cl">גודל הנקודה</span><div class="seg" id="sseg" role="group"><button data-s="votes">מספר הקולות</button><button data-s="equal">שווה</button></div></div>
+  <div class="ctl"><label class="cl" for="q">חיפוש יישוב</label><input id="q" type="search" placeholder="שם יישוב…" autocomplete="off"></div>
+</div>
+
+<div class="grid">
+  <div class="card mapwrap" id="mapcard">
+    <div class="kpis" id="kpis"></div>
+    <svg id="map" viewBox="0 0 300 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="מפת יישובים"><g id="view"><g id="land" aria-hidden="true"></g><g id="dots"></g><g id="labels"></g></g></svg>
+    <div class="zoom"><button type="button" id="zin" aria-label="הגדלה">+</button><button type="button" id="zout" aria-label="הקטנה">−</button><button type="button" id="zreset" aria-label="איפוס" style="font-size:14px">⌂</button></div>
+    <div id="tip" role="status"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div class="card side" id="side"><div class="err">טוען…</div></div>
+</div>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const EMBED = null;
+const RAW_URL = 'https://raw.githubusercontent.com/Yedidiwah/-2026/data/party_map.json';
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, props = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+};
+const svgEl = (tag, props = {}) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(props)) e.setAttribute(k, v); return e; };
+const nf = new Intl.NumberFormat('he-IL');
+const n0 = (x) => nf.format(Math.round(x));
+const num = (t) => el('span', {class: 'num'}, t);
+const pc = (x, d = 1) => (x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
+const spc = (x, d = 1) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const clear = (e) => { while (e.firstChild) e.removeChild(e.firstChild); return e; };
+try { const t = localStorage.getItem('il26-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* storage may be unavailable */ }
+
+/* ---------------------------------------------------------------- state and data (the data can be replaced while the page is open) */
+const params = new URLSearchParams(location.search);
+const isLocal = /^(localhost|127\.0\.0\.1|\[::1\]|)$/.test(location.hostname);
+const DATA_URL = EMBED ? null : (params.get('data') || (isLocal ? 'data/party_map.json' : RAW_URL));
+let D = null, LISTS = [], PL = [], NC = [], SELS = [], SELBY = {}, BYID = new Map(), landDrawn = false;
+const S = {sel: 'haredi', metric: 'share', size: 'votes', picked: null};      // picked = a settlement id
+const view = {k: 1, tx: 0, ty: 0};
+const HUE = {bibi: '--bibi', change: '--change', arab: '--arab', other: '--other'};
+const VB_W = 300, VB_H = 760, PAD = 12;
+const svg = $('#map'), gView = $('#view'), gDots = $('#dots'), gLabels = $('#labels'), gLand = $('#land'), tip = $('#tip');
+let smax = .3, dmax = .05, svmax = 1;
+const cur = () => SELBY[S.sel] || SELS[0];
+const hasCmp = () => D.ok22.indexOf(cur().id) >= 0;
+const pickedP = () => (S.picked != null ? BYID.get(S.picked) || null : null);
+const natOf = (s) => s.idx.reduce((a, i) => a + D.nat[i], 0);
+const listHue = (l) => (l.c === 'עם' ? '--raam' : l.c === 'ודם' ? '--joint' : HUE[l.b]);
+
+function setData(d) {
+  D = d; LISTS = d.lists;
+  PL = d.places.map((a) => ({id: a[0], name: a[1], lon: a[2], lat: a[3], b: a[4], bt: a[5], v: a[6], vs: a[7], p22: a[8], pop: a[9], sv: 0, sh: 0, d: null, r0: 1, el: null}));
+  NC = d.notcounted.map((a) => ({id: a[0], name: a[1], lon: a[2], lat: a[3], bt: a[4], el: null}));
+  BYID = new Map(PL.map((p) => [p.id, p]));
+  SELS = d.groups.map((g) => ({id: g.id, name: g.n, kind: g.k, hue: g.id === 'bloc_other' ? '--other' : HUE[g.h], idx: g.m}));
+  LISTS.forEach((l, i) => { if (l.c !== '*') SELS.push({id: 'L:' + l.c, name: l.n, kind: 'list', hue: listHue(l), idx: [i]}); });
+  SELBY = Object.fromEntries(SELS.map((s) => [s.id, s]));
+  if (!SELBY[S.sel]) S.sel = SELBY.haredi ? 'haredi' : SELS[0].id;
+  if (S.metric === 'change' && !hasCmp()) S.metric = 'share';
+  // projection: the bounds of every settlement with a point (counted or not), so it does not move between updates
+  const all = PL.concat(NC), lons = all.map((p) => p.lon), lats = all.map((p) => p.lat);
+  const lon0 = Math.min(...lons), lon1 = Math.max(...lons), lat0 = Math.min(...lats), lat1 = Math.max(...lats);
+  const kx = Math.cos(((lat0 + lat1) / 2) * Math.PI / 180), spanX = (lon1 - lon0) * kx, spanY = lat1 - lat0;
+  const scale = Math.min((VB_W - 2 * PAD) / spanX, (VB_H - 2 * PAD) / spanY);
+  const offX = (VB_W - spanX * scale) / 2, offY = (VB_H - spanY * scale) / 2;
+  const proj = (lon, lat) => [offX + (lon - lon0) * kx * scale, VB_H - offY - (lat - lat0) * scale];
+  all.forEach((p) => { [p.x, p.y] = proj(p.lon, p.lat); });
+  if (!landDrawn) {
+    (d.land || []).forEach((ring) => {
+      const path = ring.map((c, i) => { const q = proj(c[0], c[1]); return (i ? 'L' : 'M') + q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + ' Z';
+      gLand.append(svgEl('path', {d: path}));
+    });
+    landDrawn = true;
+  }
+  clear(gDots);
+  NC.forEach((p) => { const c = svgEl('circle', {cx: p.x.toFixed(2), cy: p.y.toFixed(2), r: 1.6, class: 'nc'}); c.__nc = p; p.el = c; gDots.append(c); });
+  PL.forEach((p) => { const c = svgEl('circle', {cx: p.x.toFixed(2), cy: p.y.toFixed(2)}); c.__p = p; p.el = c; gDots.append(c); });
+  buildControls(); renderTexts(); paint();
+}
+
+/* ---------------------------------------------------------------- painting */
+const quant = (arr, f) => { if (!arr.length) return 0; const a = arr.slice().sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(f * a.length))]; };
+const rk = () => Math.pow(view.k, -0.62);
+function compute() {
+  const s = cur(), k = D.ok22.indexOf(s.id), change = S.metric === 'change' && k >= 0;
+  const shs = [], ds = [];
+  svmax = 1;
+  for (const p of PL) {
+    let t = 0; for (const i of s.idx) t += p.vs[i];
+    p.sv = t; p.sh = p.v ? t / p.v : 0;
+    p.d = change && p.p22[k] != null && p.b >= .5 * p.bt ? p.sh - p.p22[k] : null;
+    if (t > svmax) svmax = t;
+    if (p.v >= 300) { shs.push(p.sh); if (p.d != null) ds.push(Math.abs(p.d)); }
+  }
+  smax = Math.max(.05, quant(shs, .95)); dmax = Math.max(.03, quant(ds, .95));
+}
+function paint() {
+  if (!D) return;
+  compute();
+  const s = cur(), hue = css(s.hue), up = css('--up'), down = css('--down'), mute = css('--mute'), ink = css('--ink');
+  const change = S.metric === 'change' && hasCmp(), pk = pickedP(), order = [];
+  for (const p of PL) {
+    const c = p.el;
+    p.r0 = !p.sv ? 1.1 : S.size === 'votes' ? 1.3 + 8.2 * Math.sqrt(p.sv / svmax) : 3.2;
+    let fill, op;
+    if (change) {
+      if (p.d == null) { fill = mute; op = .12; } else { fill = p.d >= 0 ? up : down; op = .1 + .9 * Math.min(1, Math.abs(p.d) / dmax); }
+    } else { fill = hue; op = p.sv ? .1 + .9 * Math.min(1, p.sh / smax) : .06; }
+    c.setAttribute('fill', fill); c.setAttribute('fill-opacity', op.toFixed(2));
+    if (pk && pk.id === p.id) { c.setAttribute('stroke', ink); c.setAttribute('stroke-width', '1.6'); c.removeAttribute('stroke-dasharray'); }
+    else if (p.b < p.bt) { c.setAttribute('stroke', mute); c.setAttribute('stroke-width', '.8'); c.setAttribute('stroke-dasharray', '1.6 1.2'); }
+    else { c.setAttribute('stroke', 'rgba(128,128,128,.4)'); c.setAttribute('stroke-width', '.4'); c.removeAttribute('stroke-dasharray'); }
+    order.push(p);
+  }
+  order.sort((a, b) => b.r0 - a.r0);                       // small dots on top of big ones
+  for (const p of order) gDots.append(p.el);
+  for (const p of NC) gDots.append(p.el);
+  applyView(); renderKpis(); renderLegend(); renderSide(); renderControls();
+}
+function applyView() {
+  gView.setAttribute('transform', `translate(${view.tx.toFixed(2)},${view.ty.toFixed(2)}) scale(${view.k.toFixed(4)})`);
+  const f = rk();
+  for (const p of PL) p.el.setAttribute('r', (p.r0 * f).toFixed(3));
+  for (const p of NC) p.el.setAttribute('r', (1.6 * f).toFixed(3));
+  drawLabels();
+}
+
+/* ---------------------------------------------------------------- labels: biggest settlements first, no overlaps */
+function drawLabels() {
+  clear(gLabels);
+  const r = svg.getBoundingClientRect(); if (!r.width) return;
+  const s = r.width / VB_W, k = view.k;
+  const cand = PL.slice().sort((a, b) => b.v - a.v).slice(0, k < 1.6 ? 14 : k < 3 ? 40 : k < 6 ? 110 : k < 12 ? 260 : 600);
+  const taken = [], fpx = 11, fm = fpx / (s * k);
+  for (const p of cand) {
+    const sx = (p.x * k + view.tx) * s, sy = (p.y * k + view.ty) * s;
+    if (sx < -20 || sx > r.width + 20 || sy < -10 || sy > r.height + 10) continue;
+    const w = p.name.length * fpx * .55, rect = [sx - w / 2, sy - fpx * 2.1, sx + w / 2, sy - fpx * .6];
+    if (taken.some((q) => rect[0] < q[2] && rect[2] > q[0] && rect[1] < q[3] && rect[3] > q[1])) continue;
+    taken.push(rect);
+    const t = svgEl('text', {x: p.x.toFixed(2), y: (p.y - (p.r0 * rk() + 1.2)).toFixed(2), 'font-size': fm.toFixed(3)});
+    t.setAttribute('style', `stroke-width:${(3 / (s * k)).toFixed(3)}px`);
+    t.textContent = p.name;
+    gLabels.append(t);
+  }
+}
+
+/* ---------------------------------------------------------------- zoom and pan */
+const vbPoint = (cx, cy) => { const r = svg.getBoundingClientRect(); return [(cx - r.left) / r.width * VB_W, (cy - r.top) / r.height * VB_H]; };
+function clampView() {
+  const k = view.k;
+  view.tx = Math.min(0, Math.max(VB_W - VB_W * k, view.tx));
+  view.ty = Math.min(0, Math.max(VB_H - VB_H * k, view.ty));
+}
+function zoomAt(x, y, f) {
+  const nk = Math.max(1, Math.min(45, view.k * f)), g = nk / view.k;
+  view.tx = x - (x - view.tx) * g; view.ty = y - (y - view.ty) * g; view.k = nk;
+  clampView(); applyView();
+}
+svg.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = vbPoint(e.clientX, e.clientY); zoomAt(x, y, e.deltaY < 0 ? 1.25 : 0.8); }, {passive: false});
+$('#zin').addEventListener('click', () => zoomAt(VB_W / 2, VB_H / 2, 1.6));
+$('#zout').addEventListener('click', () => zoomAt(VB_W / 2, VB_H / 2, 1 / 1.6));
+$('#zreset').addEventListener('click', () => { view.k = 1; view.tx = 0; view.ty = 0; applyView(); });
+const ptrs = new Map(); let moved = 0, downTarget = null, pinch0 = 0;
+svg.addEventListener('pointerdown', (e) => { ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = 0; downTarget = e.target; if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); } });
+svg.addEventListener('pointermove', (e) => {
+  if (!ptrs.has(e.pointerId)) { hover(e); return; }
+  const prev = ptrs.get(e.pointerId), cx = e.clientX, cy = e.clientY;
+  if (ptrs.size === 1) {
+    const dx = cx - prev[0], dy = cy - prev[1]; moved += Math.abs(dx) + Math.abs(dy);
+    if (moved > 5) {
+      if (!svg.classList.contains('drag')) { svg.classList.add('drag'); try { svg.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } tip.style.opacity = 0; }
+      const s = svg.getBoundingClientRect().width / VB_W; view.tx += dx / s; view.ty += dy / s; clampView(); applyView();
+    }
+  } else if (ptrs.size === 2) {
+    ptrs.set(e.pointerId, [cx, cy]);
+    const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+    if (pinch0) { const [x, y] = vbPoint((a[0] + b[0]) / 2, (a[1] + b[1]) / 2); zoomAt(x, y, d / pinch0); }
+    pinch0 = d; moved = 99;
+  }
+  ptrs.set(e.pointerId, [cx, cy]);
+});
+const endPtr = (e) => {
+  if (!ptrs.has(e.pointerId)) return;
+  ptrs.delete(e.pointerId); pinch0 = 0; svg.classList.remove('drag');
+  if (!ptrs.size && moved <= 5 && downTarget && downTarget.__p) pick(downTarget.__p, false);
+};
+svg.addEventListener('pointerup', endPtr); svg.addEventListener('pointercancel', endPtr);
+svg.addEventListener('pointerleave', () => { tip.style.opacity = 0; });
+
+/* ---------------------------------------------------------------- tooltip */
+function hover(e) {
+  const t = e.target;
+  if (t.__nc) { showTip(e, t.__nc.name, `עוד לא נספר (${t.__nc.bt} קלפיות)`); return; }
+  const p = t.__p; if (!p) { tip.style.opacity = 0; return; }
+  const k = D.ok22.indexOf(cur().id);
+  const extra = k >= 0 && p.p22[k] != null ? ` · ב־2022: ${pc(p.p22[k])}` : '';
+  showTip(e, p.name, `${cur().name}: ${n0(p.sv)} קולות (${pc(p.sh)} מהקולות הכשרים)${extra}` + (p.b < p.bt ? ` · נספרו ${p.b} מתוך ${p.bt} קלפיות` : ''));
+}
+function showTip(e, title, body) {
+  clear(tip).append(el('b', {}, title), body);
+  const r = $('#mapcard').getBoundingClientRect();
+  tip.style.left = Math.max(115, Math.min(r.width - 115, e.clientX - r.left)) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.style.opacity = 1;
+}
+
+/* ---------------------------------------------------------------- panels */
+function renderKpis() {
+  const s = cur(), nat = natOf(s), box = clear($('#kpis'));
+  const big = PL.filter((p) => p.sh >= .3 && p.v >= 300).length;
+  box.append(
+    el('div', {class: 'kpi'}, el('b', {style: `color:${css(s.hue)}`}, num(pc(nat / D.valid))), el('span', {}, 'מהקולות ארצית')),
+    el('div', {class: 'kpi'}, el('b', {}, num(n0(nat))), el('span', {}, 'קולות שנספרו')),
+    el('div', {class: 'kpi'}, el('b', {}, num(n0(big))), el('span', {}, 'יישובים עם 30% ויותר')),
+    el('div', {class: 'kpi'}, el('b', {}, num((D.votes_pct ? D.votes_pct.toFixed(0) : D.counted_pct.toFixed(0)) + '%')), el('span', {}, D.votes_pct ? 'מהקולות נספרו' : 'מהקלפיות נספרו')));
+}
+function renderLegend() {
+  const box = clear($('#legend')), change = S.metric === 'change' && hasCmp(), hue = css(cur().hue);
+  if (change) {
+    box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to left,${css('--up')},${css('--card')} 50%,${css('--down')})`}),
+      el('div', {class: 'rl'}, el('span', {}, `יותר מ־2022 (עד ${spc(dmax, 0)})`), el('span', {}, `פחות מ־2022 (עד ${spc(-dmax, 0)})`)),
+      el('div', {class: 'lnote'}, 'ההשוואה: אחוז הרשימה בקלפיות שנספרו מול התוצאה של אותו יישוב ב־2022. יישובים שנספר בהם פחות ממחצית הקלפיות מעומעמים.'));
+  } else {
+    box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to right,color-mix(in srgb,${hue} 10%,transparent),${hue})`}),
+      el('div', {class: 'rl'}, el('span', {}, num('0%')), el('span', {}, num(pc(smax, 0) + ' ומעלה'))),
+      el('div', {class: 'lnote'}, (S.size === 'votes' ? 'גודל הנקודה: מספר הקולות לבחירה. ' : '') + 'קו מקווקו: לא כל הקלפיות ביישוב נספרו. טבעת ריקה: עוד לא נספר.'));
+  }
+}
+function buildControls() {
+  const chips = clear($('#chips'));
+  ['bloc_bibi', 'bloc_change', 'bloc_arab', 'haredi', 'dl', 'bloc_other'].forEach((id) => {
+    const s = SELBY[id]; if (s) chips.append(el('button', {class: 'chip', type: 'button', 'data-id': id, 'aria-pressed': 'false', onclick: () => setSel(id)}, s.name.replace(/ \(.*\)/, '')));
+  });
+  const lsel = clear($('#lsel'));
+  lsel.append(el('option', {value: ''}, 'בחרו רשימה…'));
+  SELS.filter((s) => s.kind === 'list').forEach((s) => lsel.append(el('option', {value: s.id}, s.name)));
+}
+function renderControls() {
+  [...$('#chips').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === S.sel)));
+  $('#lsel').value = cur().kind === 'list' ? cur().id : '';
+  const ok = hasCmp();
+  [...$('#mseg').children].forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.m === (ok ? S.metric : 'share'))); if (b.dataset.m === 'change') { b.disabled = !ok; b.title = ok ? '' : 'אין מקבילה ברורה ב־2022'; } });
+  [...$('#sseg').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.s === S.size)));
+}
+function rankRows(list, a, b) {
+  return el('div', {class: 'rank'}, list.map((p) => el('div', {class: 'rr', role: 'button', tabindex: 0, onclick: () => pick(p, true), onkeydown: (e) => { if (e.key === 'Enter') pick(p, true); }},
+    el('span', {class: 'nm'}, p.name), el('span', {class: 'a'}, a(p)), el('span', {class: 'b'}, b(p)))));
+}
+function renderSide() {
+  const box = clear($('#side')), pk = pickedP();
+  if (pk) { renderPlace(box, pk); return; }
+  const change = S.metric === 'change' && hasCmp();
+  box.append(el('h2', {}, cur().name), el('div', {class: 'sub'}, change ? 'איפה השינוי הגדול ביותר מול 2022' : 'איפה הרשימה חזקה, ואיפה יש לה הכי הרבה קולות'));
+  if (change) {
+    const ds = PL.filter((p) => p.d != null && p.v >= 1000);
+    box.append(el('div', {class: 'st'}, 'הכי הרבה יותר מ־2022'), rankRows(ds.slice().sort((a, b) => b.d - a.d).slice(0, 8), (p) => spc(p.d), (p) => pc(p.sh)),
+      el('div', {class: 'st'}, 'הכי הרבה פחות מ־2022'), rankRows(ds.slice().sort((a, b) => a.d - b.d).slice(0, 8), (p) => spc(p.d), (p) => pc(p.sh)));
+  } else {
+    box.append(el('div', {class: 'st'}, 'הכי הרבה קולות'), rankRows(PL.slice().sort((a, b) => b.sv - a.sv).slice(0, 10), (p) => n0(p.sv), (p) => pc(p.sh)),
+      el('div', {class: 'st'}, 'הכי גבוה באחוז (יישובים עם 1,000 קולות כשרים ויותר)'), rankRows(PL.filter((p) => p.v >= 1000).sort((a, b) => b.sh - a.sh).slice(0, 10), (p) => pc(p.sh), (p) => n0(p.sv)));
+  }
+  box.append(el('div', {class: 'lnote', style: 'margin-top:14px'}, 'לחיצה על יישוב, במפה או ברשימה, פותחת את כל התוצאות שלו.'));
+}
+function renderPlace(box, p) {
+  const k = D.ok22.indexOf(cur().id);
+  box.append(el('div', {style: 'display:flex;justify-content:space-between;gap:10px;align-items:flex-start'}, el('h2', {}, p.name), el('button', {class: 'back', type: 'button', onclick: () => pick(null)}, 'חזרה לסיכום')));
+  const tags = [el('span', {class: 'tag'}, `נספרו ${p.b} מתוך ${p.bt} קלפיות`)];
+  if (p.b < p.bt) tags.push(el('span', {class: 'tag warn'}, 'הספירה ביישוב לא הושלמה'));
+  if (p.pop) tags.push(el('span', {class: 'tag'}, `${n0(p.pop)} תושבים`));
+  box.append(el('div', {class: 'tags'}, tags));
+  const kp = [el('div', {}, el('b', {}, num(n0(p.v))), el('span', {}, 'קולות כשרים שנספרו')),
+    el('div', {}, el('b', {style: `color:${css(cur().hue)}`}, num(pc(p.sh))), el('span', {}, cur().name))];
+  if (k >= 0 && p.p22[k] != null) kp.push(el('div', {}, el('b', {}, num(pc(p.p22[k]))), el('span', {}, 'אותה רשימה ב־2022')),
+    el('div', {}, el('b', {style: `color:${css(p.sh - p.p22[k] >= 0 ? '--up' : '--down')}`}, num(spc(p.sh - p.p22[k]))), el('span', {}, 'שינוי')));
+  box.append(el('div', {class: 'dk'}, kp), el('div', {class: 'st'}, 'כל הרשימות ביישוב'));
+  const rows = LISTS.map((l, i) => ({l, v: p.vs[i]})).filter((x) => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 10);
+  const top = rows.length ? rows[0].v : 1;
+  rows.forEach((x) => box.append(el('div', {class: 'lb'}, el('span', {}, x.l.n), el('div', {class: 'bar'}, el('i', {style: `width:${(100 * x.v / top).toFixed(1)}%;background:${css(listHue(x.l))}`})), el('span', {class: 'p'}, pc(x.v / p.v)))));
+  const blocs = D.groups.filter((g) => g.k === 'bloc').map((g) => ({n: g.n, v: g.m.reduce((a, i) => a + p.vs[i], 0), h: g.id === 'bloc_other' ? '--other' : HUE[g.h]}));
+  box.append(el('div', {class: 'st'}, 'לפי גוש'),
+    el('div', {style: 'display:flex;height:11px;border-radius:5px;overflow:hidden;background:var(--wash)'}, blocs.map((b) => el('i', {style: `width:${(100 * b.v / p.v).toFixed(1)}%;background:${css(b.h)}`, title: `${b.n} ${pc(b.v / p.v)}`}))),
+    el('div', {class: 'lnote', style: 'margin-top:6px'}, blocs.map((b) => `${b.n} ${pc(b.v / p.v)}`).join(' · ')));
+}
+function pick(p, zoom) {
+  S.picked = p ? p.id : null;
+  if (p && zoom) { view.k = 6; view.tx = VB_W / 2 - p.x * view.k; view.ty = VB_H / 2 - p.y * view.k; clampView(); }
+  paint();
+  if (p) $('#side').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  syncHash();
+}
+
+/* ---------------------------------------------------------------- controls and state */
+function setSel(id) { if (!SELBY[id]) return; S.sel = id; if (S.metric === 'change' && !hasCmp()) S.metric = 'share'; paint(); syncHash(); }
+$('#lsel').addEventListener('change', (e) => { if (e.target.value) setSel(e.target.value); });
+$('#mseg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.disabled) return; S.metric = b.dataset.m; paint(); syncHash(); });
+$('#sseg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; S.size = b.dataset.s; paint(); syncHash(); });
+$('#q').addEventListener('input', (e) => {
+  const q = e.target.value.trim(); if (q.length < 2 || !D) return;
+  const hit = PL.find((p) => p.name.startsWith(q)) || PL.find((p) => p.name.includes(q));
+  if (hit) pick(hit, true);
+});
+function syncHash() {
+  const h = `#sel=${encodeURIComponent(S.sel)}&m=${S.metric}&s=${S.size}` + (S.picked != null ? `&p=${S.picked}` : '');
+  try { history.replaceState(null, '', h); } catch (e) { /* file:// or a sandbox */ }
+}
+function readHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('sel')) S.sel = h.get('sel');
+  if (h.get('m') === 'change') S.metric = 'change';
+  if (h.get('s') === 'equal') S.size = 'equal';
+  if (h.get('p')) S.picked = Number(h.get('p'));
+}
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change', () => paint());
+new MutationObserver(() => paint()).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawLabels, 120); });
+
+/* ---------------------------------------------------------------- header and footer text */
+function renderTexts() {
+  $('#eyebrow').textContent = `בחירות 2026 · נספרו ${D.counted_pct.toFixed(1)}% מהקלפיות${D.votes_pct ? ` (${D.votes_pct.toFixed(0)}% מהקולות)` : ''} · נכון ל־${D.time}`;
+  const nc = D.nocoord, foot = clear($('#foot'));
+  foot.append(
+    el('p', {}, el('b', {}, 'מה רואים: '), `כל נקודה היא יישוב, לפי הקלפיות שנספרו בו עד כה (${n0(D.boxes)} מתוך ${n0(D.total_boxes)}). הצבע הוא אחוז הרשימה מהקולות הכשרים ביישוב, והשטח הוא מספר הקולות שלה. ` +
+      'מצב "שינוי מול 2022" מוצג רק לרשימות שיש להן יורש ברור, לכן אין השוואה לרשימות חדשות כמו ישר! וביחד.'),
+    el('p', {}, el('b', {}, 'מה חסר: '), `${n0(nc.n)} יישובים (${n0(nc.votes)} קולות, ${pc(nc.votes / D.valid)} מהקולות שנספרו) אין להם נקודה במאגר המיקומים ולכן אינם מוצגים, וכן ${n0(NC.length)} יישובים שעוד לא נספרה בהם אף קלפי (טבעת ריקה). ` +
+      'המעטפות החיצוניות (חיילים, חולים, אסירים) אינן שייכות ליישוב ואינן במפה.'),
+    el('p', {}, el('b', {}, 'יישובים שהספירה בהם לא הושלמה '), 'עשויים להטות לכיוון הקלפיות שנספרו ראשונות, ולכן הם מסומנים בקו מקווקו.'),
+    el('p', {}, el('b', {}, 'המיקום '), 'הוא מרכז היישוב ממאגר ממשלתי פתוח ומקורב לצורכי המחשה. מתאר היבשה מ־Natural Earth (נחלת הכלל), כרקע לאיתור נקודות בלבד ואינו אמירה על גבולות.'),
+    el('p', {}, el('b', {}, 'התוצאות '), 'הן הספירה החיה, לא תוצאות רשמיות, ועשויות להשתנות עד סיום הספירה.'));
+}
+
+/* ---------------------------------------------------------------- loading and live refresh */
+async function refresh(first) {
+  if (!DATA_URL) return;
+  try {
+    const r = await fetch(DATA_URL + (DATA_URL.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 60000), {cache: 'no-store'});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    if (!D || j.time !== D.time || j.boxes !== D.boxes) setData(j);
+  } catch (e) {
+    console.error('map data:', e);
+    if (!D) clear($('#side')).append(el('div', {class: 'err'}, 'המפה תופיע כשיהיו נתוני ספירה. נסו לרענן בעוד רגע.'));
+  }
+}
+readHash();
+if (EMBED) setData(EMBED); else refresh(true);
+if (DATA_URL) {
+  setInterval(() => { if (!document.hidden) refresh(false); }, 120000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(false); });
+}
+})();
+</script>
+</body>
+</html>
