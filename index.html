@@ -251,6 +251,11 @@ footer p{max-width:70ch;margin:0 0 6px}
 .fl-lines li::before{content:"";position:absolute;inset-inline-start:0;top:.65em;width:6px;height:6px;border-radius:2px;background:var(--axis)}
 .fl-warn{margin:12px 0 4px;padding:10px 12px;border-radius:12px;background:var(--wash);font-size:14px;color:var(--ink2);max-width:78ch}
 .fl-warn b{color:var(--ink)}
+.gv{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.gv-f{flex:0 0 min(84%,430px);scroll-snap-align:center;margin:0}
+.gv-f img{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:14px;border:1px solid var(--line);background:var(--wash)}
+.gv-f a{display:inline-block;margin-top:6px;font-size:13.5px;color:var(--ink2)}
+.gv-note{font-size:13.5px;color:var(--ink2);margin-top:6px;max-width:78ch}
 @media (max-width:520px){.fl-nl{font-size:12px}}
 </style>
 </head>
@@ -273,6 +278,7 @@ footer p{max-width:70ch;margin:0 0 6px}
   <section class="card hero" id="hero"><div class="err" id="loading">טוען את ההערכה האחרונה…</div></section>
   <section class="card" id="basis" hidden></section>
   <section class="card" id="parl" hidden></section>
+  <section class="card" id="gov" hidden></section>
   <section class="card" id="dist" hidden></section>
   <section class="card" id="thr" hidden></section>
   <section class="card" id="lab" hidden></section>
@@ -975,6 +981,27 @@ function renderFlows() {
 let flTimer;
 window.addEventListener('resize', () => { clearTimeout(flTimer); flTimer = setTimeout(() => { const g = $('#fl-sk'); if (g && Math.round(g.clientWidth) !== flW) flDraw(); }, 80); });
 
+/* ====================================================================== government-formation infographic: published by hand, hidden until then */
+let govV = null;
+function renderGov(m) {
+  const root = clear($('#gov')); root.hidden = false;
+  const figs = Array.from({length: m.n}, (_, i) => h('figure', {class: 'gv-f'},
+    h('img', {src: `gov/gov_${i + 1}.jpg?v=${m.v}`, alt: (m.alts && m.alts[i]) || '', loading: i ? 'lazy' : 'eager', width: 1080, height: 1350}),
+    h('a', {href: `gov/gov_${i + 1}.png?v=${m.v}`, download: `gov_${i + 1}.png`}, 'הורדה לשיתוף')));
+  put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'מי יקים את הממשלה?'),
+      h('p', {class: 'sub'}, `${m.label}. גללו הצידה לכל השקופיות.`))),
+    h('div', {class: 'gv'}, figs),
+    h('p', {class: 'gv-note'}, 'המנדטים הם הערכה סטטיסטית ולא תוצאה רשמית, אלא אם כתוב אחרת. ההסתברויות לתרחישים הן הערכה שיפוטית ולא מודל. האמירות של המנהיגים מובאות בניסוח חופשי, עד התאריך שבשקופיות.'));
+}
+async function loadGov() {
+  try {
+    const r = await fetch('gov/gov.json?t=' + Math.floor(Date.now() / 120000), {cache: 'no-store'});
+    if (!r.ok) return;                                  // nothing published yet: the card stays hidden
+    const m = await r.json();
+    if (m && m.n && m.v !== govV) { govV = m.v; renderGov(m); }
+  } catch (e) { /* not published, or offline: stay hidden */ }
+}
+
 /* ====================================================================== how it works */
 function renderHow() {
   const d = D, root = clear($('#how')); root.hidden = false;
@@ -1043,6 +1070,7 @@ $('#theme').addEventListener('click', () => {
 });
 try { const t = localStorage.getItem('il26-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* ignore */ }
 load(true);
+loadGov(); setInterval(() => { if (!document.hidden) loadGov(); }, 300000);
 setInterval(() => { if (!document.hidden) load(false); }, POLL_MS);
 setInterval(renderStatus, 30000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(false); });
