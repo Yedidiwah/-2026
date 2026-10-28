@@ -934,7 +934,7 @@ function flDraw() {
     showTip(ev, [h('b', {}, n.name),
       h('div', {style: 'opacity:.78;font-size:12px'}, side === 'o' ? `${flPct(n.share)} מהקולות ב-2022 · ${n0(n.votes)} קולות` : `≈${flPct(n.share)} (אומדן לפי תנועת הקולות)`),
       h('div', {}, side === 'o' ? 'הצביעו הפעם:' : 'הגיעו מ:'),
-      rows.map((f) => h('div', {}, (side === 'o' ? T[f.d].name : flName(O[f.o])) + ' ', num(side === 'o' ? flPct(f.pct) : flK(f.votes))))]);
+      ...rows.map((f) => h('div', {}, (side === 'o' ? T[f.d].name : flName(O[f.o])) + ' ', num(side === 'o' ? flPct(f.pct) : flK(f.votes))))]);   // showTip flattens ONE level only
   };
   const nodes = (arr, pos, x, side) => arr.forEach((n, i) => {
     const r = s('rect', {x, y: pos[i].y, width: NW, height: pos[i].h, rx: 3, style: `fill:${FL_BL[n.bloc]}`});
