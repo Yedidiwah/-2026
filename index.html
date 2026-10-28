@@ -229,6 +229,7 @@ footer p{max-width:70ch;margin:0 0 6px}
 
 <main class="wrap" id="app">
   <section class="card hero" id="hero"><div class="err" id="loading">טוען את ההערכה האחרונה…</div></section>
+  <section class="card" id="basis" hidden></section>
   <section class="card" id="parl" hidden></section>
   <section class="card" id="dist" hidden></section>
   <section class="card" id="thr" hidden></section>
@@ -421,7 +422,7 @@ function renderHero() {
   const {bibi61: pb, ca61: pca, neither: pn} = d.p;
   const lead = early ? 'עדיין לא נספרו קלפיות. ההערכה נשענת על הצבעה ב-2022 והתאמה להצבעה של היום, ולכן הטווחים רחבים. כל קלפי שנספרת מצמצמת אותם.'
     : c.pct < 3 ? 'מוקדם מאוד — נספרה רק חלק קטן מהקלפיות, וההערכה עדיין נשענת בעיקר על 2022. הטווחים רחבים וצפויים להצטמצם.'
-    : 'ההערכה מתחשבת באילו אזורים כבר נספרו ובשינוי שנצפה עד כה לעומת 2022. הטווחים מצטמצמים ככל שנספרות עוד קלפיות.';
+    : 'ההערכה נבנית מהקולות שנספרו הערב: כל קבוצה (סוג יישוב ומאפיין חברתי-כלכלי) נאמדת מהקלפיות שכבר נספרו בה, ומשוקללת לפי גודלה בקרב כלל הבוחרים. הטווחים מצטמצמים ככל שנספרות עוד קלפיות.';
   const seg = (v, cls, style = '') => h('i', {style: `flex-grow:${Math.max(v, 0.004)};${style}`, class: cls});
   const odds = h('div', {class: 'odds', role: 'img', 'aria-label': `סיכוי ל-61: ביבי ${pr(pb)}, אף גוש ${pr(pn)}, שינוי ערבים ${pr(pca)}`},
     h('div', {class: 'oddsbar'}, seg(pb, '', 'background:var(--bibi)'), seg(pn, '', 'background:var(--other)'),
@@ -448,6 +449,31 @@ function renderHero() {
   else g = [h('b', {}, `ביבי חסר ${seatsWord(dist.seats)} ל-61`), ' — מעבר לטווח שבדקנו.'];
   put(root,h('div', {class: 'eyebrow'}, eyebrow), h('h1', {}, verdict(d)), h('p', {class: 'lead'}, lead), odds, tiles,
     h('div', {class: 'gap61'}, ...g));
+}
+
+/* ====================================================================== what the estimate rests on */
+function renderBasis() {
+  const d = D, root = clear($('#basis')), b = d.basis, raw = d.raw;
+  if (!b || !raw || !d.counted.boxes) { root.hidden = true; return; }
+  root.hidden = false;
+  const parts = [
+    ['נספרו: תוצאות אמת', b.counted, 1], ['נאמדים מקלפיות שנספרו באותה קבוצה', b.projected_current, 0.55],
+    ['קבוצות שעוד לא נספרו כלל: מונחות העדפות 2022', b.projected_2022, 0.3], ['מעטפות חיצוניות: הרכב 2022', b.envelopes, 0.14]];
+  const bar = h('div', {class: 'oddsbar', role: 'img', 'aria-label': 'על מה ההערכה נשענת'},
+    parts.map(([t, v, o]) => h('i', {style: `flex-grow:${Math.max(v, 0.003)};background:var(--ink);opacity:${o}`, title: `${t}: ${pc(v, 0)}`})));
+  const key = h('div', {class: 'oddskey'}, parts.map(([t, v, o]) => h('span', {}, h('span', {class: 'sw', style: `--c:var(--ink);opacity:${o}`}), t + ' ', h('b', {}, num(pc(v, 0))))));
+  const cov = (d.coverage || []).slice().sort((x, y) => y.counted - x.counted);
+  const where = cov.length > 1 ? `נספרו הכי הרבה: ${cov[0].sector} (${Math.round(cov[0].counted * 100)}%); הכי מעט: ${cov[cov.length - 1].sector} (${Math.round(cov[cov.length - 1].counted * 100)}%). ` : '';
+  const row = (k) => h('tr', {}, h('td', {class: 'nm'}, swatch(k), 'גוש ' + BLOC[k].name),
+    h('td', {class: 'num2'}, num(`${pc(raw.share[k])} · ${raw.seats[k]}`)), h('td', {class: 'num2 se'}, num(`${pc(d.blocs[k].share)} · ${d.blocs[k].seats}`)));
+  put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'על מה ההערכה נשענת?'),
+      h('p', {class: 'sub'}, 'כמה מהמספרים הם תוצאות אמת, וכמה הם הערכה — ומה קורה אם לוקחים את הספירה כמו שהיא.'))),
+    h('div', {class: 'odds', style: 'margin-top:0'}, bar, key),
+    h('p', {class: 'cap', style: 'font-size:14px;color:var(--ink2)'}, `${b.groups_full} מתוך ${b.groups_total} קבוצות נספרו מספיק (${b.ft} קלפיות ומעלה), ולכן ההערכה שלהן נבנית מהן בלבד. העדפות 2022 משמשות רק היכן שעדיין אין שום נתון: ${pc(b.eligible_sparse, 1)} מבעלי זכות הבחירה, ומעטפות חיצוניות.`),
+    h('div', {class: 'tw', style: 'margin-top:14px'}, h('table', {style: 'min-width:0;max-width:520px'},
+      h('thead', {}, h('tr', {}, h('th', {}, 'נתח מהקולות · מנדטים'), h('th', {class: 'num2'}, 'ספירה בלבד'), h('th', {class: 'num2'}, 'הערכה לכלל הארץ'))),
+      h('tbody', {}, ORDER.map(row)))),
+    h('p', {class: 'cap'}, `"ספירה בלבד" = הקלפיות שנספרו כאילו הן כל הארץ. אזורים נספרים בקצב שונה, ולכן הספירה הגולמית נוטה לאזורים שנספרו קודם. ${where}ההערכה משקללת כל קבוצה לפי גודלה האמיתי.`));
 }
 
 /* ====================================================================== parliament section */
@@ -747,7 +773,7 @@ function renderStatus() {
 }
 function renderAll() {
   $('#demo').hidden = !D.demo;
-  renderHero(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderHow(); renderStatus();
+  renderHero(); renderBasis(); renderParliament(); renderDist(); renderThreshold(); renderLab(); renderTimeline(); renderLists(); renderCount(); renderHow(); renderStatus();
 }
 let lastStamp = null, busy = false;
 // GitHub's API serves the branch within ~60 s, while raw.githubusercontent.com may lag up to 5 minutes (its CDN ignores
