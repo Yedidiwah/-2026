@@ -566,7 +566,7 @@ function renderDist() {
 // every list that could be anywhere near the line, the likeliest to cross it first. A list the estimate
 // gives only a small chance of crossing is still shown: the point is to see what it would do to the blocs.
 function thrCandidates() {
-  return D.lists.filter((l) => l.votes > 0 && l.share >= 0.02 && l.share <= 0.09)
+  return D.lists.filter((l) => l.votes > 0 && l.share >= 0.015 && l.share <= 0.09)
     .map((l) => ({l, fall: l.seats > 0, risk: Math.min(l.pass_prob, 1 - l.pass_prob), dist: Math.abs(l.share - THRESH)}))
     .sort((a, b) => b.risk - a.risk || a.dist - b.dist);
 }
@@ -593,7 +593,7 @@ function renderThreshold() {
       h('div', {class: 'p'}, `סיכוי ${c.fall ? 'ליפול מתחת לחסימה' : 'לעבור את החסימה'}: `, num(pr(cp))),
       h('div', {class: 'track'}, h('i', {style: `width:${Math.max(1, Math.round(cp * 100))}%`})),
       h('div', {class: 'what'}, c.fall ? 'אם לא תעבור את החסימה, הקולות שלה הולכים לאיבוד והמנדטים מתחלקים מחדש:'
-        : `אם תעבור את החסימה (${seatsWord(sc.own)}), המנדטים מתחלקים מחדש:`),
+        : `אם תעבור את החסימה (כ-${pc(THRESH * 1.01, 1)} מהקולות, ${seatsWord(sc.own)}), הקולות שלה באים מכל שאר הרשימות באופן יחסי והמנדטים מתחלקים מחדש:`),
       h('div', {class: 'chips'}, ['bibi', 'change', 'arab'].map(chip)));
   };
   put(root, h('div', {class: 'head'}, h('div', {}, h('h2', {}, 'רשימות על הסף: ומה אם?'),
@@ -615,7 +615,13 @@ function labCompute(d, L) {
     const Va = sum('arab'), dv = L.sA * T, fa = (Va + dv) / Va, fn = (T - Va - dv) / (T - Va);
     v = v.map((x, i) => (lists[i].bloc === 'arab' ? x * fa : x * fn));
   }
-  const seats = baderOfer(v, T, lists.map((l) => !!L.ban[l.code]), lists.map((l) => !!L.force[l.code]));
+  // a list that "passes" really has at least the threshold: raise it to just above, the votes come from everyone else in proportion
+  lists.forEach((l, i) => {
+    if (!L.force[l.code] || v[i] >= THRESH * 1.01 * T) return;
+    const add = THRESH * 1.01 * T - v[i], rest = v.reduce((a, x, j) => a + (j === i ? 0 : x), 0);
+    v = v.map((x, j) => (j === i ? x + add : x - add * x / rest));
+  });
+  const seats = baderOfer(v, T, lists.map((l) => !!L.ban[l.code]), null);
   const bl = {bibi: 0, change: 0, arab: 0, other: 0};
   lists.forEach((l, i) => { const b = l.bloc === 'other' ? (L.assign[l.code] || 'other') : l.bloc; bl[b] += seats[i]; });
   return {seats, bl, v};
