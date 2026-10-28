@@ -30,108 +30,137 @@
 *{box-sizing:border-box}
 html,body{background:var(--page)}
 body{margin:0;padding:0 16px;color:var(--ink);font-family:"Heebo","Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.5;direction:rtl;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1180px;margin:0 auto;padding-bottom:28px}
 .num{direction:ltr;unicode-bidi:isolate;display:inline-block}
-header{padding:20px 0 8px}
-.toplink{display:inline-block;font-size:13.5px;font-weight:600;color:var(--ink2);text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:4px 13px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.app{max-width:1500px;margin:0 auto;padding:12px 0 24px}
+.toplink{display:inline-block;font-size:13px;font-weight:600;color:var(--ink2);text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 12px}
 .toplink:hover{background:var(--wash)}
-.eyebrow{font-size:12.5px;font-weight:700;color:var(--mute);letter-spacing:.04em}
-h1{margin:4px 0 0;font-size:clamp(26px,4.4vw,38px);font-weight:800;line-height:1.1}
-.dek{margin:8px 0 0;max-width:68ch;color:var(--ink2)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-.controls{display:flex;flex-wrap:wrap;gap:16px 22px;align-items:flex-end;padding:14px 0 12px}
-.ctl{display:flex;flex-direction:column;gap:6px;min-width:0}
-.cl{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.04em}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2)}
+.eyebrow{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.03em}
+h1{margin:6px 0 0;font-size:clamp(22px,2.6vw,30px);font-weight:800;line-height:1.15}
+.dek{margin:4px 0 0;color:var(--ink2);font-size:13.5px;line-height:1.45}
+.controls{padding:11px 13px;display:grid;gap:9px}
+.ctl{display:flex;flex-direction:column;gap:5px;min-width:0}
+.cl{font-size:11.5px;font-weight:700;color:var(--mute);letter-spacing:.03em}
+.rc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px 12px}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2)}
 .chip:hover{background:var(--wash)}
 .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
-.seg button{font:inherit;font-size:13px;font-weight:600;border:0;background:transparent;color:var(--ink2);padding:7px 13px;cursor:pointer}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{flex:1;font:inherit;font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--ink2);padding:6px 8px;cursor:pointer;white-space:nowrap}
 .seg button+button{border-right:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
 .seg button:disabled{opacity:.4;cursor:not-allowed}
-select,input[type=search]{font:inherit;font-size:13.5px;padding:7px 11px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);min-width:150px;max-width:100%}
-.grid{display:grid;grid-template-columns:minmax(300px,500px) 1fr;gap:16px;align-items:start}
-@media (max-width:860px){.grid{grid-template-columns:1fr}}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line);border-radius:18px 18px 0 0;overflow:hidden}
-.kpi{background:var(--card);padding:10px 12px}
-.kpi b{display:block;font-size:20px;font-weight:800;line-height:1.15}
-.kpi span{font-size:11.5px;color:var(--mute)}
+select,input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:100%;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);overflow:hidden}
+.kpi{background:var(--card);padding:8px 11px}
+.kpi b{display:block;font-size:18px;font-weight:800;line-height:1.15}
+.kpi span{font-size:11px;color:var(--mute);line-height:1.25;display:block}
+.legend{padding:8px 13px 9px;font-size:12px;color:var(--ink2);display:grid;gap:5px}
+.ramp{height:9px;border-radius:5px}
+.rl{display:flex;justify-content:space-between;font-size:11px;color:var(--mute)}
+.lnote{font-size:11px;color:var(--mute);line-height:1.4}
 .mapwrap{position:relative;overflow:hidden}
-#map{display:block;width:100%;height:auto;background:var(--sea);touch-action:none;cursor:grab;user-select:none}
+#map{display:block;width:100%;height:100%;background:var(--sea);touch-action:none;cursor:grab;user-select:none}
 #map.drag{cursor:grabbing}
 #land path{fill:var(--land);stroke:var(--land);stroke-width:1.2;stroke-linejoin:round;vector-effect:non-scaling-stroke}   /* one neutral land shape, no border lines inside it */
 #map circle{vector-effect:non-scaling-stroke}
 #map circle.nc{fill:none;stroke:var(--mute);stroke-width:.7;opacity:.7}
 #labels text{font-size:10px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none;text-anchor:middle}
-.zoom{position:absolute;top:78px;left:10px;display:flex;flex-direction:column;gap:6px}
-.zoom button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:19px;line-height:1;cursor:pointer;box-shadow:var(--shadow)}
+.zoom{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:18px;line-height:1;cursor:pointer;box-shadow:var(--shadow)}
 #tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .08s;background:var(--ink);color:var(--page);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:9px;max-width:230px;z-index:5;transform:translate(-50%,-120%);box-shadow:0 8px 22px rgba(0,0,0,.3)}
 #tip b{display:block;font-size:13.5px}
-.legend{padding:11px 14px 13px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink2);display:grid;gap:7px}
-.ramp{height:10px;border-radius:5px}
-.rl{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mute)}
-.lnote{font-size:11.5px;color:var(--mute);line-height:1.45}
-.side{padding:16px}
-@media (min-width:861px){.side{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}}   /* the map is tall: keep the list in view while scrolling */
-.side h2{margin:0;font-size:21px;font-weight:800;line-height:1.2}
-.side .sub{color:var(--ink2);font-size:13.5px;margin-top:3px}
-.st{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.04em;margin:18px 0 7px}
-.rank{display:flex;flex-direction:column;gap:2px}
-.rr{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:5px 7px;border-radius:7px;cursor:pointer;font-size:13.5px}
+.side{padding:14px 15px}
+.side h2{margin:0;font-size:19px;font-weight:800;line-height:1.2}
+.side .sub{color:var(--ink2);font-size:13px;margin-top:2px}
+.st{font-size:11.5px;font-weight:700;color:var(--mute);letter-spacing:.03em;margin:13px 0 5px}
+.rkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 22px}
+.rank{display:flex;flex-direction:column;gap:1px}
+.rr{display:grid;grid-template-columns:1fr auto auto;gap:9px;align-items:center;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:13px}
 .rr:hover{background:var(--wash)}
 .rr .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rr .a{font-weight:700;direction:ltr}
-.rr .b{color:var(--mute);font-size:12px;direction:ltr;min-width:54px;text-align:left}
-.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
-.tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--wash);color:var(--ink2);border:1px solid var(--line)}
+.rr .b{color:var(--mute);font-size:11.5px;direction:ltr;min-width:50px;text-align:left}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--wash);color:var(--ink2);border:1px solid var(--line)}
 .tag.warn{color:var(--down);border-color:currentColor;background:transparent}
-.dk{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:9px;margin-top:14px}
-.dk div{background:var(--wash);border-radius:10px;padding:9px 11px}
-.dk b{display:block;font-size:19px;font-weight:800}
-.dk span{font-size:11.5px;color:var(--mute)}
-.lb{display:grid;grid-template-columns:130px 1fr 52px;gap:8px;align-items:center;font-size:13px;margin:5px 0}
-.lb .bar{height:9px;border-radius:4px;background:var(--wash);overflow:hidden}
+.dk{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:11px}
+.dk div{background:var(--wash);border-radius:10px;padding:7px 10px}
+.dk b{display:block;font-size:18px;font-weight:800}
+.dk span{font-size:11px;color:var(--mute)}
+.lb{display:grid;grid-template-columns:120px 1fr 50px;gap:8px;align-items:center;font-size:12.5px;margin:4px 0}
+.lb .bar{height:8px;border-radius:4px;background:var(--wash);overflow:hidden}
 .lb .bar i{display:block;height:100%}
 .lb .p{direction:ltr;text-align:left;font-weight:700}
-.back{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:4px 12px;cursor:pointer}
-footer{margin-top:18px;color:var(--mute);font-size:12px;line-height:1.55}
-footer p{margin:0 0 7px;max-width:88ch}
-footer b{color:var(--ink2)}
+.back{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:3px 11px;cursor:pointer}
+.notes{font-size:12px;color:var(--mute);line-height:1.55}
+.notes summary{cursor:pointer;font-weight:700;color:var(--ink2);padding:2px 0}
+.notes p{margin:6px 0 0;max-width:88ch}
+.notes b{color:var(--ink2)}
 .err{padding:30px;text-align:center;color:var(--ink2)}
+
+/* app mode: the map takes the right side at the height of the screen, everything else sits to its left, the page itself does not scroll */
+@media (min-width:861px) and (min-height:540px){
+  html,body{height:100%;overflow:hidden}
+  body{padding:0 16px}
+  .app{height:100vh;padding:12px 0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+  .mapcol{width:min(calc((100vh - 24px) * .3947),48vw);aspect-ratio:300/760}
+  .sidecol{height:calc(100vh - 24px);display:flex;flex-direction:column;gap:9px;min-width:0}
+  .sidecol>*{flex:none}
+  .sidecol>.side{flex:1 1 0;min-height:90px;overflow:auto}
+  .notes{max-height:34vh;overflow:auto}
+}
+@media (max-height:820px) and (min-width:861px){
+  .dek{display:none}
+}
+@media (max-height:700px) and (min-width:861px){
+  .kpi{padding:6px 10px}.kpi b{font-size:16px}
+  .controls{padding:9px 12px;gap:7px}
+  h1{font-size:20px}
+}
+/* stacked: narrow screens and very short windows */
+@media (max-width:860px),(max-height:539px){
+  .app{display:flex;flex-direction:column;gap:12px}
+  .sidecol{display:contents}
+  .sidecol>header{order:1}.controls{order:2}.kpis{order:3}.mapcol{order:4;aspect-ratio:300/760}.legend{order:5}.side{order:6}.notes{order:7}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}
+  .r2{grid-template-columns:1fr}
+}
 @media (prefers-reduced-motion:reduce){#tip{transition:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <a class="toplink" id="toplink" href="./">‏← לתחזית החיה</a>
-  <div class="eyebrow" id="eyebrow">טוען את הספירה…</div>
-  <h1>מי הצביע למי? מפה לפי יישוב</h1>
-  <p class="dek">בוחרים רשימה, תת־גוש או גוש, ורואים אילו יישובים נדלקים. הצבע מראה כמה מהקולות בכל יישוב הלכו לבחירה, והגודל מראה כמה קולות זה. אפשר להגדיל ולגרור. המפה מתעדכנת עם כל קובץ חדש של ועדת הבחירות.</p>
-</header>
-
-<div class="controls">
-  <div class="ctl"><span class="cl">גושים ותתי־גושים</span><div class="chips" id="chips" role="group" aria-label="בחירת גוש"></div></div>
-  <div class="ctl"><label class="cl" for="lsel">או רשימה</label><select id="lsel"></select></div>
-  <div class="ctl"><span class="cl">צבע לפי</span><div class="seg" id="mseg" role="group"><button data-m="share">אחוז מהקולות</button><button data-m="change">שינוי מול 2022</button></div></div>
-  <div class="ctl"><span class="cl">גודל הנקודה</span><div class="seg" id="sseg" role="group"><button data-s="votes">מספר הקולות</button><button data-s="equal">שווה</button></div></div>
-  <div class="ctl"><label class="cl" for="q">חיפוש יישוב</label><input id="q" type="search" placeholder="שם יישוב…" autocomplete="off"></div>
-</div>
-
-<div class="grid">
-  <div class="card mapwrap" id="mapcard">
-    <div class="kpis" id="kpis"></div>
+<div class="app">
+  <main class="mapcol card mapwrap" id="mapcard">
     <svg id="map" viewBox="0 0 300 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="מפת יישובים"><g id="view"><g id="land" aria-hidden="true"></g><g id="dots"></g><g id="labels"></g></g></svg>
     <div class="zoom"><button type="button" id="zin" aria-label="הגדלה">+</button><button type="button" id="zout" aria-label="הקטנה">−</button><button type="button" id="zreset" aria-label="איפוס" style="font-size:14px">⌂</button></div>
     <div id="tip" role="status"></div>
-    <div class="legend" id="legend"></div>
-  </div>
-  <div class="card side" id="side"><div class="err">טוען…</div></div>
-</div>
+  </main>
 
-<footer id="foot"></footer>
+  <div class="sidecol">
+    <header>
+      <div class="hrow"><a class="toplink" id="toplink" href="./">← לתחזית החיה</a><div class="eyebrow" id="eyebrow">טוען את הספירה…</div></div>
+      <h1>מי הצביע למי? מפה לפי יישוב</h1>
+      <p class="dek">בוחרים גוש, תת־גוש או רשימה, ורואים אילו יישובים נדלקים: הצבע הוא אחוז התמיכה ביישוב, והגודל הוא מספר הקולות. המפה מתעדכנת עם כל קובץ חדש של ועדת הבחירות.</p>
+    </header>
+
+    <section class="controls card">
+      <div class="ctl"><span class="cl">גושים ותתי־גושים</span><div class="chips" id="chips" role="group" aria-label="בחירת גוש"></div></div>
+      <div class="rc">
+        <div class="ctl"><label class="cl" for="lsel">או רשימה</label><select id="lsel"></select></div>
+        <div class="ctl"><label class="cl" for="q">חיפוש יישוב</label><input id="q" type="search" placeholder="שם יישוב…" autocomplete="off"></div>
+        <div class="ctl"><span class="cl">צבע לפי</span><div class="seg" id="mseg" role="group"><button data-m="share">אחוז מהקולות</button><button data-m="change">שינוי מול 2022</button></div></div>
+        <div class="ctl"><span class="cl">גודל הנקודה</span><div class="seg" id="sseg" role="group"><button data-s="votes">מספר הקולות</button><button data-s="equal">שווה</button></div></div>
+      </div>
+    </section>
+
+    <div class="kpis card" id="kpis"></div>
+    <div class="legend card" id="legend"></div>
+    <section class="card side" id="side"><div class="err">טוען…</div></section>
+    <details class="notes"><summary>הערות ומקורות</summary><div id="foot"></div></details>
+  </div>
 </div>
 
 <script>
@@ -159,6 +188,7 @@ const pc = (x, d = 1) => (x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
 const spc = (x, d = 1) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const clear = (e) => { while (e.firstChild) e.removeChild(e.firstChild); return e; };
+const stacked = () => matchMedia('(max-width:860px),(max-height:539px)').matches;
 try { const t = localStorage.getItem('il26-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* storage may be unavailable */ }
 
 /* ---------------------------------------------------------------- state and data (the data can be replaced while the page is open) */
@@ -260,11 +290,12 @@ function applyView() {
 function drawLabels() {
   clear(gLabels);
   const r = svg.getBoundingClientRect(); if (!r.width) return;
-  const s = r.width / VB_W, k = view.k;
+  const s = Math.min(r.width / VB_W, r.height / VB_H), k = view.k;
+  const ox = (r.width - VB_W * s) / 2, oy = (r.height - VB_H * s) / 2;                  // the svg letterboxes (meet), so measure from its drawn area
   const cand = PL.slice().sort((a, b) => b.v - a.v).slice(0, k < 1.6 ? 14 : k < 3 ? 40 : k < 6 ? 110 : k < 12 ? 260 : 600);
   const taken = [], fpx = 11, fm = fpx / (s * k);
   for (const p of cand) {
-    const sx = (p.x * k + view.tx) * s, sy = (p.y * k + view.ty) * s;
+    const sx = ox + (p.x * k + view.tx) * s, sy = oy + (p.y * k + view.ty) * s;
     if (sx < -20 || sx > r.width + 20 || sy < -10 || sy > r.height + 10) continue;
     const w = p.name.length * fpx * .55, rect = [sx - w / 2, sy - fpx * 2.1, sx + w / 2, sy - fpx * .6];
     if (taken.some((q) => rect[0] < q[2] && rect[2] > q[0] && rect[1] < q[3] && rect[3] > q[1])) continue;
@@ -277,7 +308,8 @@ function drawLabels() {
 }
 
 /* ---------------------------------------------------------------- zoom and pan */
-const vbPoint = (cx, cy) => { const r = svg.getBoundingClientRect(); return [(cx - r.left) / r.width * VB_W, (cy - r.top) / r.height * VB_H]; };
+function drawn() { const r = svg.getBoundingClientRect(), s = Math.min(r.width / VB_W, r.height / VB_H); return {r, s, ox: (r.width - VB_W * s) / 2, oy: (r.height - VB_H * s) / 2}; }
+const vbPoint = (cx, cy) => { const {r, s, ox, oy} = drawn(); return [(cx - r.left - ox) / s, (cy - r.top - oy) / s]; };
 function clampView() {
   const k = view.k;
   view.tx = Math.min(0, Math.max(VB_W - VB_W * k, view.tx));
@@ -301,7 +333,7 @@ svg.addEventListener('pointermove', (e) => {
     const dx = cx - prev[0], dy = cy - prev[1]; moved += Math.abs(dx) + Math.abs(dy);
     if (moved > 5) {
       if (!svg.classList.contains('drag')) { svg.classList.add('drag'); try { svg.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } tip.style.opacity = 0; }
-      const s = svg.getBoundingClientRect().width / VB_W; view.tx += dx / s; view.ty += dy / s; clampView(); applyView();
+      const s = drawn().s; view.tx += dx / s; view.ty += dy / s; clampView(); applyView();
     }
   } else if (ptrs.size === 2) {
     ptrs.set(e.pointerId, [cx, cy]);
@@ -349,9 +381,9 @@ function renderLegend() {
   if (change) {
     box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to left,${css('--up')},${css('--card')} 50%,${css('--down')})`}),
       el('div', {class: 'rl'}, el('span', {}, `יותר מ־2022 (עד ${spc(dmax, 0)})`), el('span', {}, `פחות מ־2022 (עד ${spc(-dmax, 0)})`)),
-      el('div', {class: 'lnote'}, 'ההשוואה: אחוז הרשימה בקלפיות שנספרו מול התוצאה של אותו יישוב ב־2022. יישובים שנספר בהם פחות ממחצית הקלפיות מעומעמים.'));
+      el('div', {class: 'lnote'}, 'אחוז הרשימה בקלפיות שנספרו מול התוצאה של אותו יישוב ב־2022. יישוב שנספר בו פחות ממחצית הקלפיות מעומעם.'));
   } else {
-    box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to right,color-mix(in srgb,${hue} 10%,transparent),${hue})`}),
+    box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to left,color-mix(in srgb,${hue} 10%,transparent),${hue})`}),
       el('div', {class: 'rl'}, el('span', {}, num('0%')), el('span', {}, num(pc(smax, 0) + ' ומעלה'))),
       el('div', {class: 'lnote'}, (S.size === 'votes' ? 'גודל הנקודה: מספר הקולות לבחירה. ' : '') + 'קו מקווקו: לא כל הקלפיות ביישוב נספרו. טבעת ריקה: עוד לא נספר.'));
   }
@@ -380,16 +412,17 @@ function renderSide() {
   const box = clear($('#side')), pk = pickedP();
   if (pk) { renderPlace(box, pk); return; }
   const change = S.metric === 'change' && hasCmp();
-  box.append(el('h2', {}, cur().name), el('div', {class: 'sub'}, change ? 'איפה השינוי הגדול ביותר מול 2022' : 'איפה הרשימה חזקה, ואיפה יש לה הכי הרבה קולות'));
+  box.append(el('h2', {}, cur().name), el('div', {class: 'sub'}, change ? 'איפה השינוי הגדול ביותר מול 2022. לחיצה על יישוב פותחת את כל התוצאות שלו.' : 'איפה הרשימה חזקה, ואיפה יש לה הכי הרבה קולות. לחיצה על יישוב פותחת את כל התוצאות שלו.'));
   if (change) {
     const ds = PL.filter((p) => p.d != null && p.v >= 1000);
-    box.append(el('div', {class: 'st'}, 'הכי הרבה יותר מ־2022'), rankRows(ds.slice().sort((a, b) => b.d - a.d).slice(0, 8), (p) => spc(p.d), (p) => pc(p.sh)),
-      el('div', {class: 'st'}, 'הכי הרבה פחות מ־2022'), rankRows(ds.slice().sort((a, b) => a.d - b.d).slice(0, 8), (p) => spc(p.d), (p) => pc(p.sh)));
+    box.append(el('div', {class: 'rkgrid'},
+      el('div', {}, el('div', {class: 'st'}, 'הכי הרבה יותר מ־2022'), rankRows(ds.slice().sort((a, b) => b.d - a.d).slice(0, 9), (p) => spc(p.d), (p) => pc(p.sh))),
+      el('div', {}, el('div', {class: 'st'}, 'הכי הרבה פחות מ־2022'), rankRows(ds.slice().sort((a, b) => a.d - b.d).slice(0, 9), (p) => spc(p.d), (p) => pc(p.sh)))));
   } else {
-    box.append(el('div', {class: 'st'}, 'הכי הרבה קולות'), rankRows(PL.slice().sort((a, b) => b.sv - a.sv).slice(0, 10), (p) => n0(p.sv), (p) => pc(p.sh)),
-      el('div', {class: 'st'}, 'הכי גבוה באחוז (יישובים עם 1,000 קולות כשרים ויותר)'), rankRows(PL.filter((p) => p.v >= 1000).sort((a, b) => b.sh - a.sh).slice(0, 10), (p) => pc(p.sh), (p) => n0(p.sv)));
+    box.append(el('div', {class: 'rkgrid'},
+      el('div', {}, el('div', {class: 'st'}, 'הכי הרבה קולות'), rankRows(PL.slice().sort((a, b) => b.sv - a.sv).slice(0, 9), (p) => n0(p.sv), (p) => pc(p.sh))),
+      el('div', {}, el('div', {class: 'st'}, 'הכי גבוה באחוז (1,000 קולות כשרים ויותר)'), rankRows(PL.filter((p) => p.v >= 1000).sort((a, b) => b.sh - a.sh).slice(0, 9), (p) => pc(p.sh), (p) => n0(p.sv)))));
   }
-  box.append(el('div', {class: 'lnote', style: 'margin-top:14px'}, 'לחיצה על יישוב, במפה או ברשימה, פותחת את כל התוצאות שלו.'));
 }
 function renderPlace(box, p) {
   const k = D.ok22.indexOf(cur().id);
@@ -415,7 +448,7 @@ function pick(p, zoom) {
   S.picked = p ? p.id : null;
   if (p && zoom) { view.k = 6; view.tx = VB_W / 2 - p.x * view.k; view.ty = VB_H / 2 - p.y * view.k; clampView(); }
   paint();
-  if (p) $('#side').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  if (p && stacked()) $('#side').scrollIntoView({block: 'nearest', behavior: 'smooth'});
   syncHash();
 }
 
@@ -459,7 +492,7 @@ function renderTexts() {
 }
 
 /* ---------------------------------------------------------------- loading and live refresh */
-async function refresh(first) {
+async function refresh() {
   if (!DATA_URL) return;
   try {
     const r = await fetch(DATA_URL + (DATA_URL.includes('?') ? '&' : '?') + 't=' + Math.floor(Date.now() / 60000), {cache: 'no-store'});
@@ -472,10 +505,10 @@ async function refresh(first) {
   }
 }
 readHash();
-if (EMBED) setData(EMBED); else refresh(true);
+if (EMBED) setData(EMBED); else refresh();
 if (DATA_URL) {
-  setInterval(() => { if (!document.hidden) refresh(false); }, 120000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(false); });
+  setInterval(() => { if (!document.hidden) refresh(); }, 120000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
 }
 })();
 </script>
