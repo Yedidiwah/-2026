@@ -141,7 +141,7 @@ select,input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border-ra
 
   <div class="sidecol">
     <header>
-      <div class="hrow"><a class="toplink" id="toplink" href="./">← לתחזית החיה</a><div class="eyebrow" id="eyebrow">טוען את הספירה…</div></div>
+      <div class="hrow"><div style="display:flex;gap:6px;flex-wrap:wrap"><a class="toplink" id="toplink" href="./">← לתחזית החיה</a><a class="toplink" href="families.html">משפחות הבוחרים</a></div><div class="eyebrow" id="eyebrow">טוען את הספירה…</div></div>
       <h1>מי הצביע למי? מפה לפי יישוב</h1>
       <p class="dek">בוחרים גוש, תת־גוש או רשימה, ורואים אילו יישובים נדלקים: הצבע הוא אחוז התמיכה ביישוב, והגודל הוא מספר הקולות. המפה מתעדכנת עם כל קובץ חדש של ועדת הבחירות.</p>
     </header>
@@ -300,8 +300,8 @@ function drawLabels() {
     const w = p.name.length * fpx * .55, rect = [sx - w / 2, sy - fpx * 2.1, sx + w / 2, sy - fpx * .6];
     if (taken.some((q) => rect[0] < q[2] && rect[2] > q[0] && rect[1] < q[3] && rect[3] > q[1])) continue;
     taken.push(rect);
-    const t = svgEl('text', {x: p.x.toFixed(2), y: (p.y - (p.r0 * rk() + 1.2)).toFixed(2), 'font-size': fm.toFixed(3)});
-    t.setAttribute('style', `stroke-width:${(3 / (s * k)).toFixed(3)}px`);
+    const t = svgEl('text', {x: p.x.toFixed(2), y: (p.y - (p.r0 * rk() + 1.2)).toFixed(2)});
+    t.setAttribute('style', `font-size:${fm.toFixed(3)}px;stroke-width:${(3 / (s * k)).toFixed(3)}px`);       // inline: the stylesheet's font-size beats an attribute and ignored the zoom
     t.textContent = p.name;
     gLabels.append(t);
   }

@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>משפחות הבוחרים · בחירות 2026</title>
+<meta name="description" content="אילו רשימות דומות זו לזו לפי המקומות שבהם הן חזקות: שש משפחות טבעיות, מפה לפי יישוב וירידה עד רמת הקלפי. הספירה הסופית של בחירות 2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#f4f3ef; --card:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --mute:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --line:rgba(11,11,11,.10); --wash:rgba(11,11,11,.045);
+  --f0:#2a78d6; --f1:#eb6834; --f2:#1baf7a; --f3:#eda100; --f4:#e87ba4; --f5:#008300;
+  --up:#5b3fd0; --down:#e0791d; --land:#ebe9e2; --sea:#f8f7f3;
+  --shadow:0 1px 0 rgba(0,0,0,.04),0 10px 28px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --mute:#898781;
+  --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --wash:rgba(255,255,255,.06);
+  --f0:#3987e5; --f1:#d95926; --f2:#199e70; --f3:#c98500; --f4:#d55181; --f5:#008300;
+  --up:#8a73f0; --down:#f08f3a; --land:#242422; --sea:#141413; --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.5);
+}}
+:root[data-theme="dark"]{
+  --page:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --mute:#898781;
+  --grid:#2c2c2a; --axis:#383835; --line:rgba(255,255,255,.10); --wash:rgba(255,255,255,.06);
+  --f0:#3987e5; --f1:#d95926; --f2:#199e70; --f3:#c98500; --f4:#d55181; --f5:#008300;
+  --up:#8a73f0; --down:#f08f3a; --land:#242422; --sea:#141413; --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{background:var(--page)}
+body{margin:0;padding:0 16px;color:var(--ink);font-family:"Heebo","Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.5;direction:rtl;-webkit-font-smoothing:antialiased}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.app{max-width:1500px;margin:0 auto;padding:12px 0 24px}
+.toplink{display:inline-block;font-size:13px;font-weight:600;color:var(--ink2);text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 12px}
+.toplink:hover{background:var(--wash)}
+.eyebrow{font-size:12px;font-weight:700;color:var(--mute);letter-spacing:.02em}
+h1{margin:6px 0 0;font-size:clamp(22px,2.6vw,30px);font-weight:800;line-height:1.15}
+.dek{margin:4px 0 0;color:var(--ink2);font-size:13.5px;line-height:1.45}
+.controls{padding:11px 13px;display:grid;gap:9px}
+.ctl{display:flex;flex-direction:column;gap:5px;min-width:0}
+.cl{font-size:11.5px;font-weight:700;color:var(--mute);letter-spacing:.03em}
+.rc{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px 12px}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.hlinks{display:flex;gap:6px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink2);display:inline-flex;align-items:center;gap:6px}
+.chip:hover{background:var(--wash)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--page)}
+.cdot{width:9px;height:9px;border-radius:50%;flex:none}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{flex:1;font:inherit;font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--ink2);padding:6px 8px;cursor:pointer;white-space:nowrap}
+.seg button+button{border-right:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--page)}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+select,input[type=search]{font:inherit;font-size:13px;padding:6px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);width:100%;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);overflow:hidden}
+.kpi{background:var(--card);padding:8px 11px}
+.kpi b{display:block;font-size:18px;font-weight:800;line-height:1.15}
+.kpi span{font-size:11px;color:var(--mute);line-height:1.25;display:block}
+.legend{padding:8px 13px 9px;font-size:12px;color:var(--ink2);display:grid;gap:5px}
+.ramp{height:9px;border-radius:5px}
+.rl{display:flex;justify-content:space-between;font-size:11px;color:var(--mute)}
+.lnote{font-size:11px;color:var(--mute);line-height:1.4}
+.lkeys{display:flex;flex-wrap:wrap;gap:4px 12px}
+.lkeys span{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2)}
+.mapwrap{position:relative;overflow:hidden}
+#map{display:block;width:100%;height:100%;background:var(--sea);touch-action:none;cursor:grab;user-select:none}
+#map.drag{cursor:grabbing}
+#land path{fill:var(--land);stroke:var(--land);stroke-width:1.2;stroke-linejoin:round;vector-effect:non-scaling-stroke}   /* one neutral land shape, no border lines inside it */
+#map circle{vector-effect:non-scaling-stroke}
+#labels text{font-size:10px;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--sea);stroke-width:3px;stroke-linejoin:round;pointer-events:none;text-anchor:middle}
+.zoom{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:18px;line-height:1;cursor:pointer;box-shadow:var(--shadow)}
+#tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .08s;background:var(--ink);color:var(--page);font-size:12.5px;line-height:1.45;padding:7px 10px;border-radius:9px;max-width:240px;z-index:5;transform:translate(-50%,-120%);box-shadow:0 8px 22px rgba(0,0,0,.3)}
+#tip b{display:block;font-size:13.5px}
+.side{padding:14px 15px}
+.side h2{margin:0;font-size:19px;font-weight:800;line-height:1.2}
+.side .sub{color:var(--ink2);font-size:13px;margin-top:2px}
+.st{font-size:11.5px;font-weight:700;color:var(--mute);letter-spacing:.03em;margin:13px 0 5px}
+.rkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 22px}
+.rank{display:flex;flex-direction:column;gap:1px}
+.rr{display:grid;grid-template-columns:1fr auto auto;gap:9px;align-items:center;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:13px}
+.rr:hover{background:var(--wash)}
+.rr .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rr .a{font-weight:700;direction:ltr}
+.rr .b{color:var(--mute);font-size:11.5px;direction:ltr;min-width:50px;text-align:left}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11.5px;padding:2px 9px;border-radius:999px;background:var(--wash);color:var(--ink2);border:1px solid var(--line)}
+.dk{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:11px}
+.dk div{background:var(--wash);border-radius:10px;padding:7px 10px}
+.dk b{display:block;font-size:18px;font-weight:800}
+.dk span{font-size:11px;color:var(--mute)}
+.lb{display:grid;grid-template-columns:120px 1fr 50px;gap:8px;align-items:center;font-size:12.5px;margin:4px 0}
+.lb .bar{height:8px;border-radius:4px;background:var(--wash);overflow:hidden}
+.lb .bar i{display:block;height:100%}
+.lb .p{direction:ltr;text-align:left;font-weight:700}
+.back{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:999px;padding:3px 11px;cursor:pointer}
+.notes{font-size:12px;color:var(--mute);line-height:1.55}
+.notes summary{cursor:pointer;font-weight:700;color:var(--ink2);padding:2px 0}
+.notes p{margin:6px 0 0;max-width:88ch}
+.notes b{color:var(--ink2)}
+.notes img{max-width:100%;border-radius:10px;border:1px solid var(--line);margin-top:6px}
+.err{padding:30px;text-align:center;color:var(--ink2)}
+a.ext{color:var(--ink2);font-weight:600}
+/* the tree */
+.tree{display:block;width:100%;max-width:520px;height:auto;margin:4px 0 2px}
+.tree .tl{stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.tree .tl.fam{cursor:pointer}
+.tree .tl.fam:hover{stroke-width:3.4}
+.tree .cut{stroke:var(--mute);stroke-width:1;stroke-dasharray:4 3}
+.tree .cutl{font-size:9.5px;fill:var(--mute)}
+.tree .trow{cursor:pointer;outline:none}
+.tree .trow:hover .tn,.tree .trow:focus .tn,.tree .trow.on .tn{font-weight:800}
+.tree .tn{font-size:11.5px;fill:var(--ink);font-family:inherit}
+.tree .tn.ns{fill:var(--ink2)}
+.ftab{display:flex;flex-direction:column;gap:2px}
+.frow{display:grid;grid-template-columns:12px minmax(86px,auto) 1fr auto auto;gap:9px;align-items:center;padding:5px 7px;border-radius:8px;cursor:pointer;font-size:13px}
+.frow:hover,.frow.on{background:var(--wash)}
+.frow .fdot{width:10px;height:10px;border-radius:50%}
+.frow .fn{font-weight:700}
+.frow .fl{color:var(--ink2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frow .fs{font-weight:700;direction:ltr;text-align:left}
+.frow .fp{color:var(--mute);font-size:12px;direction:ltr;min-width:44px;text-align:left}
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:4px 26px;align-items:start}
+.fstack{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--wash);gap:1px}
+.fstack i{display:block;height:100%}
+.facts{display:flex;flex-direction:column;gap:3px;margin:6px 0 0;padding:0;list-style:none;font-size:12.5px;color:var(--ink2)}
+.facts li{padding-inline-start:12px;position:relative}
+.facts li::before{content:"";position:absolute;inset-inline-start:0;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--axis)}
+.btnrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.btn{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:6px 12px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{background:var(--wash)}
+.bwrap{overflow:auto;max-height:420px;border:1px solid var(--line);border-radius:10px;margin-top:6px}
+table.bx{border-collapse:collapse;width:100%;font-size:12.5px}
+table.bx th{position:sticky;top:0;background:var(--card);text-align:right;font-size:11px;color:var(--mute);font-weight:700;padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.bx td{padding:4px 8px;border-bottom:1px solid var(--grid);white-space:nowrap}
+table.bx td.n{direction:ltr;text-align:left}
+table.bx .fstack{min-width:150px}
+table.bx tr:last-child td{border-bottom:0}
+
+/* app mode: the map takes the right side at the height of the screen, everything else sits to its left, the page itself does not scroll */
+@media (min-width:861px) and (min-height:540px){
+  html,body{height:100%;overflow:hidden}
+  body{padding:0 16px}
+  .app{height:100vh;padding:12px 0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+  .mapcol{width:min(calc((100vh - 24px) * .3947),48vw);aspect-ratio:300/760}
+  .sidecol{height:calc(100vh - 24px);display:flex;flex-direction:column;gap:9px;min-width:0}
+  .sidecol>*{flex:none}
+  .sidecol>.side{flex:1 1 0;min-height:90px;overflow:auto}
+  .notes{max-height:34vh;overflow:auto}
+}
+@media (max-height:820px) and (min-width:861px){
+  .dek{display:none}
+}
+@media (max-height:700px) and (min-width:861px){
+  .kpi{padding:6px 10px}.kpi b{font-size:16px}
+  .controls{padding:9px 12px;gap:7px}
+  h1{font-size:20px}
+}
+/* stacked: narrow screens and very short windows */
+@media (max-width:860px),(max-height:539px){
+  .app{display:flex;flex-direction:column;gap:12px}
+  .sidecol{display:contents}
+  .sidecol>header{order:1}.controls{order:2}.kpis{order:3}.mapcol{order:4;aspect-ratio:300/760}.legend{order:5}.side{order:6}.notes{order:7}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(88px,1fr))}
+  .frow{grid-template-columns:12px 1fr auto auto}.frow .fl{display:none}
+}
+@media (prefers-reduced-motion:reduce){#tip{transition:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="mapcol card mapwrap" id="mapcard">
+    <svg id="map" viewBox="0 0 300 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="מפת יישובים לפי משפחת הבוחרים"><g id="view"><g id="land" aria-hidden="true"></g><g id="dots"></g><g id="labels"></g></g></svg>
+    <div class="zoom"><button type="button" id="zin" aria-label="הגדלה">+</button><button type="button" id="zout" aria-label="הקטנה">−</button><button type="button" id="zreset" aria-label="איפוס" style="font-size:14px">⌂</button></div>
+    <div id="tip" role="status"></div>
+  </main>
+
+  <div class="sidecol">
+    <header>
+      <div class="hrow"><div class="hlinks"><a class="toplink" href="./">← לתחזית</a><a class="toplink" href="map.html">מפת הגושים</a></div><div class="eyebrow" id="eyebrow">טוען…</div></div>
+      <h1>מי דומה למי? משפחות הבוחרים</h1>
+      <p class="dek">רשימות שחזקות באותם מקומות מרכיבות משפחה, בלי שום חלוקה לגושים. בוחרים משפחה או רשימה ורואים אילו יישובים נדלקים, לוחצים על יישוב ויורדים עד רמת הקלפי.</p>
+    </header>
+
+    <section class="controls card">
+      <div class="ctl"><span class="cl">משפחות</span><div class="chips" id="chips" role="group" aria-label="בחירת משפחה"></div></div>
+      <div class="rc">
+        <div class="ctl"><label class="cl" for="lsel">או רשימה</label><select id="lsel"></select></div>
+        <div class="ctl"><label class="cl" for="q">חיפוש יישוב</label><input id="q" type="search" placeholder="שם יישוב…" autocomplete="off"></div>
+        <div class="ctl"><span class="cl">צבע לפי</span><div class="seg" id="mseg" role="group"><button data-m="share">אחוז מהקולות</button><button data-m="change">שינוי מול 2022</button></div></div>
+        <div class="ctl"><span class="cl">גודל הנקודה</span><div class="seg" id="sseg" role="group"><button data-s="votes">מספר הקולות</button><button data-s="equal">שווה</button></div></div>
+      </div>
+    </section>
+
+    <div class="kpis card" id="kpis"></div>
+    <div class="legend card" id="legend"></div>
+    <section class="card side" id="side"><div class="err">טוען…</div></section>
+    <details class="notes"><summary>הערות, שיטה ומקורות</summary><div id="foot"></div></details>
+  </div>
+</div>
+
+<script>
+const DATA_URL = 'fam/families.json', BOX_URL = 'fam/boxes.json';
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const el = (tag, props = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k === 'style') e.style.cssText = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+  return e;
+};
+const svgEl = (tag, props = {}) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(props)) e.setAttribute(k, v); return e; };
+const nf = new Intl.NumberFormat('he-IL');
+const n0 = (x) => nf.format(Math.round(x));
+const num = (t) => el('span', {class: 'num'}, t);
+const pc = (x, d = 1) => (x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
+const spc = (x, d = 1) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const clear = (e) => { while (e.firstChild) e.removeChild(e.firstChild); return e; };
+const stacked = () => matchMedia('(max-width:860px),(max-height:539px)').matches;
+try { const t = localStorage.getItem('il26-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) { /* storage may be unavailable */ }
+
+/* ---------------------------------------------------------------- state and data */
+let D = null, LISTS = [], FAMS = [], PL = [], BYID = new Map(), SELS = [], SELBY = {}, BOXES = null, boxesP = null, landDrawn = false;
+const S = {sel: 'dom', metric: 'share', size: 'votes', picked: null, boxes: false, bsort: 'sel', bshown: 60};
+const view = {k: 1, tx: 0, ty: 0};
+const VB_W = 300, VB_H = 760, PAD = 12;
+const svg = $('#map'), gView = $('#view'), gDots = $('#dots'), gLabels = $('#labels'), gLand = $('#land'), tip = $('#tip');
+let smax = .3, dmax = .05, svmax = 1;
+const cur = () => SELBY[S.sel] || SELS[0];
+const cmpIdx = () => D.cmp.indexOf(cur().id);
+const hasCmp = () => cmpIdx() >= 0;
+const pickedP = () => (S.picked != null ? BYID.get(S.picked) || null : null);
+const fcol = (slot) => css('--f' + slot);
+const fvar = (slot) => `var(--f${slot})`;
+const selSlot = (s) => (s.kind === 'dom' ? null : s.slot);
+const REST = 'var(--axis)';
+
+function setData(d) {
+  D = d; LISTS = d.lists; FAMS = d.families;
+  PL = d.places.map((a) => {
+    const p = {id: a[0], name: a[1], lon: a[2], lat: a[3], v: a[4], vs: a[5], pop: a[6], g: a[7], nb: a[8], tr: a[9], p22: a[10], ix: a[11], iy: a[12], sv: 0, sh: 0, d: null, r0: 1, el: null};
+    p.fs = FAMS.map((f) => f.m.reduce((t, i) => t + p.vs[i], 0) / p.v);
+    let b = 0; p.fs.forEach((x, i) => { if (x > p.fs[b]) b = i; });
+    p.dom = b; p.dsh = p.fs[b];
+    return p;
+  });
+  BYID = new Map(PL.map((p) => [p.id, p]));
+  SELS = [{id: 'dom', name: 'כל המשפחות', kind: 'dom', idx: []}];
+  FAMS.forEach((f) => SELS.push({id: 'F:' + f.id, name: f.n, kind: 'fam', idx: f.m, slot: f.slot, fam: f}));
+  LISTS.forEach((l, i) => { if (l.c !== '*') SELS.push({id: 'L:' + l.c, name: l.n, kind: 'list', idx: [i], slot: FAMS[l.f].slot, li: i}); });
+  SELBY = Object.fromEntries(SELS.map((s) => [s.id, s]));
+  if (!SELBY[S.sel]) S.sel = 'dom';
+  if (S.metric === 'change' && !hasCmp()) S.metric = 'share';
+  const lons = PL.map((p) => p.lon), lats = PL.map((p) => p.lat);
+  const lon0 = Math.min(...lons), lon1 = Math.max(...lons), lat0 = Math.min(...lats), lat1 = Math.max(...lats);
+  const kx = Math.cos(((lat0 + lat1) / 2) * Math.PI / 180), spanX = (lon1 - lon0) * kx, spanY = lat1 - lat0;
+  const scale = Math.min((VB_W - 2 * PAD) / spanX, (VB_H - 2 * PAD) / spanY);
+  const offX = (VB_W - spanX * scale) / 2, offY = (VB_H - spanY * scale) / 2;
+  const proj = (lon, lat) => [offX + (lon - lon0) * kx * scale, VB_H - offY - (lat - lat0) * scale];
+  PL.forEach((p) => { [p.x, p.y] = proj(p.lon, p.lat); });
+  if (!landDrawn) {
+    (d.land || []).forEach((ring) => {
+      const path = ring.map((c, i) => { const q = proj(c[0], c[1]); return (i ? 'L' : 'M') + q[0].toFixed(1) + ',' + q[1].toFixed(1); }).join(' ') + ' Z';
+      gLand.append(svgEl('path', {d: path}));
+    });
+    landDrawn = true;
+  }
+  clear(gDots);
+  PL.forEach((p) => { const c = svgEl('circle', {cx: p.x.toFixed(2), cy: p.y.toFixed(2)}); c.__p = p; p.el = c; gDots.append(c); });
+  buildControls(); renderTexts(); paint();
+}
+
+/* ---------------------------------------------------------------- painting */
+const quant = (arr, f) => { if (!arr.length) return 0; const a = arr.slice().sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(f * a.length))]; };
+const rk = () => Math.pow(view.k, -0.62);
+function compute() {
+  const s = cur(), k = cmpIdx(), change = S.metric === 'change' && k >= 0;
+  const shs = [], ds = [];
+  svmax = 1;
+  for (const p of PL) {
+    if (s.kind === 'dom') { p.sv = p.v; p.sh = p.dsh; p.d = null; }
+    else {
+      let t = 0; for (const i of s.idx) t += p.vs[i];
+      p.sv = t; p.sh = p.v ? t / p.v : 0;
+      p.d = change && p.p22[k] != null ? p.sh - p.p22[k] : null;
+    }
+    if (p.sv > svmax) svmax = p.sv;
+    if (p.v >= 300) { shs.push(p.sh); if (p.d != null) ds.push(Math.abs(p.d)); }
+  }
+  smax = Math.max(.05, quant(shs, .95)); dmax = Math.max(.03, quant(ds, .95));
+}
+function paint() {
+  if (!D) return;
+  compute();
+  const s = cur(), up = css('--up'), down = css('--down'), mute = css('--mute'), ink = css('--ink');
+  const change = S.metric === 'change' && hasCmp(), pk = pickedP(), order = [];
+  const hue = s.kind === 'dom' ? null : fcol(s.slot);
+  for (const p of PL) {
+    const c = p.el;
+    p.r0 = !p.sv ? 1.1 : S.size === 'votes' ? 1.3 + 8.2 * Math.sqrt(p.sv / svmax) : 3.2;
+    let fill, op;
+    if (s.kind === 'dom') { fill = fcol(FAMS[p.dom].slot); op = .38 + .62 * Math.min(1, p.dsh / .6); }
+    else if (change) { if (p.d == null) { fill = mute; op = .12; } else { fill = p.d >= 0 ? up : down; op = .1 + .9 * Math.min(1, Math.abs(p.d) / dmax); } }
+    else { fill = hue; op = p.sv ? .1 + .9 * Math.min(1, p.sh / smax) : .06; }
+    c.setAttribute('fill', fill); c.setAttribute('fill-opacity', op.toFixed(2));
+    if (pk && pk.id === p.id) { c.setAttribute('stroke', ink); c.setAttribute('stroke-width', '1.6'); }
+    else { c.setAttribute('stroke', 'rgba(128,128,128,.4)'); c.setAttribute('stroke-width', '.4'); }
+    order.push(p);
+  }
+  order.sort((a, b) => b.r0 - a.r0);                       // small dots on top of big ones
+  for (const p of order) gDots.append(p.el);
+  applyView(); renderKpis(); renderLegend(); renderSide(); renderControls();
+}
+function applyView() {
+  gView.setAttribute('transform', `translate(${view.tx.toFixed(2)},${view.ty.toFixed(2)}) scale(${view.k.toFixed(4)})`);
+  const f = rk();
+  for (const p of PL) p.el.setAttribute('r', (p.r0 * f).toFixed(3));
+  drawLabels();
+}
+
+/* ---------------------------------------------------------------- labels: biggest settlements first, no overlaps */
+function drawLabels() {
+  clear(gLabels);
+  const r = svg.getBoundingClientRect(); if (!r.width) return;
+  const s = Math.min(r.width / VB_W, r.height / VB_H), k = view.k;
+  const ox = (r.width - VB_W * s) / 2, oy = (r.height - VB_H * s) / 2;
+  const cand = PL.slice().sort((a, b) => b.v - a.v).slice(0, k < 1.6 ? 14 : k < 3 ? 40 : k < 6 ? 110 : k < 12 ? 260 : 600);
+  const taken = [], fpx = 11, fm = fpx / (s * k);
+  for (const p of cand) {
+    const sx = ox + (p.x * k + view.tx) * s, sy = oy + (p.y * k + view.ty) * s;
+    if (sx < -20 || sx > r.width + 20 || sy < -10 || sy > r.height + 10) continue;
+    const w = p.name.length * fpx * .55, rect = [sx - w / 2, sy - fpx * 2.1, sx + w / 2, sy - fpx * .6];
+    if (taken.some((q) => rect[0] < q[2] && rect[2] > q[0] && rect[1] < q[3] && rect[3] > q[1])) continue;
+    taken.push(rect);
+    const t = svgEl('text', {x: p.x.toFixed(2), y: (p.y - (p.r0 * rk() + 1.2)).toFixed(2)});
+    t.setAttribute('style', `font-size:${fm.toFixed(3)}px;stroke-width:${(3 / (s * k)).toFixed(3)}px`);       // inline: the stylesheet's font-size would beat an attribute and ignore the zoom
+    t.textContent = p.name;
+    gLabels.append(t);
+  }
+}
+
+/* ---------------------------------------------------------------- zoom and pan */
+function drawn() { const r = svg.getBoundingClientRect(), s = Math.min(r.width / VB_W, r.height / VB_H); return {r, s, ox: (r.width - VB_W * s) / 2, oy: (r.height - VB_H * s) / 2}; }
+const vbPoint = (cx, cy) => { const {r, s, ox, oy} = drawn(); return [(cx - r.left - ox) / s, (cy - r.top - oy) / s]; };
+function clampView() {
+  const k = view.k;
+  view.tx = Math.min(0, Math.max(VB_W - VB_W * k, view.tx));
+  view.ty = Math.min(0, Math.max(VB_H - VB_H * k, view.ty));
+}
+function zoomAt(x, y, f) {
+  const nk = Math.max(1, Math.min(45, view.k * f)), g = nk / view.k;
+  view.tx = x - (x - view.tx) * g; view.ty = y - (y - view.ty) * g; view.k = nk;
+  clampView(); applyView();
+}
+svg.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = vbPoint(e.clientX, e.clientY); zoomAt(x, y, e.deltaY < 0 ? 1.25 : 0.8); }, {passive: false});
+$('#zin').addEventListener('click', () => zoomAt(VB_W / 2, VB_H / 2, 1.6));
+$('#zout').addEventListener('click', () => zoomAt(VB_W / 2, VB_H / 2, 1 / 1.6));
+$('#zreset').addEventListener('click', () => { view.k = 1; view.tx = 0; view.ty = 0; applyView(); });
+const ptrs = new Map(); let moved = 0, downTarget = null, pinch0 = 0;
+svg.addEventListener('pointerdown', (e) => { ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = 0; downTarget = e.target; if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); } });
+svg.addEventListener('pointermove', (e) => {
+  if (!ptrs.has(e.pointerId)) { hover(e); return; }
+  const prev = ptrs.get(e.pointerId), cx = e.clientX, cy = e.clientY;
+  if (ptrs.size === 1) {
+    const dx = cx - prev[0], dy = cy - prev[1]; moved += Math.abs(dx) + Math.abs(dy);
+    if (moved > 5) {
+      if (!svg.classList.contains('drag')) { svg.classList.add('drag'); try { svg.setPointerCapture(e.pointerId); } catch (x) { /* ignore */ } tip.style.opacity = 0; }
+      const s = drawn().s; view.tx += dx / s; view.ty += dy / s; clampView(); applyView();
+    }
+  } else if (ptrs.size === 2) {
+    ptrs.set(e.pointerId, [cx, cy]);
+    const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]);
+    if (pinch0) { const [x, y] = vbPoint((a[0] + b[0]) / 2, (a[1] + b[1]) / 2); zoomAt(x, y, d / pinch0); }
+    pinch0 = d; moved = 99;
+  }
+  ptrs.set(e.pointerId, [cx, cy]);
+});
+const endPtr = (e) => {
+  if (!ptrs.has(e.pointerId)) return;
+  ptrs.delete(e.pointerId); pinch0 = 0; svg.classList.remove('drag');
+  if (!ptrs.size && moved <= 5 && downTarget && downTarget.__p) pick(downTarget.__p, false);
+};
+svg.addEventListener('pointerup', endPtr); svg.addEventListener('pointercancel', endPtr);
+svg.addEventListener('pointerleave', () => { tip.style.opacity = 0; });
+
+/* ---------------------------------------------------------------- tooltip */
+function hover(e) {
+  const p = e.target.__p; if (!p) { tip.style.opacity = 0; return; }
+  const s = cur(), k = cmpIdx();
+  if (s.kind === 'dom') { showTip(e, p.name, `${FAMS[p.dom].n}: ${pc(p.dsh)} · ${n0(p.v)} קולות כשרים`); return; }
+  const extra = k >= 0 && p.p22[k] != null ? ` · ב־2022: ${pc(p.p22[k])}` : '';
+  showTip(e, p.name, `${s.name}: ${n0(p.sv)} קולות (${pc(p.sh)} מהקולות הכשרים)${extra}`);
+}
+function showTip(e, title, body) {
+  clear(tip).append(el('b', {}, title), body);
+  const r = $('#mapcard').getBoundingClientRect();
+  tip.style.left = Math.max(120, Math.min(r.width - 120, e.clientX - r.left)) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; tip.style.opacity = 1;
+}
+
+/* ---------------------------------------------------------------- panels */
+function renderKpis() {
+  const s = cur(), box = clear($('#kpis')), b = D.basis;
+  const big = s.kind === 'dom' ? null : PL.filter((p) => p.sh >= .3 && p.v >= 300).length;
+  let nat, seats, slot = selSlot(s);
+  if (s.kind === 'fam') { nat = s.fam.p; seats = s.fam.s; } else if (s.kind === 'list') { nat = LISTS[s.li].p; seats = LISTS[s.li].s; }
+  box.append(
+    el('div', {class: 'kpi'}, el('b', {style: slot != null ? `color:${fvar(slot)}` : ''}, s.kind === 'dom' ? num('120') : num(nat.toFixed(1).replace(/\.0$/, '') + '%')), el('span', {}, s.kind === 'dom' ? 'מנדטים בכנסת' : 'מהקולות הכשרים בארץ')),
+    el('div', {class: 'kpi'}, el('b', {}, s.kind === 'dom' ? num('6') : num(String(seats))), el('span', {}, s.kind === 'dom' ? 'משפחות' : 'מנדטים')),
+    el('div', {class: 'kpi'}, el('b', {}, num(s.kind === 'dom' ? n0(PL.length) : n0(big))), el('span', {}, s.kind === 'dom' ? 'יישובים על המפה' : 'יישובים עם 30% ויותר')),
+    el('div', {class: 'kpi'}, el('b', {}, num((b.valid_all / 1e6).toFixed(2) + 'M')), el('span', {}, 'קולות כשרים בספירה האחרונה')));
+}
+function renderLegend() {
+  const box = clear($('#legend')), s = cur(), change = S.metric === 'change' && hasCmp();
+  if (s.kind === 'dom') {
+    box.append(el('div', {class: 'lkeys'}, FAMS.map((f) => el('span', {}, el('i', {class: 'cdot', style: `background:${fvar(f.slot)}`}), f.n))),
+      el('div', {class: 'lnote'}, 'צבע: המשפחה הגדולה ביותר ביישוב. ככל שהצבע חזק יותר היא גדולה יותר (60% מהקולות ומעלה: מלא). גודל הנקודה: מספר הקולות. כדי לראות משפחה אחת בלי ההסתרה של האחרות, בוחרים אותה למעלה.'));
+  } else if (change) {
+    box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to left,${css('--up')},${css('--card')} 50%,${css('--down')})`}),
+      el('div', {class: 'rl'}, el('span', {}, `יותר מ־2022 (עד ${spc(dmax, 0)})`), el('span', {}, `פחות מ־2022 (עד ${spc(-dmax, 0)})`)),
+      el('div', {class: 'lnote'}, 'אחוז הבחירה בקולות הכשרים של היישוב מול אותו יישוב ב־2022' + (D.cmp_note[s.id] ? ', ' + D.cmp_note[s.id] : '') + '.'));
+  } else {
+    const hue = fvar(s.slot);
+    box.append(el('div', {class: 'ramp', style: `background:linear-gradient(to left,color-mix(in srgb,${hue} 10%,transparent),${hue})`}),
+      el('div', {class: 'rl'}, el('span', {}, num('0%')), el('span', {}, num(pc(smax, 0) + ' ומעלה'))),
+      el('div', {class: 'lnote'}, (S.size === 'votes' ? 'גודל הנקודה: מספר הקולות לבחירה. ' : '') + 'הצבע הוא אחוז הקולות הכשרים ביישוב.'));
+  }
+}
+function buildControls() {
+  const chips = clear($('#chips'));
+  SELS.filter((s) => s.kind === 'dom' || s.kind === 'fam').forEach((s) => chips.append(el('button', {class: 'chip', type: 'button', 'data-id': s.id, 'aria-pressed': 'false', onclick: () => setSel(s.id)},
+    s.kind === 'fam' ? el('i', {class: 'cdot', style: `background:${fvar(s.slot)}`}) : null, s.name)));
+  const lsel = clear($('#lsel'));
+  lsel.append(el('option', {value: ''}, 'בחרו רשימה…'));
+  SELS.filter((s) => s.kind === 'list').forEach((s) => lsel.append(el('option', {value: s.id}, s.name + (LISTS[s.li].s ? ` · ${LISTS[s.li].s} מנדטים` : ' · ללא מנדט'))));
+}
+function renderControls() {
+  [...$('#chips').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === S.sel)));
+  $('#lsel').value = cur().kind === 'list' ? cur().id : '';
+  const ok = hasCmp();
+  [...$('#mseg').children].forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.m === (ok ? S.metric : 'share'))); if (b.dataset.m === 'change') { b.disabled = !ok; b.title = ok ? '' : 'אין מקבילה ברורה ב־2022'; } });
+  [...$('#sseg').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.s === S.size)));
+}
+function rankRows(list, a, b) {
+  return el('div', {class: 'rank'}, list.map((p) => el('div', {class: 'rr', role: 'button', tabindex: 0, onclick: () => pick(p, true), onkeydown: (e) => { if (e.key === 'Enter') pick(p, true); }},
+    el('span', {class: 'nm'}, p.name), el('span', {class: 'a'}, a(p)), el('span', {class: 'b'}, b(p)))));
+}
+
+/* the tree: rows = lists in tree order, leaves on the right next to the names, the root on the left */
+function renderTree() {
+  const W = 300, rowH = 22, top = 20, x0 = 206, x1 = 14, nameX = 296, n = LISTS.length - 1, Hh = top + n * rowH + 6, mx = D.tree.max * 1.03;
+  const X = (d) => x0 - (x0 - x1) * d / mx, Y = (y) => top + y * rowH;
+  const t = svgEl('svg', {viewBox: `0 0 ${W} ${Hh}`, class: 'tree', role: 'img', 'aria-label': 'עץ הדמיון בין הרשימות. הטבלה מתחתיו מציגה את אותן משפחות.'});
+  t.append(svgEl('line', {x1: X(D.tree.cut).toFixed(1), x2: X(D.tree.cut).toFixed(1), y1: top - 8, y2: Hh - 4, class: 'cut'}));
+  const ct = svgEl('text', {x: X(D.tree.cut).toFixed(1), y: top - 11, 'text-anchor': 'middle', class: 'cutl'}); ct.textContent = 'חיתוך'; t.append(ct);
+  D.tree.links.forEach((L) => {
+    const pl = svgEl('polyline', {points: L.d.map((d, i) => X(d).toFixed(1) + ',' + Y(L.y[i]).toFixed(1)).join(' '), class: 'tl' + (L.f != null ? ' fam' : ''), stroke: L.f != null ? fvar(FAMS[L.f].slot) : 'var(--mute)'});
+    if (L.f != null) pl.addEventListener('click', () => setSel('F:' + FAMS[L.f].id));
+    t.append(pl);
+  });
+  const s = cur();
+  for (let i = 0; i < n; i++) {
+    const l = LISTS[i], f = FAMS[l.f], y = Y(i + .5);
+    const g = svgEl('g', {class: 'trow' + (s.id === 'L:' + l.c || s.id === 'F:' + f.id ? ' on' : ''), tabindex: 0, role: 'button'});
+    g.append(svgEl('rect', {x: 0, y: (y - rowH / 2).toFixed(1), width: W, height: rowH, fill: 'transparent'}));
+    g.append(svgEl('rect', {x: x0 + 3, y: (y - 6).toFixed(1), width: 5, height: 12, rx: 1.5, fill: fvar(f.slot)}));
+    const tx = svgEl('text', {x: nameX, y: (y + 4).toFixed(1), 'text-anchor': 'start', class: 'tn' + (l.s ? '' : ' ns')}); tx.textContent = l.n;   // in an RTL page "start" is the right edge of the text
+    g.append(tx);
+    g.addEventListener('click', () => setSel('L:' + l.c));
+    g.addEventListener('keydown', (e) => { if (e.key === 'Enter') setSel('L:' + l.c); });
+    t.append(g);
+  }
+  return t;
+}
+function renderFamTable() {
+  const tb = el('div', {class: 'ftab'});
+  FAMS.forEach((f) => {
+    const names = f.m.map((i) => LISTS[i]).sort((a, b) => b.s - a.s).map((l) => l.s ? `${l.n} ${l.s}` : `${l.n} (ללא מנדט)`).join(' · ');
+    tb.append(el('div', {class: 'frow' + (S.sel === 'F:' + f.id ? ' on' : ''), role: 'button', tabindex: 0, onclick: () => setSel('F:' + f.id), onkeydown: (e) => { if (e.key === 'Enter') setSel('F:' + f.id); }},
+      el('i', {class: 'fdot', style: `background:${fvar(f.slot)}`}), el('span', {class: 'fn'}, f.n), el('span', {class: 'fl', title: names}, names),
+      el('span', {class: 'fs'}, num(String(f.s)), ' מנד׳'), el('span', {class: 'fp'}, num(f.p.toFixed(1) + '%'))));
+  });
+  return tb;
+}
+function simLists(i) {                              // the most alike and the most opposed lists, from the correlation matrix (13 lists, the last row is "everything else")
+  const row = D.corr[i].map((r, j) => ({j, r})).filter((x) => x.j !== i);
+  const asc = row.slice().sort((a, b) => b.r - a.r), desc = row.slice().sort((a, b) => a.r - b.r);
+  return {alike: asc.slice(0, 3), rival: desc.slice(0, 2)};
+}
+function profileLine(i) {
+  const a = D.raw.acad[i], k = D.raw.kids4[i], g = D.raw.median_age[i];
+  return `בממוצע, המקומות שבהם הרשימה מקבלת את קולותיה: ${num(a + '%').textContent} אקדמאים (בארץ ${D.avg.acad}%), ${num(k + '%').textContent} משפחות עם 4 ילדים ומעלה (${D.avg.kids4}%), גיל חציוני ${g} (${D.avg.median_age}).`;
+}
+function renderSide() {
+  const box = clear($('#side')), pk = pickedP();
+  if (pk) { renderPlace(box, pk); return; }
+  const s = cur(), change = S.metric === 'change' && hasCmp();
+  box.append(el('div', {class: 'twocol'},
+    el('div', {}, el('h2', {}, 'עץ הדמיון'), el('div', {class: 'sub'}, 'ענפים שמתחברים קרוב לשמות הם רשימות שחזקות באותם מקומות. לחיצה על רשימה או על ענף צבעוני בוחרת אותם על המפה.'), renderTree()),
+    el('div', {}, el('h2', {}, 'שש המשפחות'), el('div', {class: 'sub'}, 'הצבעים קבועים: אותה משפחה, אותו צבע, בעץ, במפה ובטבלה.'), renderFamTable(),
+      el('ul', {class: 'facts'},
+        el('li', {}, `ישר! וביחד הן הזוג הדומה ביותר: הן חזקות באותם מקומות (${num(D.corr[D.lists.findIndex((l) => l.c === 'דרך')][D.lists.findIndex((l) => l.c === 'רק')].toFixed(2)).textContent} מתוך 1).`),
+        el('li', {}, `המשותפת ורע״ם נראות דומות רק כי שתיהן ערביות: בתוך היישובים הערביים הן יריבות (מתאם שלילי ${Math.abs(D.facts.rival_arab).toFixed(2)}), ובתוך הערים החרדיות גם ש״ס ויהדות התורה (${Math.abs(D.facts.rival_haredi).toFixed(2)}).`),
+        el('li', {}, `ישראל ביתנו לבד: הדמיון הגבוה ביותר שלה לרשימה אחרת הוא ${D.facts.yb_max_r.toFixed(2)}.`),
+        el('li', {}, `המבנה חוזר גם ב־2022 (מתאם של ${D.facts.repeat22.toFixed(2)} בין תבנית הדמיון של שתי הבחירות), אבל הזוג הערבי התרחק: ${D.facts.arab_pair_2022.toFixed(2)} ב־2022 ו־${D.facts.arab_pair_2026.toFixed(2)} ב־2026.`)))));
+  if (s.kind === 'dom') return;
+  box.append(el('div', {class: 'st', style: 'margin-top:16px'}, 'הבחירה הנוכחית'), el('h2', {}, s.name));
+  if (s.kind === 'fam') {
+    box.append(el('div', {class: 'sub'}, s.fam.d), el('div', {class: 'lnote', style: 'margin-top:4px'}, s.fam.m.map((i) => profileLine(i).replace('בממוצע, המקומות שבהם הרשימה מקבלת את קולותיה', LISTS[i].n)).join(' ')));
+  } else {
+    const i = s.li, {alike, rival} = simLists(i);
+    box.append(el('div', {class: 'sub'}, `${LISTS[i].s ? LISTS[i].s + ' מנדטים' : 'לא עברה את החסימה'} · ${LISTS[i].p.toFixed(1)}% מהקולות הכשרים בארץ · משפחה: ${FAMS[LISTS[i].f].n}`),
+      el('div', {class: 'lnote', style: 'margin-top:4px'}, profileLine(i)),
+      el('ul', {class: 'facts'},
+        el('li', {}, 'הכי דומות (חזקות באותם מקומות): ' + alike.map((x) => `${LISTS[x.j].n} ${x.r.toFixed(2)}`).join(', ')),
+        el('li', {}, 'הכי מתחרות (איפה שהן חזקות, השנייה חלשה): ' + rival.map((x) => `${LISTS[x.j].n} ${x.r.toFixed(2)}`).join(', '))));
+  }
+  if (change) {
+    const ds = PL.filter((p) => p.d != null && p.v >= 1000);
+    box.append(el('div', {class: 'rkgrid'},
+      el('div', {}, el('div', {class: 'st'}, 'הכי הרבה יותר מ־2022'), rankRows(ds.slice().sort((a, b) => b.d - a.d).slice(0, 9), (p) => spc(p.d), (p) => pc(p.sh))),
+      el('div', {}, el('div', {class: 'st'}, 'הכי הרבה פחות מ־2022'), rankRows(ds.slice().sort((a, b) => a.d - b.d).slice(0, 9), (p) => spc(p.d), (p) => pc(p.sh)))));
+  } else {
+    box.append(el('div', {class: 'rkgrid'},
+      el('div', {}, el('div', {class: 'st'}, 'הכי הרבה קולות'), rankRows(PL.slice().sort((a, b) => b.sv - a.sv).slice(0, 9), (p) => n0(p.sv), (p) => pc(p.sh))),
+      el('div', {}, el('div', {class: 'st'}, 'הכי גבוה באחוז (1,000 קולות כשרים ויותר)'), rankRows(PL.filter((p) => p.v >= 1000).sort((a, b) => b.sh - a.sh).slice(0, 9), (p) => pc(p.sh), (p) => n0(p.sv)))));
+  }
+}
+
+/* a settlement: the families in it, the lists, who it resembles, then its ballot boxes and the government map of neighbourhoods */
+function similar(p, n = 6) {
+  const dist = (q) => { let t = 0; for (let i = 0; i < p.fs.length; i++) { const d = p.fs[i] - q.fs[i]; t += d * d; } return t; };
+  return PL.filter((q) => q !== p && q.v >= 1000).map((q) => [dist(q), q]).sort((a, b) => a[0] - b[0]).slice(0, n).map((x) => x[1]);
+}
+function renderPlace(box, p) {
+  const s = cur(), k = cmpIdx();
+  box.append(el('div', {style: 'display:flex;justify-content:space-between;gap:10px;align-items:flex-start'}, el('h2', {}, p.name), el('button', {class: 'back', type: 'button', onclick: () => pick(null)}, 'חזרה לסיכום')));
+  const tags = [el('span', {class: 'tag'}, D.groups[p.g]), el('span', {class: 'tag'}, `${n0(p.nb)} קלפיות`)];
+  if (p.pop) tags.push(el('span', {class: 'tag'}, `${n0(p.pop)} תושבים`));
+  box.append(el('div', {class: 'tags'}, tags));
+  const kp = [el('div', {}, el('b', {}, num(n0(p.v))), el('span', {}, 'קולות כשרים (קלפיות רגילות)')),
+    el('div', {}, el('b', {style: `color:${fvar(FAMS[p.dom].slot)}`}, num(pc(p.dsh))), el('span', {}, 'המשפחה הגדולה: ' + FAMS[p.dom].n))];
+  if (s.kind !== 'dom') {
+    kp.push(el('div', {}, el('b', {style: `color:${fvar(s.slot)}`}, num(pc(p.sh))), el('span', {}, s.name)));
+    if (k >= 0 && p.p22[k] != null) kp.push(el('div', {}, el('b', {}, num(pc(p.p22[k]))), el('span', {}, 'ב־2022')), el('div', {}, el('b', {style: `color:${css(p.sh - p.p22[k] >= 0 ? '--up' : '--down')}`}, num(spc(p.sh - p.p22[k]))), el('span', {}, 'שינוי')));
+  }
+  box.append(el('div', {class: 'dk'}, kp));
+
+  // the six families in this place against the country
+  box.append(el('div', {class: 'st'}, 'המשפחות ביישוב'));
+  const rest = Math.max(0, 1 - p.fs.reduce((a, b) => a + b, 0));
+  box.append(el('div', {class: 'fstack'}, FAMS.map((f, i) => el('i', {style: `width:${(100 * p.fs[i]).toFixed(2)}%;background:${fvar(f.slot)}`, title: `${f.n} ${pc(p.fs[i])}`})), el('i', {style: `width:${(100 * rest).toFixed(2)}%;background:${REST}`, title: `רשימות קטנות ${pc(rest)}`})));
+  FAMS.map((f, i) => ({f, i})).sort((a, b) => p.fs[b.i] - p.fs[a.i]).forEach(({f, i}) => {
+    const nat = f.p / 100, ratio = nat ? p.fs[i] / nat : 0;
+    box.append(el('div', {class: 'lb', style: 'grid-template-columns:120px 1fr 130px'}, el('span', {}, f.n), el('div', {class: 'bar'}, el('i', {style: `width:${(100 * p.fs[i] / Math.max(.01, p.dsh)).toFixed(1)}%;background:${fvar(f.slot)}`})),
+      el('span', {class: 'p', style: 'font-weight:600'}, `${pc(p.fs[i])} · `, el('span', {style: 'color:var(--mute);font-weight:500'}, `פי ${ratio.toFixed(1)} מהארצי`))));
+  });
+  // the lists
+  box.append(el('div', {class: 'st'}, 'הרשימות ביישוב'));
+  const rows = LISTS.map((l, i) => ({l, v: p.vs[i], i})).filter((x) => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 9);
+  const top = rows.length ? rows[0].v : 1;
+  rows.forEach((x) => box.append(el('div', {class: 'lb'}, el('span', {}, x.l.n), el('div', {class: 'bar'}, el('i', {style: `width:${(100 * x.v / top).toFixed(1)}%;background:${x.l.f != null ? fvar(FAMS[x.l.f].slot) : REST}`})), el('span', {class: 'p'}, pc(x.v / p.v)))));
+  // traits and similar places
+  const [ac, kd, ag, ses] = p.tr;
+  if (ac != null) box.append(el('div', {class: 'lnote', style: 'margin-top:8px'}, `מדדי הרשות (הלמ״ס): ${ac}% אקדמאים (בארץ ${D.avg.acad}%), ${kd}% משפחות עם 4 ילדים ומעלה (${D.avg.kids4}%), גיל חציוני ${ag} (${D.avg.median_age})` + (ses != null ? `, אשכול חברתי־כלכלי ${ses} מתוך 10.` : '.')));
+  box.append(el('div', {class: 'st'}, 'יישובים עם אותה תמהיל משפחות'), rankRows(similar(p), (q) => pc(q.dsh, 0), (q) => FAMS[q.dom].n));
+  // go down to the ballot boxes and the neighbourhood map
+  box.append(el('div', {class: 'btnrow'},
+    el('button', {class: 'btn', type: 'button', onclick: () => { S.boxes = !S.boxes; S.bshown = 60; renderSide(); }}, S.boxes ? 'הסתר את הקלפיות' : `הצג את ${n0(p.nb)} הקלפיות של היישוב`),
+    el('a', {class: 'btn', href: govmapUrl(p), target: '_blank', rel: 'noopener'}, 'מפת שכונות באתר הממשלתי ↗')));
+  if (S.boxes) renderBoxes(box, p);
+}
+const govmapUrl = (p) => `https://elections.govmap.gov.il/?c=${p.ix},${p.iy}&z=${p.v >= 15000 ? 10 : 9}&election=26`;
+
+/* ballot boxes of one settlement: a stacked bar of the six families per box, sortable by the selection */
+async function loadBoxes() {
+  if (BOXES) return BOXES;
+  if (!boxesP) boxesP = fetch(BOX_URL).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then((j) => (BOXES = j));
+  return boxesP;
+}
+function renderBoxes(box, p) {
+  const wrap = el('div', {}, el('div', {class: 'lnote'}, 'טוען את הקלפיות…'));
+  box.append(el('div', {class: 'st'}, 'קלפיות'), wrap);
+  loadBoxes().then((all) => {
+    if (S.picked !== p.id || !S.boxes) return;
+    const rows = (all[String(p.id)] || []).map((r) => {
+      const valid = r[3], vs = r.slice(4);
+      const fs = FAMS.map((f) => (valid ? f.m.reduce((t, i) => t + vs[i], 0) / valid : 0));
+      const s = cur(); let sh = 0;
+      if (s.kind !== 'dom' && valid) sh = s.idx.reduce((t, i) => t + vs[i], 0) / valid;
+      return {label: r[0], elig: r[1], voters: r[2], valid, fs, sh};
+    });
+    const s = cur();
+    if (S.bsort === 'sel' && s.kind !== 'dom') rows.sort((a, b) => b.sh - a.sh); else rows.sort((a, b) => parseFloat(a.label) - parseFloat(b.label));
+    clear(wrap);
+    if (!rows.length) { wrap.append(el('div', {class: 'lnote'}, 'אין נתוני קלפיות ליישוב הזה.')); return; }
+    const sortBtns = el('div', {class: 'seg', style: 'max-width:340px;margin-bottom:6px'},
+      el('button', {type: 'button', 'aria-pressed': String(S.bsort === 'sel' && s.kind !== 'dom'), disabled: s.kind === 'dom', onclick: () => { S.bsort = 'sel'; S.bshown = 60; renderSide(); }}, s.kind === 'dom' ? 'לפי הבחירה (בחרו משפחה)' : 'לפי ' + s.name),
+      el('button', {type: 'button', 'aria-pressed': String(S.bsort !== 'sel' || s.kind === 'dom'), onclick: () => { S.bsort = 'num'; S.bshown = 60; renderSide(); }}, 'לפי מספר קלפי'));
+    const shown = rows.slice(0, S.bshown);
+    const tbl = el('table', {class: 'bx'}, el('thead', {}, el('tr', {}, el('th', {}, 'קלפי'), el('th', {}, 'כשרים'), el('th', {}, 'הצבעה'), el('th', {}, 'המשפחות'), s.kind !== 'dom' ? el('th', {}, s.name) : null)),
+      el('tbody', {}, shown.map((r) => {
+        const rest = Math.max(0, 1 - r.fs.reduce((a, b) => a + b, 0));
+        return el('tr', {}, el('td', {class: 'n'}, r.label), el('td', {class: 'n'}, n0(r.valid)), el('td', {class: 'n'}, r.elig ? pc(r.voters / r.elig, 0) : '–'),
+          el('td', {}, el('div', {class: 'fstack'}, FAMS.map((f, i) => el('i', {style: `width:${(100 * r.fs[i]).toFixed(2)}%;background:${fvar(f.slot)}`, title: `${f.n} ${pc(r.fs[i])}`})), el('i', {style: `width:${(100 * rest).toFixed(2)}%;background:${REST}`}))),
+          s.kind !== 'dom' ? el('td', {class: 'n', style: 'font-weight:700'}, pc(r.sh)) : null);
+      })));
+    wrap.append(sortBtns, el('div', {class: 'bwrap'}, tbl),
+      rows.length > shown.length ? el('div', {class: 'btnrow'}, el('button', {class: 'btn', type: 'button', onclick: () => { S.bshown += 100; renderSide(); }}, `הצג עוד (${n0(rows.length - shown.length)} קלפיות)`)) : null,
+      el('div', {class: 'lnote', style: 'margin-top:6px'}, 'כל פס הוא קלפי אחת, לפי חלק המשפחות מהקולות הכשרים בה. קלפיות קטנות (מעט קולות) משתנות בקפיצות.'));
+  }).catch((e) => { console.error('boxes:', e); clear(wrap).append(el('div', {class: 'lnote'}, 'לא הצלחתי לטעון את הקלפיות כרגע.')); });
+}
+function pick(p, zoom) {
+  if (!p || S.picked !== p.id) { S.boxes = false; S.bshown = 60; }
+  S.picked = p ? p.id : null;
+  if (p && zoom) { view.k = 6; view.tx = VB_W / 2 - p.x * view.k; view.ty = VB_H / 2 - p.y * view.k; clampView(); }
+  paint();
+  if (p && stacked()) $('#side').scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  syncHash();
+}
+
+/* ---------------------------------------------------------------- controls and state */
+function setSel(id) { if (!SELBY[id]) return; S.sel = id; if (S.metric === 'change' && !hasCmp()) S.metric = 'share'; paint(); syncHash(); }
+$('#lsel').addEventListener('change', (e) => { if (e.target.value) setSel(e.target.value); });
+$('#mseg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.disabled) return; S.metric = b.dataset.m; paint(); syncHash(); });
+$('#sseg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; S.size = b.dataset.s; paint(); syncHash(); });
+$('#q').addEventListener('input', (e) => {
+  const q = e.target.value.trim(); if (q.length < 2 || !D) return;
+  const hit = PL.find((p) => p.name.startsWith(q)) || PL.find((p) => p.name.includes(q));
+  if (hit) pick(hit, true);
+});
+function syncHash() {
+  const h = `#sel=${encodeURIComponent(S.sel)}&m=${S.metric}&s=${S.size}` + (S.picked != null ? `&p=${S.picked}` : '');
+  try { history.replaceState(null, '', h); } catch (e) { /* file:// or a sandbox */ }
+}
+function readHash() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('sel')) S.sel = h.get('sel');
+  if (h.get('m') === 'change') S.metric = 'change';
+  if (h.get('s') === 'equal') S.size = 'equal';
+  if (h.get('p')) S.picked = Number(h.get('p'));
+}
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change', () => paint());
+new MutationObserver(() => paint()).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawLabels, 120); });
+
+/* ---------------------------------------------------------------- header and footer text */
+function renderTexts() {
+  const b = D.basis, f = D.facts;
+  const iRes = LISTS.findIndex((l) => l.c === 'די'), iLik = LISTS.findIndex((l) => l.c === 'מחל');
+  const resLikud = D.stab && iRes >= 0 && iLik >= 0 ? D.stab[iRes][iLik] : null;
+  $('#eyebrow').textContent = `בחירות 2026 · הספירה האחרונה של הוועדה, נכון ל־${b.asof} · מבוסס על ${(b.valid_all / 1e6).toFixed(2)} מיליון קולות כשרים`;
+  const foot = clear($('#foot'));
+  foot.append(
+    el('p', {}, el('b', {}, 'מה זו משפחה: '), `רשימות שחזקות באותן קלפיות. לכל זוג רשימות מודדים את הקשר בין אחוזי ההצבעה שלהן על פני ${n0(b.boxes)} הקלפיות הרגילות (1 = תמיד חזקות באותם מקומות, 0 = אין קשר, מתחת ל־0 = מתחרות), ומחברים את הדומות לעץ. משפחה היא קבוצת רשימות שהתחברו בעץ לפני מרחק ${D.tree.cut}. שום חלוקה לגושים לא שימשה.`),
+    el('p', {}, el('b', {}, 'מה רואים במפה: '), 'כל נקודה היא יישוב. במצב "כל המשפחות" הצבע הוא המשפחה הגדולה ביותר ביישוב. בבחירת משפחה או רשימה הצבע הוא אחוזה מהקולות הכשרים והשטח הוא מספר הקולות. מצב "שינוי מול 2022" קיים רק איפה שיש מקבילה ברורה ב־2022 (המרכז מול ארבע רשימות המרכז והשמאל, חרדים, ערבים, ישראל ביתנו, והרשימות עם יורש ברור).'),
+    el('p', {}, el('b', {}, 'התוצאות: '), `הספירה האחרונה של ועדת הבחירות לפי הקובץ שעודכן ב־${b.asof}, לא התוצאות הרשמיות. המנדטים מחושבים מהקולות שנספרו בשיטת בדר־עופר, עם הסכמי העודפים לפי דיווחי העיתונות. ${f.wasted_pct.toString()}% מהקולות הלכו לרשימות שלא עברו את החסימה.`),
+    el('p', {}, el('b', {}, 'מה חסר: '), `${n0(D.nocoord.n)} יישובים (${n0(D.nocoord.votes)} קולות) אין להם נקודה במאגר המיקומים ולכן אינם על המפה. המעטפות החיצוניות (חיילים, חולים, אסירים: ${n0(b.env_valid)} קולות כשרים, כ־${Math.round(100 * b.env_valid / b.valid_all)}% מהקולות) אינן שייכות ליישוב ואינן במפה ובניתוח; הקלפיות הרגילות הן ${b.regular_pct.toFixed(0)}% מהקולות.`),
+    el('p', {}, el('b', {}, 'מגבלות: '), 'אלה נתונים של מקומות ולא של מצביעים: יישוב עם הרבה אקדמאים שמצביע לרשימה אינו אומר שאקדמאי מצביע לה. המדדים החברתיים והכלכליים של הלמ״ס הם ברמת הרשות (כ־89% מהקולות). אין מדד ישיר לדתיות, ושיעור המשפחות עם 4 ילדים ומעלה הוא קירוב. המילואימניקים ועמך ישראל לא עברו את החסימה ושיוכם למשפחה הוא לפי הדמיון בלבד.'),
+    el('p', {}, el('b', {}, 'יציבות: '), `ב־${n0(f.boot_n)} דגימות חוזרות של יישובים שלמים, כל זוג וכל שלישייה בתוך משפחה נשארים יחד ב־99% עד 100% מהמקרים. ישראל ביתנו והמילואימניקים הן הפחות יציבות` + (resLikud != null ? ` (המילואימניקים מצטרפים לליכוד ועוצמה ב־${resLikud}% מהדגימות)` : '') + `. העץ ברמת היישוב זהה לעץ ברמת הקלפי (דיוק העץ ${f.cophenetic.toFixed(2)}).`),
+    el('p', {}, el('b', {}, 'המיקום '), 'הוא מרכז היישוב ממאגר ממשלתי פתוח ומקורב לצורכי המחשה. מתאר היבשה מ־Natural Earth (נחלת הכלל), כרקע לאיתור נקודות בלבד ואינו אמירה על גבולות. הקישור "מפת שכונות" פותח את אתר התוצאות הממשלתי (govmap), ממורכז על היישוב; שם הצבע הוא לפי מיקום הקלפי ולא לפי מגורי המצביעים.'),
+    el('details', {}, el('summary', {}, 'התמונה המלאה: עץ, מאפייני המקום והמנדטים לפי משפחה'), el('img', {src: 'fam/families.png', alt: 'עץ הדמיון בין הרשימות, מאפייני המקום של בוחרי כל רשימה והמנדטים לפי משפחה', loading: 'lazy'})));
+}
+
+/* ---------------------------------------------------------------- loading */
+async function load() {
+  try {
+    const r = await fetch(DATA_URL);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    setData(await r.json());
+  } catch (e) {
+    console.error('families data:', e);
+    clear($('#side')).append(el('div', {class: 'err'}, 'לא הצלחתי לטעון את הנתונים. נסו לרענן בעוד רגע.'));
+  }
+}
+readHash();
+load();
+})();
+</script>
+</body>
+</html>
