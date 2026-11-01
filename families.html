@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>משפחות הבוחרים · בחירות 2026</title>
-<meta name="description" content="אילו רשימות דומות זו לזו לפי המקומות שבהם הן חזקות: שש משפחות טבעיות, מפה לפי יישוב וירידה עד רמת הקלפי. הספירה הסופית של בחירות 2026.">
+<meta name="description" content="אילו רשימות דומות זו לזו לפי המקומות שבהם הן חזקות: שש משפחות טבעיות, מפה לפי יישוב וירידה עד רמת הקלפי. וגם ההצבעה, המצביעים שנוספו ותנועת הקולות מ־2022. הספירה הסופית של בחירות 2026.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -226,6 +226,24 @@ table.bx tr:last-child td{border-bottom:0}
   .sidecol>.side{flex:none;overflow:visible;min-height:0}
   .notes{max-height:none;overflow:visible}
 }
+/* turnout and moving votes */
+.sh{font-size:16px;font-weight:800;margin:26px 0 2px;line-height:1.25}
+.mini{display:flex;height:7px;border-radius:4px;overflow:hidden;background:var(--wash);margin-top:4px;gap:1px;min-width:120px}
+.mini i{display:block;height:100%}
+.xt td.hc{text-align:center;direction:ltr;font-weight:600}
+.fl{display:grid;grid-template-columns:minmax(124px,176px) minmax(0,1fr);gap:4px 14px;align-items:center;padding:8px 4px;border-bottom:1px solid var(--grid)}
+.fl .fn{font-weight:700;font-size:13px;line-height:1.3}
+.fl .fn small{display:block;font-weight:500;color:var(--mute);font-size:11.5px;margin-top:1px}
+.fl .fstack{height:14px}
+.fl .ft{grid-column:2;font-size:12px;color:var(--ink2);line-height:1.55}
+.fl .ft .sg{display:inline-block;vertical-align:top;margin:0 0 3px;margin-inline-end:18px;line-height:1.35}
+.fl .ft b{color:var(--ink);font-weight:700}
+.fl .ft .sg em{display:block;font-style:normal;color:var(--mute);font-size:11.5px}
+.xt tr.sub td{font-size:11.5px;color:var(--ink2)}
+.xt tr.sub td:first-child{padding-inline-start:26px}
+.sw2{display:inline-block;width:11px;height:11px;border-radius:3px;margin-inline-end:5px;vertical-align:-1px}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+@media (max-width:560px){.fl{grid-template-columns:1fr}.fl .ft{grid-column:1}}
 </style>
 </head>
 <body>
@@ -240,11 +258,12 @@ table.bx tr:last-child td{border-bottom:0}
     <header>
       <div class="hrow"><div class="hlinks"><a class="toplink" href="./">← לתחזית</a><a class="toplink" href="map.html">מפת הגושים</a></div><div class="eyebrow" id="eyebrow">טוען…</div></div>
       <h1>מי דומה למי? משפחות הבוחרים</h1>
-      <p class="dek">רשימות שחזקות באותם מקומות מרכיבות משפחה, בלי שום חלוקה לגושים. רק הרשימות שעברו את החסימה. בוחרים משפחה או רשימה ורואים אילו יישובים נדלקים, לוחצים על יישוב ויורדים עד רמת הקלפי, ובלשונית "חיבורים אפשריים" רואים מי יכולה להתחבר עם מי.</p>
+      <p class="dek">רשימות שחזקות באותם מקומות מרכיבות משפחה, בלי שום חלוקה לגושים. רק הרשימות שעברו את החסימה. בוחרים משפחה או רשימה ורואים אילו יישובים נדלקים, לוחצים על יישוב ויורדים עד רמת הקלפי, ובלשונית "חיבורים אפשריים" רואים מי יכולה להתחבר עם מי. בלשונית "הצבעה ותנועת קולות" רואים כמה יותר אנשים הצביעו, מי הוסיף אותם ולאן עברו קולות של 2022, ובשורת "הצבעה" אפשר לצבוע את המפה לפי ההצבעה.</p>
     </header>
 
     <section class="controls card">
       <div class="ctl"><span class="cl">משפחות</span><div class="chips" id="chips" role="group" aria-label="בחירת משפחה"></div></div>
+      <div class="ctl"><span class="cl">הצבעה (במקום משפחה)</span><div class="chips" id="tchips" role="group" aria-label="שכבות הצבעה"></div></div>
       <div class="rc">
         <div class="ctl"><label class="cl" for="lsel">או רשימה</label><select id="lsel"></select></div>
         <div class="ctl"><label class="cl" for="q">חיפוש יישוב</label><input id="q" type="search" placeholder="שם יישוב…" autocomplete="off"></div>
@@ -261,7 +280,7 @@ table.bx tr:last-child td{border-bottom:0}
 </div>
 
 <script>
-const DATA_URL = 'fam/families.json', BOX_URL = 'fam/boxes.json';
+const DATA_URL = 'fam/families.json', BOX_URL = 'fam/boxes.json', TURN_URL = 'fam/turnout.json';
 (() => {
 'use strict';
 const $ = (s, r = document) => r.querySelector(s);
@@ -281,7 +300,7 @@ const nf = new Intl.NumberFormat('he-IL');
 const n0 = (x) => nf.format(Math.round(x));
 const num = (t) => el('span', {class: 'num'}, t);
 const pc = (x, d = 1) => (x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
-const spc = (x, d = 1) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d).replace(/\.0+$/, '') + '%';
+const spc = (x, d = 1) => '\u2066' + (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x * 100).toFixed(d).replace(/\.0+$/, '') + '%\u2069';        // LRI..PDI: the sign stays in front of the number inside right-to-left text
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const clear = (e) => { while (e.firstChild) e.removeChild(e.firstChild); return e; };
 const stacked = () => matchMedia('(max-width:860px),(max-height:539px)').matches;
@@ -289,7 +308,7 @@ try { const t = localStorage.getItem('il26-theme'); if (t) document.documentElem
 
 /* ---------------------------------------------------------------- state and data */
 let D = null, LISTS = [], FAMS = [], PL = [], BYID = new Map(), SELS = [], SELBY = {}, BOXES = null, boxesP = null, landDrawn = false;
-const S = {sel: 'dom', metric: 'share', size: 'votes', picked: null, boxes: false, bsort: 'sel', bshown: 60, tab: 'fam', pair: null};
+const S = {sel: 'dom', metric: 'share', size: 'votes', picked: null, boxes: false, bsort: 'sel', bshown: 60, tab: 'fam', pair: null, fdir: 'from'};
 const view = {k: 1, tx: 0, ty: 0};
 const VB_W = 300, VB_H = 760, PAD = 12;
 const svg = $('#map'), gView = $('#view'), gDots = $('#dots'), gLabels = $('#labels'), gLand = $('#land'), tip = $('#tip');
@@ -306,7 +325,7 @@ const REST = 'var(--axis)';
 function setData(d) {
   D = d; LISTS = d.lists; FAMS = d.families;
   PL = d.places.map((a) => {
-    const p = {id: a[0], name: a[1], lon: a[2], lat: a[3], v: a[4], vs: a[5], pop: a[6], g: a[7], nb: a[8], tr: a[9], p22: a[10], ix: a[11], iy: a[12], x2: a[13], sv: 0, sh: 0, d: null, r0: 1, el: null};
+    const p = {id: a[0], name: a[1], lon: a[2], lat: a[3], v: a[4], vs: a[5], pop: a[6], g: a[7], nb: a[8], tr: a[9], p22: a[10], ix: a[11], iy: a[12], x2: a[13], tn: null, sv: 0, sh: 0, d: null, r0: 1, el: null};
     p.fs = FAMS.map((f) => f.m.reduce((t, i) => t + p.vs[i], 0) / p.v);
     let b = 0; p.fs.forEach((x, i) => { if (x > p.fs[b]) b = i; });
     p.dom = b; p.dsh = p.fs[b];
@@ -316,6 +335,7 @@ function setData(d) {
   SELS = [{id: 'dom', name: 'כל המשפחות', kind: 'dom', idx: []}];
   FAMS.forEach((f) => SELS.push({id: 'F:' + f.id, name: f.n, kind: 'fam', idx: f.m, slot: f.slot, fam: f}));
   LISTS.forEach((l, i) => { if (l.c !== '*') SELS.push({id: 'L:' + l.c, name: l.n, kind: 'list', idx: [i], slot: FAMS[l.f].slot, li: i}); });
+  TSELS.forEach(([id, name]) => SELS.push({id, name, kind: 'turn', idx: [], slot: null}));
   SELBY = Object.fromEntries(SELS.map((s) => [s.id, s]));
   if (!SELBY[S.sel]) S.sel = 'dom';
   if (S.metric === 'change' && !hasCmp()) S.metric = 'share';
@@ -335,7 +355,7 @@ function setData(d) {
   }
   clear(gDots);
   PL.forEach((p) => { const c = svgEl('circle', {cx: p.x.toFixed(2), cy: p.y.toFixed(2)}); c.__p = p; p.el = c; gDots.append(c); });
-  buildControls(); renderTexts(); paint();
+  attachTurnout(); buildControls(); renderTexts(); paint();
 }
 
 /* ---------------------------------------------------------------- painting */
@@ -343,6 +363,7 @@ const quant = (arr, f) => { if (!arr.length) return 0; const a = arr.slice().sor
 const rk = () => Math.pow(view.k, -0.62);
 function compute() {
   const s = cur(), k = cmpIdx(), change = S.metric === 'change' && k >= 0;
+  if (isTurn(s)) { computeTurn(s); return; }
   const shs = [], ds = [];
   svmax = 1;
   for (const p of PL) {
@@ -362,12 +383,13 @@ function paint() {
   compute();
   const s = cur(), up = css('--up'), down = css('--down'), mute = css('--mute'), ink = css('--ink');
   const change = S.metric === 'change' && hasCmp(), pk = pickedP(), order = [];
-  const hue = s.kind === 'dom' ? null : fcol(s.slot);
+  const hue = s.kind === 'dom' || isTurn(s) ? null : fcol(s.slot);
   for (const p of PL) {
     const c = p.el;
     p.r0 = !p.sv ? 1.1 : S.size === 'votes' ? 1.3 + 8.2 * Math.sqrt(p.sv / svmax) : 3.2;
     let fill, op;
-    if (s.kind === 'dom') { fill = fcol(FAMS[p.dom].slot); op = .38 + .62 * Math.min(1, p.dsh / .6); }
+    if (isTurn(s)) { [fill, op] = turnFill(s, p, up, down, mute); }
+    else if (s.kind === 'dom') { fill = fcol(FAMS[p.dom].slot); op = .38 + .62 * Math.min(1, p.dsh / .6); }
     else if (change) { if (p.d == null) { fill = mute; op = .12; } else { fill = p.d >= 0 ? up : down; op = .1 + .9 * Math.min(1, Math.abs(p.d) / dmax); } }
     else { fill = hue; op = p.sv ? .1 + .9 * Math.min(1, p.sh / smax) : .06; }
     c.setAttribute('fill', fill); c.setAttribute('fill-opacity', op.toFixed(2));
@@ -455,6 +477,7 @@ svg.addEventListener('pointerleave', () => { tip.style.opacity = 0; });
 function hover(e) {
   const p = e.target.__p; if (!p) { tip.style.opacity = 0; return; }
   const s = cur(), k = cmpIdx();
+  if (isTurn(s)) { showTip(e, p.name, turnTip(s, p)); return; }
   if (s.kind === 'dom') { showTip(e, p.name, `${FAMS[p.dom].n}: ${pc(p.dsh)} · ${n0(p.v)} קולות כשרים`); return; }
   const extra = k >= 0 && p.p22[k] != null ? ` · ב־2022: ${pc(p.p22[k])}` : '';
   showTip(e, p.name, `${s.name}: ${n0(p.sv)} קולות (${pc(p.sh)} מהקולות הכשרים)${extra}`);
@@ -468,6 +491,7 @@ function showTip(e, title, body) {
 /* ---------------------------------------------------------------- panels */
 function renderKpis() {
   const s = cur(), box = clear($('#kpis')), b = D.basis, slot = selSlot(s);
+  if (isTurn(s)) { kpiTurn(box); return; }
   let nat, seats, votes;
   if (s.kind === 'fam') { nat = s.fam.p; seats = s.fam.s; votes = s.fam.v; } else if (s.kind === 'list') { nat = LISTS[s.li].p; seats = LISTS[s.li].s; votes = LISTS[s.li].v; }
   const big = s.kind === 'dom' ? null : PL.filter((p) => p.sh >= .3 && p.v >= 300).length;
@@ -480,6 +504,7 @@ function renderKpis() {
 }
 function renderLegend() {
   const box = clear($('#legend')), s = cur(), change = S.metric === 'change' && hasCmp();
+  if (isTurn(s)) { legendTurn(box, s); return; }
   if (s.kind === 'dom') {
     box.append(el('div', {class: 'lkeys'}, FAMS.map((f) => el('span', {}, el('i', {class: 'cdot', style: `background:${fvar(f.slot)}`}), f.n))),
       el('div', {class: 'lnote'}, 'צבע: המשפחה הגדולה ביותר ביישוב. ככל שהצבע חזק יותר היא גדולה יותר (60% מהקולות ומעלה: מלא). גודל הנקודה: מספר הקולות. כדי לראות משפחה אחת בלי ההסתרה של האחרות, בוחרים אותה למעלה.'));
@@ -501,12 +526,16 @@ function buildControls() {
   const lsel = clear($('#lsel'));
   lsel.append(el('option', {value: ''}, 'בחרו רשימה…'));
   SELS.filter((s) => s.kind === 'list').forEach((s) => lsel.append(el('option', {value: s.id}, s.name + (LISTS[s.li].s ? ` · ${LISTS[s.li].s} מנדטים` : ' · ללא מנדט'))));
+  const tch = clear($('#tchips'));
+  SELS.filter((s) => s.kind === 'turn').forEach((s) => tch.append(el('button', {class: 'chip', type: 'button', 'data-id': s.id, 'aria-pressed': 'false', onclick: () => setSel(s.id)}, s.name)));
 }
 function renderControls() {
+  const turn = isTurn(cur());
   [...$('#chips').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.id === S.sel)));
+  [...$('#tchips').children].forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.id === S.sel)); b.disabled = TNERR; });
   $('#lsel').value = cur().kind === 'list' ? cur().id : '';
   const ok = hasCmp();
-  [...$('#mseg').children].forEach((b) => { b.setAttribute('aria-pressed', String(b.dataset.m === (ok ? S.metric : 'share'))); if (b.dataset.m === 'change') { b.disabled = !ok; b.title = ok ? '' : 'אין מקבילה ברורה ב־2022'; } });
+  [...$('#mseg').children].forEach((b) => { b.setAttribute('aria-pressed', String(!turn && b.dataset.m === (ok ? S.metric : 'share'))); if (b.dataset.m === 'change') { b.disabled = turn || !ok; b.title = turn ? 'שכבת הצבעה נבחרה' : ok ? '' : 'אין מקבילה ברורה ב־2022'; } else b.disabled = turn; });
   [...$('#sseg').children].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.s === S.size)));
 }
 function rankRows(list, a, b) {
@@ -584,7 +613,7 @@ function mergeLine(i) {
     el('li', {}, `${n0(none)} מתוך ${n - 1} הרשימות האחרות הפוכות לה: איפה שהיא חזקה הן חלשות. פירוט בלשונית "חיבורים אפשריים".`)];
 }
 function renderFamilies(box) {
-  const s = cur(), change = S.metric === 'change' && hasCmp();
+  const s0 = cur(), s = famSel(s0) ? s0 : SELBY['dom'], change = S.metric === 'change' && hasCmp();
   const iLi = (c) => LISTS.findIndex((l) => l.c === c);
   box.append(el('div', {class: 'twocol'},
     el('div', {}, el('h2', {}, 'עץ הדמיון'), el('div', {class: 'sub'}, 'ענפים שמתחברים קרוב לשמות הם רשימות שחזקות באותם מקומות. לחיצה על רשימה או על ענף צבעוני בוחרת אותם על המפה.'), renderTree()),
@@ -708,12 +737,281 @@ function renderTime(box) {
   notes.push('החלק של המשפחה הערבית עלה מ־10.8% ב־2022 (רע״ם 4.1%, חד״ש־תע״ל 3.8% ובל״ד 2.9%, שלא עברה את החסימה) ל־' + T.series[0][n - 1] + '% ב־2026. זה תואם את עליית ההצבעה ביישובים הערביים: מ־54% ל־80%.');
   box.append(el('ul', {class: 'facts', style: 'margin-top:8px'}, notes.map((t) => el('li', {}, t))));
 }
+/* ---------------------------------------------------------------- turnout, added voters, potential and moving votes (fam/turnout.json) */
+const TSELS = [['T:t26', 'אחוז ההצבעה'], ['T:dt', 'שינוי בהצבעה מול 2022'], ['T:add', 'מצביעים שנוספו'], ['T:pot', 'פוטנציאל נוסף']];
+let TN = null, TNERR = false;
+const TS = {lo: .5, hi: .9, dt: .05, add: .3, pot: .05};            // the scales of the map layers, set from the places in computeTurn()
+const isTurn = (s) => s.kind === 'turn';
+const famSel = (s) => s.kind === 'fam' || s.kind === 'list';
+const sgn = (x) => '\u2066' + (x > 0 ? '+' : x < 0 ? '−' : '') + n0(Math.abs(x)) + '\u2069';
+const p1 = (x) => x.toFixed(1) + '%';
+const clamp01 = (x) => Math.max(0, Math.min(1, x));
+const tOf = (p) => (p.tn && p.tn.e26 > 0 ? p.tn.v26 / p.tn.e26 : null);
+const t22Of = (p) => (p.tn && p.tn.e22 > 0 ? p.tn.v22 / p.tn.e22 : null);
+function attachTurnout() {
+  if (!TN) return;
+  for (const p of PL) { const a = TN.places[String(p.id)]; p.tn = a ? {e22: a[0], v22: a[1], e26: a[2], v26: a[3], bench: a[4], pot: a[5]} : null; }
+}
+function splitAdd(n) {                       // the exact split of the change in voters: a bigger roll at the 2022 turnout, and a higher turnout on the 2026 roll
+  const a = n.v26 - n.v22, g = n.e22 ? Math.round((n.e26 - n.e22) * n.v22 / n.e22) : a;
+  return {a, g, t: a - g};
+}
+function computeTurn(s) {
+  const ts = [], ds = [], as = [], gs = [];
+  svmax = 1;
+  for (const p of PL) {
+    const n = p.tn; let sv = 0;
+    if (n) {
+      sv = s.id === 'T:add' ? Math.abs(n.v26 - n.v22) : s.id === 'T:pot' ? n.pot : n.v26;
+      if (n.e26 >= 300) {
+        ts.push(tOf(p)); gs.push(n.pot / n.e26);
+        if (n.e22 >= 300 && n.v22 > 0) { ds.push(Math.abs(tOf(p) - t22Of(p))); as.push(Math.abs(n.v26 - n.v22) / n.v22); }
+      }
+    }
+    p.sv = sv; p.sh = 0; p.d = null;
+    if (sv > svmax) svmax = sv;
+  }
+  TS.lo = quant(ts, .05); TS.hi = Math.max(TS.lo + .05, quant(ts, .95));
+  TS.dt = Math.max(.03, quant(ds, .95)); TS.add = Math.max(.05, quant(as, .95)); TS.pot = Math.max(.02, quant(gs, .95));
+}
+function turnFill(s, p, up, down, mute) {
+  const n = p.tn; if (!n) return [mute, .12];
+  const t = tOf(p), t0 = t22Of(p);
+  if (s.id === 'T:t26') return [up, .1 + .9 * clamp01((t - TS.lo) / (TS.hi - TS.lo))];
+  if (s.id === 'T:dt') { if (t0 == null) return [mute, .12]; const d = t - t0; return [d >= 0 ? up : down, .1 + .9 * clamp01(Math.abs(d) / TS.dt)]; }
+  if (s.id === 'T:add') { const a = n.v26 - n.v22; return [a >= 0 ? up : down, .15 + .85 * clamp01(Math.abs(a) / Math.max(1, n.v22) / TS.add)]; }
+  return [up, n.pot ? .12 + .88 * clamp01(n.pot / n.e26 / TS.pot) : .05];                 // T:pot
+}
+function turnTip(s, p) {
+  const n = p.tn; if (!n) return 'אין נתוני הצבעה ליישוב';
+  const t = tOf(p), t0 = t22Of(p), base = `${n0(n.v26)} מצביעים מתוך ${n0(n.e26)} (${pc(t)})`;
+  if (s.id === 'T:dt') return t0 == null ? `${base} · אין מקבילה ב־2022` : `ההצבעה ${t >= t0 ? 'עלתה' : 'ירדה'} מ־${pc(t0)} ל־${pc(t)} · ${base}`;
+  if (s.id === 'T:add') { const x = splitAdd(n); return `${sgn(x.a)} מצביעים מול 2022 (${n0(n.v22)} ← ${n0(n.v26)}): ${sgn(x.g)} מגידול הפנקס, ${sgn(x.t)} משינוי באחוז ההצבעה`; }
+  if (s.id === 'T:pot') return n.pot ? `פוטנציאל ${n0(n.pot)} קולות: ההצבעה ${pc(t)}, ביישובים דומים ${p1(n.bench)}` : `ההצבעה (${pc(t)}) כבר ברמת יישובים דומים (${p1(n.bench)})`;
+  return base + (t0 != null ? ` · ב־2022: ${pc(t0)}` : '');
+}
+function legendTurn(box, s) {
+  const up = css('--up'), down = css('--down'), card = css('--card');
+  const ramp = () => el('div', {class: 'ramp', style: `background:linear-gradient(to left,color-mix(in srgb,${up} 10%,transparent),${up})`});
+  const two = () => el('div', {class: 'ramp', style: `background:linear-gradient(to left,${up},${card} 50%,${down})`});
+  if (s.id === 'T:t26') box.append(ramp(), el('div', {class: 'rl'}, el('span', {}, num(pc(TS.lo, 0))), el('span', {}, num(pc(TS.hi, 0) + ' ומעלה'))),
+    el('div', {class: 'lnote'}, 'הצבע: אחוז ההצבעה ביישוב ב־2026 מתוך בעלי זכות הבחירה (קלפיות רגילות). גודל הנקודה: מספר המצביעים.'));
+  else if (s.id === 'T:dt') box.append(two(), el('div', {class: 'rl'}, el('span', {}, `ההצבעה עלתה (עד ${spc(TS.dt, 0)})`), el('span', {}, `ירדה (עד ${spc(-TS.dt, 0)})`)),
+    el('div', {class: 'lnote'}, 'השינוי באחוז ההצבעה של היישוב מול 2022: ככל שהצבע חזק יותר השינוי גדול יותר. גודל הנקודה: מספר המצביעים ב־2026.'));
+  else if (s.id === 'T:add') box.append(two(), el('div', {class: 'rl'}, el('span', {}, 'יותר מצביעים מ־2022'), el('span', {}, 'פחות מצביעים')),
+    el('div', {class: 'lnote'}, `גודל הנקודה: כמה מצביעים נוספו (או ירדו) מול 2022. הצבע: השינוי ביחס למצביעים של 2022, מלא מ־${Math.round(TS.add * 100)}% ומעלה.`));
+  else box.append(ramp(), el('div', {class: 'rl'}, el('span', {}, num('0%')), el('span', {}, num(pc(TS.pot, 0) + ' מהרשומים ומעלה'))),
+    el('div', {class: 'lnote'}, 'פוטנציאל: כמה קולות היו נוספים אילו ההצבעה ביישוב הייתה מגיעה לרמה של העשירון העליון של יישובים דומים (אותה אוכלוסייה, אותה רמה חברתית־כלכלית). גודל הנקודה: מספר הקולות. הצבע: חלקם מהרשומים ביישוב. תרחיש ולא תחזית.'));
+}
+function kpiTurn(box) {
+  const ser = TN ? TN.national.series : null, all = TN ? TN.groups.find((g) => g.g === 'all') : null, k = (big, small) => el('div', {class: 'kpi'}, el('b', {}, big), el('span', {}, small));
+  box.append(
+    k(ser ? num(p1(ser[ser.length - 1].t)) : '…', ser ? `הצבעה בארץ, כולל מעטפות (ב־2022: ${p1(ser[ser.length - 2].t)})` : TNERR ? 'נתוני ההצבעה לא נטענו' : 'טוען…'),
+    k(all ? num(sgn(all.dV)) : '…', 'מצביעים נוספים בקלפיות הרגילות מול 2022'),
+    k(TN ? num(n0(TN.potential.potential)) : '…', 'קולות פוטנציאליים (תרחיש, ראו בלשונית "הצבעה ותנועת קולות")'),
+    k(num(n0(D.basis.valid_all)), 'קולות כשרים בספירה האחרונה'));
+}
+
+/* ---- the tab */
+const SH = (t, id) => el('div', {class: 'sh', 'data-sec': id || null}, t);
+const heat = (v, mx) => (v ? `background:color-mix(in srgb,${v > 0 ? 'var(--up)' : 'var(--down)'} ${(8 + 52 * Math.min(1, Math.abs(v) / mx)).toFixed(0)}%,transparent)` : '');
+const cell2 = (a, b, f = n0) => el('td', {}, el('div', {class: 'b'}, num(f(a))), el('div', {class: 'm'}, 'ב־2022: ', num(f(b))));
+const th = (hs) => el('thead', {}, el('tr', {}, hs.map((h) => el('th', {}, h))));
+const tblWrap = (t) => el('div', {class: 'bwrap', style: 'max-height:none'}, t);
+function renderTurn(box) {
+  if (!TN) { box.append(el('div', {class: 'err'}, TNERR ? 'לא הצלחתי לטעון את נתוני ההצבעה. נסו לרענן בעוד רגע.' : 'טוען את נתוני ההצבעה…')); return; }
+  box.append(el('h2', {}, 'הצבעה ותנועת קולות'),
+    el('div', {class: 'sub'}, 'מה השתנה בין 2022 ל־2026: כמה יותר אנשים הצביעו, מי הוסיף אותם, למי נוספו הקולות, לאן עברו קולות של 2022 וכמה עוד אפשר היה להוסיף. את שכבות ההצבעה אפשר לראות גם על המפה (שורת "הצבעה" למעלה).'));
+  box.append(el('div', {class: 'tabs', style: 'margin:8px 0 0'}, [['sum', 'בקצרה'], ['nat', 'ההצבעה בארץ'], ['grp', 'מי הוסיף'], ['fam', 'למי נוספו'], ['flow', 'תנועת קולות'], ['pot', 'פוטנציאל']].map(([id, lab]) =>
+    el('button', {class: 'chip', type: 'button', style: 'font-size:12px;padding:3px 10px', onclick: () => { const t = box.querySelector(`[data-sec="${id}"]`); if (t) t.scrollIntoView({block: 'start', behavior: 'smooth'}); }}, lab))));
+  turnSummary(box); turnNational(box); turnGroups(box); turnFamilies(box); turnFlows(box); turnPotential(box);
+}
+function turnSummary(box) {
+  const ser = TN.national.series, a = ser[ser.length - 1], b = ser[ser.length - 2];
+  const all = TN.groups.find((g) => g.g === 'all'), gs = TN.groups.filter((g) => g.g !== 'all'), F = TN.families, FL = TN.flows, P = TN.potential;
+  const byAdd = gs.slice().sort((x, y) => y.dV - x.dV), byJump = gs.slice().sort((x, y) => (y.t26 - y.t22) - (x.t26 - x.t22)).slice(0, 3);
+  const gain = F.rows.filter((r) => r.change > 0).sort((x, y) => y.change - x.change), loss = F.rows.filter((r) => r.change < 0).sort((x, y) => x.change - y.change);
+  const ft = (r) => `${r.f} ${sgn(r.change)}` + ((F.lists || []).some((l) => l.f === r.f) ? ` (${F.lists.filter((l) => l.f === r.f).map((l) => `${listName(l.c)} ${sgn(l.change)}`).join(', ')})` : '');
+  const li = [
+    `ההצבעה בארץ עלתה מ־${p1(b.t)} ל־${p1(a.t)}: ${n0(a.V)} מצביעים לעומת ${n0(b.V)} (${sgn(a.V - b.V)}), כולל המעטפות החיצוניות.`,
+    `בקלפיות הרגילות נוספו ${n0(all.dV)} מצביעים: ${n0(all.growth)} כי יש יותר בעלי זכות בחירה, ו־${n0(all.turn)} כי אחוז ההצבעה עלה.`,
+    'מי הוסיף: ' + byAdd.map((g) => `${g.n} ${sgn(g.dV)} (${Math.round(100 * g.dV / all.dV)}%)`).join(', ') + '. הקפיצה הגדולה באחוז ההצבעה: ' + byJump.map((g) => `${g.n} מ־${p1(g.t22)} ל־${p1(g.t26)}`).join(', ') + '.',
+    `הקולות הכשרים בקלפיות הרגילות גדלו ב־${n0(F.added_valid)}. גדלו: ${gain.map(ft).join(', ')}. קטנו: ${loss.map(ft).join(', ')}. הרשימות שלא עברו את החסימה: ${sgn(F.rest26 - F.rest22)}.`];
+  if (FL) {
+    const O = FL.origins, Dd = FL.dests;
+    const tops = O.map((o, i) => ({o, fs: FL.flows.filter((f) => f.o === i).sort((x, y) => y.pct - x.pct)})).filter((r) => r.fs.length && r.o.k !== 'rest');
+    const still = tops.filter((r) => r.fs[0].pct >= 85), moved = tops.filter((r) => r.fs[0].pct < 85).sort((x, y) => y.o.v * (1 - y.fs[0].pct / 100) - x.o.v * (1 - x.fs[0].pct / 100));
+    const part = (r, n) => `${r.o.s}: ` + r.fs.slice(0, n).map((f) => `${Math.round(f.pct)}% ${Dd[f.d].s}`).join(', ');
+    li.push('תנועת קולות (אומדן): כמעט לא זזו, 85% ויותר באותה רשימה או ברשימה שאליה התאחדו: ' + still.map((r) => part(r, 1)).join('; ') + '.');
+    li.push('הכי הרבה קולות זזו: ' + moved.slice(0, 4).map((r) => `${r.o.n.replace(/ \(.*\)$/, '')} (${n0(r.o.v)} קולות ב־2022) ${part(r, 3).replace(/^[^:]*: /, '')}`).join('; ') + '.');
+  }
+  li.push(`פוטנציאל (תרחיש): ${n0(P.nonvoters)} בעלי זכות בחירה לא הצביעו בקלפיות הרגילות. אילו בכל יישוב ההצבעה הייתה מגיעה לרמה של העשירון העליון של יישובים דומים, היו נוספים ${n0(P.potential)} קולות.`);
+  box.append(SH('בקצרה', 'sum'), el('ul', {class: 'facts'}, li.map((t) => el('li', {}, t))));
+}
+function turnNational(box) {
+  const N = TN.national, ser = N.series, n = ser.length, last = ser[n - 1];
+  box.append(SH('אחוז ההצבעה בארץ, 2019 עד 2026', 'nat'));
+  const W = 560, H = 176, plotL = 50, plotR = W - 74, top = 24, bot = 28, y0 = 60, y1 = 80;
+  const xi = (i) => plotR - (plotR - plotL) * i / (n - 1), yi = (v) => top + (H - top - bot) * (1 - (v - y0) / (y1 - y0));
+  const sv = svgEl('svg', {viewBox: `0 0 ${W} ${H}`, class: 'tchart', role: 'img', 'aria-label': `אחוז ההצבעה הארצי בכל בחירות מ־${ser[0].label} עד ${last.label}. הטבלה מתחת לתרשים מציגה את אותם מספרים.`});
+  for (let y = y0; y <= y1; y += 5) {
+    sv.append(svgEl('line', {x1: plotL - 14, x2: plotR + 14, y1: yi(y), y2: yi(y), class: 'gl'}));
+    const t = svgEl('text', {x: plotR + 40, y: yi(y) + 3.5, class: 'tk'}); t.textContent = y + '%'; sv.append(t);
+  }
+  ser.forEach((r, i) => { const t = svgEl('text', {x: xi(i), y: H - 9, 'text-anchor': 'middle', class: 'tk'}); t.textContent = r.label; sv.append(t); });
+  const pts = ser.map((r, i) => [xi(i), yi(r.t)]);
+  sv.append(svgEl('polyline', {points: pts.map((p) => p.map((x) => x.toFixed(1)).join(',')).join(' '), fill: 'none', stroke: 'var(--up)', 'stroke-width': 2.4, 'stroke-linejoin': 'round', 'stroke-linecap': 'round'}));
+  pts.forEach((p, i) => { const c = svgEl('circle', {cx: p[0].toFixed(1), cy: p[1].toFixed(1), r: 4.2, fill: 'var(--up)', class: 'tdot'}); const tt = svgEl('title'); tt.textContent = `${ser[i].label}: ${p1(ser[i].t)} · ${n0(ser[i].V)} מצביעים מתוך ${n0(ser[i].E)}`; c.append(tt); sv.append(c); });
+  [0, n - 2, n - 1].forEach((i) => { const t = svgEl('text', {x: pts[i][0].toFixed(1), y: (pts[i][1] - 9).toFixed(1), 'text-anchor': 'middle', class: 'tl2'}); t.textContent = p1(ser[i].t); sv.append(t); });
+  box.append(sv);
+  const rows = ser.map((r, i) => el('tr', {class: i === n - 1 ? 'avg' : ''}, el('td', {class: 'b'}, r.label), el('td', {}, num(n0(r.E))), el('td', {}, num(n0(r.V))), el('td', {class: 'b'}, num(p1(r.t))), el('td', {}, i ? num(sgn(r.V - ser[i - 1].V)) : '–')));
+  box.append(tblWrap(el('table', {class: 'xt tt'}, th(['בחירות', 'בעלי זכות בחירה', 'הצביעו', 'אחוז ההצבעה', 'שינוי במצביעים מהבחירות הקודמות']), el('tbody', {}, rows))));
+  box.append(el('div', {class: 'lnote', style: 'margin-top:5px'}, `אחוז ההצבעה הארצי כולל את המעטפות החיצוניות (חיילים, חולים, אסירים ואחרים: ${n0(N.env26)} מצביעים ב־2026), ולכן הוא גבוה מאחוז ההצבעה בקלפיות הרגילות בלבד: ${n0(N.reg26)} מצביעים, ${p1(100 * N.reg26 / last.E)} מבעלי זכות הבחירה. בין 2022 ל־2026 נוספו גם ${n0(last.E - ser[n - 2].E)} בעלי זכות בחירה בפנקס.`));
+}
+function turnGroups(box) {
+  const all = TN.groups.find((g) => g.g === 'all'), gs = TN.groups.filter((g) => g.g !== 'all'), mx = Math.max(...gs.map((g) => g.dV));
+  box.append(SH('מי הוסיף את המצביעים', 'grp'),
+    el('div', {class: 'sub'}, `קלפיות רגילות, ${n0(all.settlements)} יישובים שקיימים בשתי הבחירות. החשבון מדויק ובלי הערכות: התוספת היא גידול הפנקס (בעלי זכות בחירה חדשים, בהצבעה כמו ב־2022) ועוד אחוז הצבעה גבוה יותר (על הפנקס של 2026).`));
+  const add = (g, bar) => el('td', {style: 'min-width:200px'}, el('div', {class: 'b'}, num(sgn(g.dV))), el('div', {class: 'm'}, 'פנקס ', num(n0(g.growth)), ' · הצבעה ', num(n0(g.turn))),
+    bar ? el('div', {class: 'mini'}, el('i', {style: `width:${(100 * Math.max(0, g.growth) / mx).toFixed(1)}%;background:var(--axis)`}), el('i', {style: `width:${(100 * Math.max(0, g.turn) / mx).toFixed(1)}%;background:var(--up)`})) : null);
+  const row = (g, bar) => el('tr', {class: bar ? '' : 'avg'}, el('td', {}, el('div', {class: 'b'}, g.n), el('div', {class: 'm'}, `${n0(g.settlements)} יישובים`)), cell2(g.t26, g.t22, p1), cell2(g.E26, g.E22), cell2(g.V26, g.V22), add(g, bar));
+  box.append(tblWrap(el('table', {class: 'xt'}, th(['סוג יישוב', 'אחוז הצבעה', 'בעלי זכות בחירה', 'הצביעו', 'מצביעים שנוספו']), el('tbody', {}, gs.map((g) => row(g, true)), row(all, false)))),
+    el('div', {class: 'mleg'}, el('span', {}, el('i', {class: 'sw2', style: 'background:var(--axis)'}), 'פנקס גדול יותר'), el('span', {}, el('i', {class: 'sw2', style: 'background:var(--up)'}), 'אחוז הצבעה גבוה יותר')));
+}
+function turnFamilies(box) {
+  const F = TN.families, rows = F.rows, sum = (k) => rows.reduce((t, r) => t + r[k], 0);
+  const restChg = F.rest26 - F.rest22, restVol = F.added_valid - sum('volume'), restPref = restChg - restVol;
+  const mxc = Math.max(...rows.map((r) => Math.max(Math.abs(r.pref), Math.abs(r.volume), Math.abs(r.change))), Math.abs(restPref));
+  box.append(SH('למי נוספו הקולות', 'fam'),
+    el('div', {class: 'sub'}, `הקולות הכשרים בקלפיות הרגילות גדלו ב־${n0(F.added_valid)}. השינוי של כל משפחה מחולק בחשבון מדויק לשניים: "יותר מצביעים" = מה שהייתה מקבלת אילו המצביעים הנוספים בכל יישוב היו מתחלקים בדיוק כמו מצביעי 2022 באותו יישוב, ו"שינוי בהעדפה" = כל השאר, כלומר השינוי בחלק שהמשפחה מקבלת ביישוב.`));
+  const mk = (name, dot, v22, v26, chg, vol, pref, cls) => {
+    const ht = (v) => (cls === 'avg' ? '' : heat(v, mxc));
+    return el('tr', {class: cls || ''}, el('td', {}, dot ? el('i', {class: 'fdot', style: `background:${dot};display:inline-block;margin-inline-end:6px`}) : null, name),
+      cell2(v26, v22), el('td', {class: 'b', style: ht(chg)}, num(sgn(chg))), el('td', {style: ht(vol)}, vol == null ? '–' : num(sgn(vol))), el('td', {style: ht(pref)}, pref == null ? '–' : num(sgn(pref))));
+  };
+  const tot22 = sum('v22') + F.rest22, tot26 = sum('v26') + F.rest26;
+  box.append(tblWrap(el('table', {class: 'xt'}, th(['משפחה', 'קולות כשרים', 'שינוי', 'בגלל יותר מצביעים', 'בגלל שינוי בהעדפה']),
+    el('tbody', {}, rows.map((r) => { const f = FAMS.find((x) => x.n === r.f); return [mk(r.f, f ? fvar(f.slot) : null, r.v22, r.v26, r.change, r.volume, r.pref),
+        (F.lists || []).filter((l) => l.f === r.f).map((l) => mk(listName(l.c), null, l.v22, l.v26, l.change, l.volume, l.pref, 'sub'))]; }),
+      mk('לא עברו את החסימה', REST, F.rest22, F.rest26, restChg, restVol, restPref), mk('סך הכול', null, tot22, tot26, tot26 - tot22, F.added_valid, 0, 'avg')))));
+  box.append(el('div', {class: 'lnote', style: 'margin-top:4px'}, 'שורות הרשימות מתחת למשפחה: ב־2022 הרשימה הקודמת הברורה שלהן (רע״ם, חד״ש־תע״ל, ש״ס ויהדות התורה). הרשימות באותה משפחה הן יריבות בתוך המגזר ולא גוש אחד. בשאר המשפחות אין לכל רשימה של 2026 רשימה קודמת אחת ברורה.'));
+  const LL = F.lists || [], shs = LL.find((l) => l.c === 'שס'), utj = LL.find((l) => l.c === 'ג'), ram = LL.find((l) => l.c === 'עם'), jl = LL.find((l) => l.c === 'ודם'), bal = TN.flows ? TN.flows.origins.find((o) => o.k === 'bal') : null;
+  const rzf = rows.find((r) => r.f === 'דתיים־לאומיים'), lk = rows.find((r) => r.f === 'ליכוד ועוצמה'), hr = rows.find((r) => r.f === 'חרדים'), ar = rows.find((r) => r.f === 'ערבים');
+  const notes = [];
+  if (rzf && lk) notes.push(`ב־2022 עוצמה יהודית רצה ברשימה אחת עם הציונות הדתית (${n0(rzf.v22)} קולות כשרים בקלפיות הרגילות). לכן 2022 נספרת כולה במשפחת הדתיים־הלאומיים ו־2026 בשתי משפחות: חלק מהירידה של הדתיים־הלאומיים (${sgn(rzf.change)}) וחלק מהעלייה של ליכוד ועוצמה (${sgn(lk.change)}) הם שינוי בשיוך ולא קולות שעברו.`);
+  if (hr) notes.push(`החרדים: ${n0(hr.volume)} קולות היו מתווספים להם רק מכך שהצביעו יותר ביישוביהם, אבל חלקם מהקולות ירד (שינוי בהעדפה ${sgn(hr.pref)}), ולכן בסך הכול ${sgn(hr.change)}` + (shs && utj ? `: ${listName('שס')} ${sgn(shs.change)} ו${listName('ג')} ${sgn(utj.change)}.` : '.'));
+  if (ar) notes.push(`הערבים: ${n0(ar.volume)} מתוך ${n0(ar.change)} באים רק מכך שביישובים הערביים הצביעו הרבה יותר. החשבון אינו אומר שאלה מצביעים "חדשים" של המשפחה: הוא מניח שהמצביעים הנוספים התחלקו כמו מצביעי 2022 באותו יישוב.`);
+  if (ram && jl) notes.push(`רע״ם והמשותפת אינן גוש אחד: רע״ם ${sgn(ram.change)} (מזה ${n0(ram.volume)} רק מכך שהצביעו יותר ביישוביה), והמשותפת ${sgn(jl.change)} (מזה ${n0(jl.pref)} שינוי בהעדפה).` + (bal ? ` המשותפת ב־2026 כוללת גם את בל״ד, שב־2022 לא עברה את החסימה (${n0(bal.v)} קולות) ולכן אינה בבסיס שלה ב־2022: חלק גדול מהשינוי בהעדפה שלה הוא הצטרפות.` : ''));
+  box.append(el('ul', {class: 'facts', style: 'margin-top:8px'}, notes.map((t) => el('li', {}, t))));
+  // where the preferences changed: the same split by the kind of settlement
+  const gnames = Object.fromEntries(TN.groups.map((g) => [g.g, g.n])), gk = Object.keys(F.by_group);
+  const mx2 = Math.max(...gk.flatMap((k) => F.by_group[k].map((r) => Math.abs(r.pref))));
+  box.append(el('div', {class: 'st', style: 'margin-top:14px'}, 'שינוי בהעדפה לפי סוג יישוב (קולות)'),
+    tblWrap(el('table', {class: 'xt'}, th(['סוג יישוב', ...rows.map((r) => r.f)]),
+      el('tbody', {}, gk.map((k) => el('tr', {}, el('td', {class: 'b'}, gnames[k] || k), F.by_group[k].map((r) => el('td', {class: 'hc', style: heat(r.pref, mx2)}, sgn(r.pref)))))))),
+    el('div', {class: 'lnote', style: 'margin-top:4px'}, 'מספר חיובי: המשפחה קיבלה ביישובים מהסוג הזה יותר ממה שהייתה מקבלת אילו מצביעי כל יישוב התחלקו כמו ב־2022. שלילי: פחות. הגוון חזק יותר ככל שהסכום גדול יותר.'));
+}
+
+/* ---- votes that moved: an ecological estimate of how the voters of each 2022 list voted in 2026 */
+const listName = (c) => { const l = LISTS.find((x) => x.c === c); return l ? l.n : c; };
+const FLOW_CODE = {likud: 'מחל', otz: 'ב', rz: 'ט', shas: 'שס', utj: 'ג', ben: 'רק', eis: 'דרך', dem: 'אמת', yb: 'ל', jl: 'ודם', ram: 'עם', yesh: 'דרך', nu: 'דרך', lab: 'אמת', had: 'ודם'};
+const flowSlot = (k) => { const c = FLOW_CODE[k], l = c ? LISTS.find((x) => x.c === c) : null; return l && l.f != null ? FAMS[l.f].slot : null; };
+const SHADE = [1, .64, .42, .3];
+function flowRow(name, sub, segs, ranges) {
+  const seen = {};
+  const bar = el('div', {class: 'fstack'}, segs.map((g) => {
+    const key = String(g.slot), r = key in seen ? seen[key] + 1 : 0; seen[key] = r;
+    return el('i', {style: `width:${g.pct}%;background:${g.slot == null ? REST : fvar(g.slot)};opacity:${SHADE[Math.min(r, SHADE.length - 1)]}`, title: `${g.name}: ${Math.round(g.pct)}% · ${n0(g.votes)} קולות`});
+  }));
+  const txt = el('div', {class: 'ft'}, segs.map((g) => el('span', {class: 'sg'}, el('b', {}, g.name), ' ', num(Math.min(100, Math.round(g.pct)) + '%'),
+    el('em', {}, num(n0(g.votes)), ' קולות', ranges && g.lo != null && Math.round(g.lo) !== Math.round(g.hi) ? [' · טווח ', num(`${Math.round(g.lo)}%–${Math.min(100, Math.round(g.hi))}%`)] : null))));
+  return el('div', {class: 'fl'}, el('div', {class: 'fn'}, name, el('small', {}, sub)), bar, txt);
+}
+function turnFlows(box) {
+  const F = TN.flows;
+  if (!F) return;
+  const O = F.origins, Dd = F.dests;
+  box.append(SH('איזה קולות עברו ולאן', 'flow'),
+    el('div', {class: 'sub'}, `אומדן סטטיסטי לפי ${n0(F.settlements)} יישובים: איך מצביעי כל רשימה של 2022 התפלגו בין הרשימות של 2026. הרשימות של 2022 הן אלה שעברו את החסימה, מרצ ובל״ד (שלא עברו) ושאר הקולות שלא עברו; הרשימות של 2026 הן 11 שעברו ושורה אחת לאלה שלא עברו.`));
+  box.append(el('div', {class: 'seg', style: 'max-width:560px;margin:8px 0 4px'}, [['from', 'לפי 2022: לאן הלכו הקולות'], ['to', 'לפי 2026: מאיפה הגיעו']].map(([id, lab]) =>
+    el('button', {type: 'button', 'aria-pressed': String(S.fdir === id), onclick: () => { const sd = $('#side'), a = sd.scrollTop, b = window.scrollY; S.fdir = id; renderSide(); syncHash(); sd.scrollTop = a; window.scrollTo(0, b); }}, lab))));
+  const wrap = el('div', {});
+  if (S.fdir === 'to') {
+    Dd.map((d, j) => ({d, j})).sort((a, b) => (a.d.k === 'rest') - (b.d.k === 'rest') || b.d.a - a.d.a).forEach(({d, j}) => {
+      const parts = O.map((o, i) => ({i, votes: o.v * F.T[i][j]})).filter((x) => x.votes >= 5000 && x.votes / d.v >= .015).sort((x, y) => y.votes - x.votes);
+      const segs = parts.map((x) => ({name: O[x.i].s, pct: Math.round(1000 * x.votes / d.v) / 10, votes: Math.round(x.votes / 100) * 100, slot: flowSlot(O[x.i].k)}));
+      const rem = 100 - segs.reduce((t, g) => t + g.pct, 0);
+      if (rem >= .5) segs.push({name: 'אחרים', pct: Math.round(rem * 10) / 10, votes: Math.max(0, Math.round((d.v - parts.reduce((t, x) => t + x.votes, 0)) / 100) * 100), slot: null});
+      wrap.append(flowRow(d.n, ['בפועל ', num(n0(d.a)), ' קולות · לפי מצביעי 2022 ', num(n0(d.v)), ' · הפרש ', num(sgn(d.a - d.v))], segs, false));
+    });
+  } else {
+    O.map((o, i) => ({o, i})).sort((a, b) => (a.o.k === 'rest') - (b.o.k === 'rest') || b.o.v - a.o.v).forEach(({o, i}) => {
+      const fs = F.flows.filter((f) => f.o === i).sort((x, y) => y.pct - x.pct);
+      const segs = fs.map((f) => ({name: Dd[f.d].s, pct: f.pct, votes: f.votes, lo: f.lo, hi: f.hi, slot: flowSlot(Dd[f.d].k)}));
+      const rem = 100 - segs.reduce((t, g) => t + g.pct, 0);
+      if (rem >= .5) segs.push({name: 'אחרים', pct: Math.round(rem * 10) / 10, votes: Math.max(0, Math.round((o.v - fs.reduce((t, f) => t + f.votes, 0)) / 100) * 100), slot: null});
+      wrap.append(flowRow(o.n, [num(n0(o.v)), ' קולות ב־2022'], segs, true));
+    });
+  }
+  box.append(wrap, el('div', {class: 'lnote', style: 'margin-top:4px'}, 'צבע הפס הוא המשפחה של הרשימה שבפס (בתצוגה לפי 2022: הרשימה של 2026; בתצוגה לפי 2026: הרשימה של 2022). גוונים שונים של אותו צבע הם רשימות שונות באותה משפחה; אפור הוא רשימות שלא עברו את החסימה.'));
+  const ev = F.flows.find((f) => O[f.o].k === 'rz' && Dd[f.d].k === 'otz');
+  const notes = [
+    `זה אומדן סטטיסטי של מקומות ולא סקר של אנשים. הוא מחפש את ההעברות שמסבירות הכי טוב איך חלקן של הרשימות בכל אחד מ־${n0(F.settlements)} היישובים ב־2022 הפך לחלקן ב־2026, והטווח (10% עד 90%) מגיע מ־${F.boot} דגימות חוזרות של יישובים. שורות עם מעט קולות או טווח רחב אינן יציבות.`,
+    'הוא מתאר מצביעים שהצביעו בשתי הבחירות. מי שלא הצביע ב־2022 או הצביע לראשונה לא נספר בו, ולכן בתצוגה לפי 2026 יש הפרש בין הקולות בפועל לבין מה שמצביעי 2022 מסבירים: אלה בעיקר מצביעים נוספים, והשאר שגיאת אומדן. ההפרש גדול ברשימות הערביות, איפה שההצבעה קפצה.',
+    ev ? `ב־2022 הציונות הדתית, עוצמה יהודית ונעם רצו ברשימה אחת: ${ev.pct}% מקולותיה "עברו" כאן לעוצמה (${n0(ev.votes)} קולות). לא כולם בחרו אחרת: חלק מהם הצביעו לעוצמה כבר ב־2022.` : null,
+    'מרצ ובל״ד לא עברו את החסימה ב־2022 והן מוצגות בנפרד מ"אחרות" כי המקומות החזקים שלהן שונים מאוד. ב־2026 העבודה ומרצ התאחדו בדמוקרטים, ובל״ד הצטרפה למשותפת.'].filter(Boolean);
+  box.append(el('ul', {class: 'facts', style: 'margin-top:6px'}, notes.map((t) => el('li', {}, t))));
+}
+
+/* ---- potential: a scenario, with its benchmark and the seats it would move */
+function turnPotential(box) {
+  const P = TN.potential, pc1 = (a, b) => (b ? p1(100 * a / b) : '–');
+  box.append(SH('כמה קולות עוד אפשר היה להוסיף', 'pot'),
+    el('div', {class: 'sub'}, `בקלפיות הרגילות ${n0(P.nonvoters)} בעלי זכות בחירה לא הצביעו. התרחיש: בכל יישוב שהצביעו בו פחות מהרף, ההצבעה עולה עד הרף, והרף הוא ${P.benchmark}. יישוב שכבר מעל הרף לא משתנה, והמצביעים הנוספים מצביעים כמו מצביעי היישוב ב־2026. ${n0(P.potential)} הקולות האלה הם ${pc1(P.potential, P.nonvoters)} מאלה שלא הצביעו. זה חישוב של גודל ולא תחזית.`));
+  const mxg = Math.max(...P.by_group.map((g) => g.potential));
+  box.append(tblWrap(el('table', {class: 'xt'}, th(['סוג יישוב', 'לא הצביעו', 'הצבעה היום', 'הצבעה בתרחיש', 'קולות נוספים בתרחיש']),
+    el('tbody', {}, P.by_group.map((g) => el('tr', {}, el('td', {class: 'b'}, g.n), el('td', {}, num(n0(g.nonvoters))), el('td', {}, num(p1(g.t26))), el('td', {}, num(p1(g.t_if))),
+      el('td', {style: 'min-width:170px'}, el('div', {class: 'b'}, num(sgn(g.potential))), el('div', {class: 'mini'}, el('i', {style: `width:${(100 * g.potential / mxg).toFixed(1)}%;background:var(--up)`})))))))));
+  box.append(el('div', {class: 'st', style: 'margin-top:14px'}, 'לפי משפחה (התוספת מחולקת לפי חלק המשפחה בכל יישוב)'),
+    tblWrap(el('table', {class: 'xt'}, th(['משפחה', 'קולות ב־2026', 'קולות נוספים בתרחיש', 'כתוספת לקולות ב־2026', 'לא הצביעו (לפי חלקה ביישוב)']),
+      el('tbody', {}, P.by_family.map((r) => { const f = FAMS.find((x) => x.n === r.f); return el('tr', {}, el('td', {}, el('i', {class: 'fdot', style: `background:${f ? fvar(f.slot) : REST};display:inline-block;margin-inline-end:6px`}), r.f),
+        el('td', {}, num(n0(r.v26))), el('td', {class: 'b'}, num(sgn(r.potential))), el('td', {}, num(pc1(r.potential, r.v26))), el('td', {}, num(n0(r.nonvoters)))); })))));
+  const diffs = P.seats.filter((x) => x.now !== x.if);
+  box.append(el('div', {class: 'st', style: 'margin-top:14px'}, 'מנדטים: בספירה ובתרחיש'),
+    tblWrap(el('table', {class: 'xt sm'}, th(['רשימה', ...P.seats.map((x) => x.n)]),
+      el('tbody', {}, el('tr', {}, el('td', {}, 'בספירה'), P.seats.map((x) => el('td', {class: 'n'}, String(x.now)))),
+        el('tr', {class: 'avg'}, el('td', {}, 'בתרחיש'), P.seats.map((x) => el('td', {class: 'n', style: x.now !== x.if ? 'font-weight:800;color:var(--ink)' : ''}, String(x.if))))))),
+    el('div', {class: 'lnote', style: 'margin-top:4px'}, diffs.length ? `בתרחיש משתנים רק המנדטים של ${diffs.map((x) => `${x.n} (מ־${x.now} ל־${x.if})`).join(' ושל ')}: גם תוספת של ${n0(P.potential)} קולות כמעט לא משנה את החלוקה, כי היא מתפלגת בערך כמו הקולות שכבר נספרו. הסכמי העודפים כמו בספירה.` : 'בתרחיש חלוקת המנדטים לא משתנה. הסכמי העודפים כמו בספירה.'));
+  box.append(el('div', {class: 'st', style: 'margin-top:14px'}, 'היישובים עם הפוטנציאל הגדול ביותר (לחיצה פותחת את היישוב)'),
+    el('div', {class: 'rank'}, P.top.map((t) => el('div', {class: 'rr', role: 'button', tabindex: 0, onclick: () => { const p = BYID.get(t.id); if (p) pick(p, true); }, onkeydown: (e) => { if (e.key === 'Enter') { const p = BYID.get(t.id); if (p) pick(p, true); } }},
+      el('span', {class: 'nm'}, `${t.n} · ${n0(t.elig)} בעלי זכות בחירה`), el('span', {class: 'a'}, sgn(t.pot)), el('span', {class: 'b', style: 'direction:rtl;text-align:start;min-width:150px'}, 'היום ', num(p1(t.t26)), ' · רף ', num(p1(t.bench)))))),
+    el('div', {class: 'lnote', style: 'margin-top:4px'}, 'מימין לשמאל: היישוב, כמה קולות היו נוספים בתרחיש, אחוז ההצבעה היום, והרף (ההצבעה שיישובים דומים כבר מגיעים אליה).'),
+    el('ul', {class: 'facts', style: 'margin-top:8px'}, el('li', {}, `למה הרף של יישובים דומים ולא ההצבעה הטובה ביותר של היישוב עצמו: ב־2026 הייתה ההצבעה הגבוהה ביותר מ־2019 ביישובים שמהווים ${P.own_best_share_pct}% מבעלי זכות הבחירה, ולכן רף כזה כמעט לא משאיר פוטנציאל. הרף נקבע לפי אותה אוכלוסייה (יהודים, חרדים, ערים מעורבות, ערבים, בדואים, דרוזים) ושלוש רמות חברתיות־כלכליות.`),
+      el('li', {}, 'אפשר לראות את הפוטנציאל של כל יישוב על המפה: שורת "הצבעה" למעלה, "פוטנציאל נוסף".')));
+}
+function placeTurn(p) {
+  const n = p.tn;
+  if (!TN) return [el('div', {class: 'st'}, 'ההצבעה ביישוב'), el('div', {class: 'lnote'}, TNERR ? 'נתוני ההצבעה לא נטענו.' : 'טוען נתוני הצבעה…')];
+  if (!n) return [];
+  const t = tOf(p), t0 = t22Of(p), x = splitAdd(n);
+  return [el('div', {class: 'st'}, 'ההצבעה ביישוב (קלפיות רגילות)'), el('div', {class: 'dk'},
+    el('div', {}, el('b', {}, num(pc(t))), el('span', {}, t0 == null ? 'אחוז ההצבעה ב־2026' : `אחוז ההצבעה ב־2026, ב־2022: ${pc(t0)}`)),
+    el('div', {}, el('b', {}, num(n0(n.v26))), el('span', {}, `מצביעים מתוך ${n0(n.e26)} בעלי זכות בחירה (ב־2022: ${n0(n.v22)} מתוך ${n0(n.e22)})`)),
+    el('div', {}, el('b', {style: `color:${css(x.a >= 0 ? '--up' : '--down')}`}, num(sgn(x.a))), el('span', {}, `מצביעים מול 2022: ${sgn(x.g)} מגידול הפנקס, ${sgn(x.t)} משינוי באחוז ההצבעה`)),
+    el('div', {}, el('b', {}, num(n0(n.pot))), el('span', {}, n.pot ? `פוטנציאל: אילו ההצבעה הייתה ${p1(n.bench)}, כמו ביישובים דומים` : `ההצבעה כבר ברמת יישובים דומים (${p1(n.bench)})`)))];
+}
+function loadTurnout() {
+  return fetch(TURN_URL).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then((j) => { TN = j; attachTurnout(); paint(); })
+    .catch((e) => { console.error('turnout:', e); TNERR = true; if (D) { renderSide(); renderKpis(); renderControls(); } });
+}
+
 function renderSide() {
   const box = clear($('#side')), pk = pickedP();
   if (pk) { renderPlace(box, pk); return; }
-  box.append(el('div', {class: 'tabs', role: 'tablist'}, [['fam', 'משפחות'], ['merge', 'חיבורים אפשריים'], ['time', 'לאורך זמן']].map(([id, lab]) =>
+  box.append(el('div', {class: 'tabs', role: 'tablist'}, [['fam', 'משפחות'], ['merge', 'חיבורים אפשריים'], ['time', 'לאורך זמן'], ['turn', 'הצבעה ותנועת קולות']].map(([id, lab]) =>
     el('button', {class: 'chip', type: 'button', role: 'tab', 'aria-pressed': String(S.tab === id), onclick: () => { S.tab = id; renderSide(); syncHash(); }}, lab))));
-  if (S.tab === 'merge') renderMerge(box); else if (S.tab === 'time') renderTime(box); else renderFamilies(box);
+  if (S.tab === 'merge') renderMerge(box); else if (S.tab === 'time') renderTime(box); else if (S.tab === 'turn') renderTurn(box); else renderFamilies(box);
 }
 
 /* a settlement: the families in it, the lists, who it resembles, then its ballot boxes and the government map of neighbourhoods */
@@ -722,7 +1020,7 @@ function similar(p, n = 6) {
   return PL.filter((q) => q !== p && q.v >= 1000).map((q) => [dist(q), q]).sort((a, b) => a[0] - b[0]).slice(0, n).map((x) => x[1]);
 }
 function renderPlace(box, p) {
-  const s = cur(), k = cmpIdx();
+  const s0 = cur(), s = famSel(s0) ? s0 : SELBY['dom'], k = cmpIdx();
   box.append(el('div', {style: 'display:flex;justify-content:space-between;gap:10px;align-items:flex-start'}, el('h2', {}, p.name), el('button', {class: 'back', type: 'button', onclick: () => pick(null)}, 'חזרה לסיכום')));
   const tags = [el('span', {class: 'tag'}, D.groups[p.g]), el('span', {class: 'tag'}, `${n0(p.nb)} קלפיות`)];
   if (p.pop) tags.push(el('span', {class: 'tag'}, `${n0(p.pop)} תושבים`));
@@ -734,6 +1032,7 @@ function renderPlace(box, p) {
     if (k >= 0 && p.p22[k] != null) kp.push(el('div', {}, el('b', {}, num(pc(p.p22[k]))), el('span', {}, 'ב־2022')), el('div', {}, el('b', {style: `color:${css(p.sh - p.p22[k] >= 0 ? '--up' : '--down')}`}, num(spc(p.sh - p.p22[k]))), el('span', {}, 'שינוי')));
   }
   box.append(el('div', {class: 'dk'}, kp));
+  if (isTurn(s0)) box.append(...placeTurn(p));
 
   // the six families in this place against the country
   box.append(el('div', {class: 'st'}, 'המשפחות ביישוב: קולות, אחוז, ופי כמה מהארצי'));
@@ -750,6 +1049,7 @@ function renderPlace(box, p) {
   const rows = LISTS.map((l, i) => ({l, v: p.vs[i], i})).filter((x) => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 12);
   const top = rows.length ? rows[0].v : 1;
   rows.forEach((x) => box.append(el('div', {class: 'lb wide'}, el('span', {}, x.l.n), el('div', {class: 'bar'}, el('i', {style: `width:${(100 * x.v / top).toFixed(1)}%;background:${x.l.f != null ? fvar(FAMS[x.l.f].slot) : REST}`})), el('span', {class: 'p'}, `${n0(x.v)} קולות · ${pc(x.v / p.v)}`))));
+  if (!isTurn(s0)) box.append(...placeTurn(p));
   // traits: CBS authority level, education stream, borders, local turnout
   const [ac, kd, ag, ses] = p.tr, [eh, ed, es, dg, dl, mun, nat, inc] = p.x2 || [];
   const lines = [];
@@ -780,7 +1080,7 @@ function renderBoxes(box, p) {
   box.append(el('div', {class: 'st'}, 'קלפיות'), wrap);
   loadBoxes().then((all) => {
     if (S.picked !== p.id || !S.boxes) return;
-    const s = cur();
+    const s = famSel(cur()) ? cur() : SELBY['dom'];
     const rows = (all[String(p.id)] || []).map((r) => {
       const valid = r[3], vs = r.slice(4);
       const fv = FAMS.map((f) => f.m.reduce((t, i) => t + vs[i], 0));
@@ -817,7 +1117,7 @@ function pick(p, zoom) {
 }
 
 /* ---------------------------------------------------------------- controls and state */
-function setSel(id) { if (!SELBY[id]) return; S.sel = id; if (S.metric === 'change' && !hasCmp()) S.metric = 'share'; paint(); syncHash(); }
+function setSel(id) { if (!SELBY[id]) return; const was = isTurn(cur()); S.sel = id; if (isTurn(SELBY[id])) S.tab = 'turn'; else if (was && S.tab === 'turn') S.tab = 'fam'; if (S.metric === 'change' && !hasCmp()) S.metric = 'share'; paint(); syncHash(); }
 $('#lsel').addEventListener('change', (e) => { if (e.target.value) setSel(e.target.value); });
 $('#mseg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.disabled) return; S.metric = b.dataset.m; paint(); syncHash(); });
 $('#sseg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; S.size = b.dataset.s; paint(); syncHash(); });
@@ -827,7 +1127,7 @@ $('#q').addEventListener('input', (e) => {
   if (hit) pick(hit, true);
 });
 function syncHash() {
-  const h = `#sel=${encodeURIComponent(S.sel)}&m=${S.metric}&s=${S.size}` + (S.picked != null ? `&p=${S.picked}` : '') + (S.tab !== 'fam' ? `&tab=${S.tab}` : '') + (S.tab === 'merge' && S.pair ? `&pr=${S.pair}` : '');
+  const h = `#sel=${encodeURIComponent(S.sel)}&m=${S.metric}&s=${S.size}` + (S.picked != null ? `&p=${S.picked}` : '') + (S.tab !== 'fam' ? `&tab=${S.tab}` : '') + (S.tab === 'merge' && S.pair ? `&pr=${S.pair}` : '') + (S.tab === 'turn' && S.fdir !== 'from' ? `&fd=${S.fdir}` : '');
   try { history.replaceState(null, '', h); } catch (e) { /* file:// or a sandbox */ }
 }
 function readHash() {
@@ -836,7 +1136,8 @@ function readHash() {
   if (h.get('m') === 'change') S.metric = 'change';
   if (h.get('s') === 'equal') S.size = 'equal';
   if (h.get('p')) S.picked = Number(h.get('p'));
-  if (['fam', 'merge', 'time'].includes(h.get('tab'))) S.tab = h.get('tab');
+  if (['fam', 'merge', 'time', 'turn'].includes(h.get('tab'))) S.tab = h.get('tab');
+  if (h.get('fd') === 'to') S.fdir = 'to';
   if (/^\d+,\d+$/.test(h.get('pr') || '')) S.pair = h.get('pr');
 }
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change', () => paint());
@@ -857,6 +1158,7 @@ function renderTexts() {
     el('p', {}, el('b', {}, 'יציבות: '), `ב־${n0(f.boot_n)} דגימות חוזרות של יישובים שלמים, כל זוג וכל שלישייה בתוך משפחה נשארים יחד ב־99% עד 100% מהמקרים. ישראל ביתנו והציונות הדתית הן הרשימות הבודדות, והקשר שלהן לרשימות אחרות חלש (הדמיון הגבוה ביותר של ישראל ביתנו ${f.yb_max_r.toFixed(2)}). העץ ברמת היישוב זהה לעץ ברמת הקלפי (דיוק העץ ${f.cophenetic.toFixed(2)}).`),
     el('p', {}, el('b', {}, 'חיבורים אפשריים: '), 'הקביעה "קרובות מאוד / קרובות אך מתחרות / קרובות חלקית / רחוקות / הפוכות" היא לפי כלל קבוע על שני מספרים: הדמיון בין הרשימות על פני הקלפיות, והדמיון בתוך כל אוכלוסייה שבה שתיהן חזקות (הנמוך שבהם קובע). הסימולציה של המנדטים מחשבת בדר־עופר על הקולות שנספרו עם הרשימות מאוחדות, בלי הסכמי עודפים, כשהקולות שאבדו בשימור חלקי יוצאים מהרשימות שעברו. שימור היסטורי = חלקה של הרשימה המאוחדת מהקולות הכשרים חלקי סכום החלקים בבחירות הקודמות. הכלי אינו מנבא החלטות של ראשי רשימות.'),
     el('p', {}, el('b', {}, 'לאורך זמן: '), 'כל רשימה שעברה את החסימה בכל בחירות משויכת למשפחה שהיישובים החזקים שלה ב־2026 דומים לשלה (מתאם בין חלקה ביישוב לחלק המשפחה ביישוב). רשימה עם מתאם נמוך מ־0.15 לכל המשפחות נשארת בלי שיוך. זה אינו מיפוי יורשים.'),
+    el('p', {}, el('b', {}, 'הצבעה ותנועת קולות: '), 'אחוז ההצבעה הארצי הוא כל המצביעים (גם במעטפות החיצוניות) חלקי כל בעלי זכות הבחירה. כל שאר החישובים הם על הקלפיות הרגילות של היישובים שקיימים בשתי הבחירות. פירוק התוספת לגידול הפנקס ולאחוז הצבעה גבוה יותר, ופירוק השינוי של כל משפחה ל"יותר מצביעים" ול"שינוי בהעדפה", הם חשבון מדויק. תנועת הקולות היא אומדן סטטיסטי של מקומות (התאמה לפי ריבועים פחותים לא־שליליים על פני כל היישובים, עם טווחים מדגימות חוזרות של יישובים) ולא סקר: היא אינה מזהה מצביע בודד ואינה מבחינה בין מי שעבר רשימה למי שלא הצביע ב־2022. הפוטנציאל הוא תרחיש חישובי לפי רף שיישובים דומים כבר מגיעים אליו, ולא תחזית.'),
     el('p', {}, el('b', {}, 'המיקום '), 'הוא מרכז היישוב ממאגר ממשלתי פתוח ומקורב לצורכי המחשה. מתאר היבשה מ־Natural Earth (נחלת הכלל), כרקע לאיתור נקודות בלבד ואינו אמירה על גבולות. הקישור "מפת שכונות" פותח את אתר התוצאות הממשלתי (govmap), ממורכז על היישוב; תנאי השימוש שלו אוסרים להעתיק ממנו שכבות ללא אישור, ולכן אין כאן העתק שלהן. שם הצבע הוא לפי מיקום הקלפי ולא לפי מגורי המצביעים.'),
     el('details', {}, el('summary', {}, 'התמונה המלאה: עץ, מאפייני המקום והמנדטים לפי משפחה'), el('img', {src: 'fam/families.png', alt: 'עץ הדמיון בין הרשימות, מאפייני המקום של בוחרי כל רשימה והמנדטים לפי משפחה', loading: 'lazy'})));
 }
@@ -867,6 +1169,7 @@ async function load() {
     const r = await fetch(DATA_URL);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     setData(await r.json());
+    loadTurnout();
   } catch (e) {
     console.error('families data:', e);
     clear($('#side')).append(el('div', {class: 'err'}, 'לא הצלחתי לטעון את הנתונים. נסו לרענן בעוד רגע.'));
