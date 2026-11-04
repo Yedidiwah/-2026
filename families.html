@@ -256,7 +256,7 @@ table.bx tr:last-child td{border-bottom:0}
 
   <div class="sidecol">
     <header>
-      <div class="hrow"><div class="hlinks"><a class="toplink" href="./">← לתחזית</a><a class="toplink" href="map.html">מפת הגושים</a></div><div class="eyebrow" id="eyebrow">טוען…</div></div>
+      <div class="hrow"><div class="hlinks"><a class="toplink" href="./">← לתחזית</a><a class="toplink" href="map.html">מפת הגושים</a><a class="toplink" href="compare">מול בחירות קודמות ומה אם</a></div><div class="eyebrow" id="eyebrow">טוען…</div></div>
       <h1>מי דומה למי? משפחות הבוחרים</h1>
       <p class="dek">רשימות שחזקות באותם מקומות מרכיבות משפחה, בלי שום חלוקה לגושים. רק הרשימות שעברו את החסימה. בוחרים משפחה או רשימה ורואים אילו יישובים נדלקים, לוחצים על יישוב ויורדים עד רמת הקלפי, ובלשונית "חיבורים אפשריים" רואים מי יכולה להתחבר עם מי. בלשונית "הצבעה ותנועת קולות" רואים כמה יותר אנשים הצביעו, מי הוסיף אותם ולאן עברו קולות של 2022, ובשורת "הצבעה" אפשר לצבוע את המפה לפי ההצבעה.</p>
     </header>
@@ -876,7 +876,8 @@ function turnGroups(box) {
     bar ? el('div', {class: 'mini'}, el('i', {style: `width:${(100 * Math.max(0, g.growth) / mx).toFixed(1)}%;background:var(--axis)`}), el('i', {style: `width:${(100 * Math.max(0, g.turn) / mx).toFixed(1)}%;background:var(--up)`})) : null);
   const row = (g, bar) => el('tr', {class: bar ? '' : 'avg'}, el('td', {}, el('div', {class: 'b'}, g.n), el('div', {class: 'm'}, `${n0(g.settlements)} יישובים`)), cell2(g.t26, g.t22, p1), cell2(g.E26, g.E22), cell2(g.V26, g.V22), add(g, bar));
   box.append(tblWrap(el('table', {class: 'xt'}, th(['סוג יישוב', 'אחוז הצבעה', 'בעלי זכות בחירה', 'הצביעו', 'מצביעים שנוספו']), el('tbody', {}, gs.map((g) => row(g, true)), row(all, false)))),
-    el('div', {class: 'mleg'}, el('span', {}, el('i', {class: 'sw2', style: 'background:var(--axis)'}), 'פנקס גדול יותר'), el('span', {}, el('i', {class: 'sw2', style: 'background:var(--up)'}), 'אחוז הצבעה גבוה יותר')));
+    el('div', {class: 'mleg'}, el('span', {}, el('i', {class: 'sw2', style: 'background:var(--axis)'}), 'פנקס גדול יותר'), el('span', {}, el('i', {class: 'sw2', style: 'background:var(--up)'}), 'אחוז הצבעה גבוה יותר')),
+    el('div', {class: 'lnote', style: 'margin-top:5px'}, el('b', {}, 'שימו לב: '), 'ההצבעה כאן היא בקלפיות הרגילות בלבד, ומי שהצביע במעטפה כפולה (חיילים, חולים ועוד) לא נספר ביישוב שלו. הקובץ הסופי של 2026 מציין לכל קלפי כמה מהרשומים בה הצביעו בקלפי אחרת, כנראה במעטפה (454,353, כ־6.2% מבעלי זכות הבחירה; ביישובים יהודיים 6.9%, בערביים 2.4%), אבל ל־2022 אין נתון כזה, ולכן ההשוואה נעשית על הקלפיות הרגילות. המעטפות היו 9.6% מהקולות ב־2022 ו־7.9% ב־2026, ולכן חלק מהעלייה ביישובים היהודיים עשוי להיות מי שהצביע במעטפה ב־2022 ובקלפי ב־2026. פירוט בעמוד ', el('a', {href: 'compare#whatif', class: 'ext'}, 'מול בחירות קודמות ומה אם'), '.'));
 }
 function turnFamilies(box) {
   const F = TN.families, rows = F.rows, sum = (k) => rows.reduce((t, r) => t + r[k], 0);
